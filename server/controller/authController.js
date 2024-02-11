@@ -1,11 +1,13 @@
 //logic file/code for the routes/ api end points
 const User = require('../models/user')
+const {hashPassword, comparePassword} = require('../helpers/auth')
 
 const test = (req,res) =>
 {
     res.json('test is working')
 }
 
+// Register endpoint
 const registerUser = async (req, res) =>
 {
     try {
@@ -31,9 +33,14 @@ const registerUser = async (req, res) =>
             })
             
         }
+        
+        const hashedPassword = await hashPassword(password)
+        //create user in database
         // still needs to hash the password
         const user = await User.create({
-            userName, email, password
+            userName, 
+            email, 
+            password : hashedPassword,
         })
 
         return res.json(user)
@@ -43,8 +50,37 @@ const registerUser = async (req, res) =>
     }
 }
 
+//Login endpoint
+const loginUser = async (req,res) => {
+    try {
+        const {email, password} = req.body;
+
+        //Check if user exists
+        const user = await User.findOne({email});
+        if(!user){
+            return res.json({
+                error : 'No user found'
+            })
+        }
+        //check if password match
+        const match = await comparePassword(password,user.password)
+        if(match){
+            res.json('Password match')
+        }
+        if(!match){
+            res.json({
+                error: 'Passwords do not match'
+            })
+        }
+        } catch (error) {
+            console.log(error)
+        
+    }
+
+}
 module.exports = 
 {
     test,
-    registerUser
+    registerUser,
+    loginUser
 }
