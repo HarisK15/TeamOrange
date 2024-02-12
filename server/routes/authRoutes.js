@@ -2,7 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const cors = require('cors')
-const { test, registerUser, loginUser} = require('../controller/authController')
+const { test, registerUser, loginUser} = require('../controllers/authControllers')
 
 //middleware
 router.use(

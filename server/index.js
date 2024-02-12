@@ -16,6 +16,7 @@ app.use(express.json())
 
 
 app.use('/',require('./routes/authRoutes'))
+app.use('/clucks',require('./routes/cluckRoutes'))
 
 //set up port to listen
 if (process.env.NODE_ENV !== 'test')
