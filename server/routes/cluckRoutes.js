@@ -1,7 +1,17 @@
 const express = require('express');
 const { getAllClucks, getCluck, postCluck, editCluck } = require('../controllers/cluckControllers');
+const cors = require('cors')
 
 const router = express.Router();
+
+router.use(
+    cors(
+        {
+            credentials:true,
+            origin: 'http://localhost:5173'
+        }
+    )
+)
 
 // GET all clucks
 router.get('/', getAllClucks);

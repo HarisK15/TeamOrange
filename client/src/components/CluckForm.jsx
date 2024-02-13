@@ -9,7 +9,7 @@ const CluckForm = () => {
 
     const cluck = { text };
 
-    const response = await fetch("/clucks", {
+    const response = await fetch("http://localhost:3000/clucks/", {
       method: "POST",
       body: JSON.stringify(cluck),
       headers: {
