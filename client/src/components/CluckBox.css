@@ -66,3 +66,50 @@
 .cluck-info p {
   margin: 0;
 }
+
+.edit-button {
+  align-self: flex-end;
+  padding: 6px 16px;
+  font-weight: bold;
+  color: #ffffff;
+  background-color: #000000;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.cancel-button {
+  align-self: flex-end;
+  padding: 6px 16px;
+  font-weight: bold;
+  color: #ffffff;
+  background-color: #000000;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.buttons {
+  display: flex;
+  align-self:flex-end;
+  gap: 10px;
+}
+
+.edit-textarea {
+  flex-grow: 1;
+  width: 95%;
+  height: 60px;
+  border: none;
+  resize: none;
+  outline: none;
+  background-color: #000000;
+  color: #ffffff;
+  font-size: 14px;
+  box-sizing: border-box;
+  overflow: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.cluck-textarea::-webkit-scrollbar {
+  display: none;
+}
