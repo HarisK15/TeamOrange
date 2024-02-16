@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import "./CluckForm.css";
+import profilePicUrl from "/public/images/default-pic.jpg";
 
 const CluckForm = () => {
   const [text, setText] = useState("");
@@ -30,14 +32,20 @@ const CluckForm = () => {
   };
 
   return (
-    <form className="create" onSubmit={handleSubmit}>
-      <input
-        type="text"
-        onChange={(e) => setText(e.target.value)}
-        value={text}
-      />
-      <button type="submit">Cluck</button>
-      {error && <div className="error">{error}</div>}
+    <form className="cluck-form" onSubmit={handleSubmit}>
+      <img src={profilePicUrl} alt="Profile" className="profile-pic" />
+      <div className="cluck-content">
+        <textarea
+          className="cluck-textarea"
+          onChange={(e) => setText(e.target.value)}
+          value={text}
+          placeholder="What's your cluck?"
+        />
+        <button type="submit" className="cluck-button">
+          Cluck
+        </button>
+        {error && <div className="error">{error}</div>}
+      </div>
     </form>
   );
 };
