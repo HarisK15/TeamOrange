@@ -23,22 +23,22 @@
   margin-right: 10px;
 }
 
- .name-username {
+.name-username {
   display: flex;
   gap: 10px;
 }
 
- .name {
+.name {
   margin: 0;
   font-weight: bold;
 }
 
- .username {
+.username {
   color: #657786;
   margin: 0;
 }
 
- .cluck-content {
+.cluck-content {
   flex-grow: 1;
   overflow-wrap: break-word;
   word-break: break-word;
@@ -48,21 +48,21 @@
   margin-left: 65px;
 }
 
- .cluck-content p {
+.cluck-content p {
   margin: 0;
 }
 
- .cluck-info {
+.cluck-info {
   font-size: 0.8em;
   color: #657786;
 }
 
- .cluck-timestamp{
+.cluck-timestamp {
   font-size: 0.7em;
   color: #657786;
   text-align: left;
 }
 
- .cluck-info p {
+.cluck-info p {
   margin: 0;
 }
