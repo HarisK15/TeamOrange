@@ -33,18 +33,20 @@ const CluckForm = () => {
 
   return (
     <form className="cluck-form" onSubmit={handleSubmit}>
-      <img src={profilePicUrl} alt="Profile" className="profile-pic" />
-      <div className="cluck-content">
-        <textarea
-          className="cluck-textarea"
-          onChange={(e) => setText(e.target.value)}
-          value={text}
-          placeholder="What's your cluck?"
-        />
-        <button type="submit" className="cluck-button">
-          Cluck
-        </button>
-        {error && <div className="error">{error}</div>}
+      <div className="form-content">
+        <img src={profilePicUrl} alt="Profile" className="profile-pic" />
+        <div className="cluck-content">
+          <textarea
+            className="cluck-textarea"
+            onChange={(e) => setText(e.target.value)}
+            value={text}
+            placeholder="What's your cluck?"
+          />
+          <button type="submit" className="cluck-button">
+            Cluck
+          </button>
+          {error && <div className="error">{error}</div>}
+        </div>
       </div>
     </form>
   );
