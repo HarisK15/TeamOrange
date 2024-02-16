@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "./CluckForm.css";
-import profilePicUrl from "/public/images/default-pic.jpg";
+import profilePicUrl from "../../public/images/default-pic.jpg";
 
 const CluckForm = () => {
   const [text, setText] = useState("");

@@ -1,5 +1,5 @@
 import "./CluckBox.css";
-import profilePicUrl from "/public/images/default-pic.jpg";
+import profilePicUrl from "../../public/images/default-pic.jpg";
 
 const CluckBox = ({ cluck }) => {
   return (
