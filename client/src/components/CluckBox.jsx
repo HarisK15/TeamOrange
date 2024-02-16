@@ -1,7 +1,32 @@
+import { React, useState } from "react";
 import "./CluckBox.css";
-import profilePicUrl from "../../public/images/default-pic.jpg";
+import profilePicUrl from "../images/default-pic.jpg";
 
 const CluckBox = ({ cluck }) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedText, setEditedText] = useState("");
+
+  const handleSave = async () => {
+    if (isEditing) {
+      const response = await fetch(`http://localhost:8000/clucks/${cluck._id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ text: editedText }),
+      });
+
+      if (response.ok) {
+        // Update the cluck text and exit editing mode
+        cluck.text = editedText;
+        setIsEditing(false);
+      } else {
+        // Handle error
+        console.error("Failed to update cluck");
+      }
+    }
+  };
+
   return (
     <div className="cluckBox">
       <div className="cluck-header">
@@ -12,7 +37,17 @@ const CluckBox = ({ cluck }) => {
         </div>
       </div>
       <div className="cluck-content">
-        <p>{cluck.text}</p>
+        {isEditing ? (
+          <textarea
+            value={editedText}
+            onChange={(e) => setEditedText(e.target.value)}
+          />
+        ) : (
+          <p>{cluck.text}</p>
+        )}
+        <button onClick={isEditing ? handleSave : () => setIsEditing(true)}>
+          {isEditing ? "Save" : "Edit"}
+        </button>
       </div>
       <div className="cluck-info">
         <div className="cluck-timestamp">
