@@ -16,6 +16,7 @@ app.use(express.json())
 
 
 app.use('/',require('./routes/authRoutes'))
+app.use('/', require('./routes/passwordRouter') );
 
 //set up port to listen
 const port = 8000;
