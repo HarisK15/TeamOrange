@@ -18,6 +18,12 @@ app.use(express.json())
 app.use('/',require('./routes/authRoutes'))
 
 //set up port to listen
-const port = 8000;
-app.listen(port,() => console.log(`Server is running on port ${port}`))
+if (process.env.NODE_ENV !== 'test')
+{
+    const port = 8000;
+    app.listen(port,() => console.log(`Server is running on port ${port}`))
+}
 
+
+
+module.exports = app;
