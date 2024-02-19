@@ -3,7 +3,7 @@ const app = require('../index.js');
 const request = supertest(app);
 const mongoose = require('mongoose');
 const { MongoMemoryServer } = require('mongodb-memory-server');
-const User = require('../models/user'); 
+const User = require('../models/user.js'); 
 
 let mongoServer;
 
