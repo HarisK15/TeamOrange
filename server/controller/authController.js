@@ -42,7 +42,8 @@ const registerUser = async (req, res) =>
             email, 
             password : hashedPassword,
         })
-
+        
+        req.session.userEmail = email;
         return res.json(user)
     } catch (error) {
         console.log(error)
@@ -65,6 +66,7 @@ const loginUser = async (req,res) => {
         //check if password match
         const match = await comparePassword(password,user.password)
         if(match){
+            req.session.userEmail = email;
             res.json('Password match')
         }
         if(!match){

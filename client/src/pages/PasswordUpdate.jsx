@@ -7,7 +7,6 @@ import { useNavigate } from "react-router-dom";
 export default function ChangePasswordForm() {
     const navigate = useNavigate();
     const [data, setData] = useState({
-        email: '',
         currentPassword: '',
         newPassword: '',
     });
@@ -22,16 +21,14 @@ export default function ChangePasswordForm() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const { email, currentPassword, newPassword } = data;
+        const { currentPassword, newPassword } = data;
         try {
             const response = await axios.post('change-password', {
-                email,
                 currentPassword,
                 newPassword,
             });
             toast.success(response.data.message);
             setData({
-                email: '',
                 currentPassword: '',
                 newPassword: '',
             });
@@ -47,14 +44,6 @@ export default function ChangePasswordForm() {
     return (
         <div>
             <form onSubmit={handleSubmit}>
-                <label>Email</label>
-                <input
-                    type="email"
-                    name="email"
-                    placeholder="Enter email address..."
-                    value={data.email}
-                    onChange={handleChange}
-                />
                 <label>Current Password</label>
                 <input
                     type="password"

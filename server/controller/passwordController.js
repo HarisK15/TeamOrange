@@ -1,15 +1,15 @@
 const User = require('../models/user')
-const { hashPassword } = require('../helpers/auth')
+const { hashPassword, comparePassword } = require('../helpers/auth')
 
 const changePassword = async (req, res) => {
     try {
-        const { email, currentPassword, newPassword } = req.body;
+        const { currentPassword, newPassword } = req.body;
 
-        const user = await User.findOne({ email });
+        let user = await User.findOne({ email: req.session.userEmail });
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
-        if (!await user.isValidPassword(currentPassword)) {
+        if (!await comparePassword( currentPassword, user.password )) {
             return res.status(400).json({ error: 'Current password is incorrect' });
         }
         if(!newPassword || newPassword.length<6 || (currentPassword === newPassword)){

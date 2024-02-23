@@ -13,6 +13,6 @@ router.use(
 );
 
 // POST requests
-router.post('/change-password', changePassword); // Route for changing passwords
+router.post('/change-password', changePassword); 
 
 module.exports = router;
