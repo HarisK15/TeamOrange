@@ -28,25 +28,31 @@ const createSecretToken = (id) => {
   });
 };
 
-const userVerification = (req, res) => {
+const userVerification = async (req, res, next) => {
   const token = req.cookies.token;
+
   if (!token) {
-    return res.json({ status: false });
+    return res.status(401).json({ isLoggedIn: false });
   }
-  jwt.verify(token, process.env.JWT_SECRET, async (err, data) => {
-    if (err) {
-      return res.json({ status: false });
-    } else {
-      const user = await User.findById(data.id);
-      if (user) return res.json({ status: true, user: user.username });
-      else return res.json({ status: false });
+
+  try {
+    const data = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(data.id);
+
+    if (!user) {
+      return res.status(401).json({ status: false });
     }
-  });
+
+    req.user = user;
+    next();
+  } catch (err) {
+    return res.status(401).json({ status: false });
+  }
 };
 
 module.exports = {
   hashPassword,
   comparePassword,
   createSecretToken,
-  userVerification
+  userVerification,
 };
