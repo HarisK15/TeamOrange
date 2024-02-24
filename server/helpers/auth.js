@@ -28,6 +28,7 @@ const createSecretToken = (id) => {
   });
 };
 
+// Middleware to verify that a user is logged in and then attaches the user's object id to the request object
 const userVerification = async (req, res, next) => {
   const token = req.cookies.token;
 
@@ -43,7 +44,7 @@ const userVerification = async (req, res, next) => {
       return res.status(401).json({ status: false });
     }
 
-    req.user = user;
+    req.userId = user._id;
     next();
   } catch (err) {
     return res.status(401).json({ status: false });
