@@ -5,7 +5,7 @@ const {
   postCluck,
   editCluck,
 } = require("../controllers/cluckControllers");
-const { userVerification } = require("../helpers/auth");
+const { userVerification } = require("../middleware/verifyUser");
 const cors = require("cors");
 
 const router = express.Router();
