@@ -1,31 +1,31 @@
 import { useState } from "react";
+import axios from "axios";
 import "./CluckBox.css";
 import profilePicUrl from "../images/default-pic.jpg";
 
-const CluckBox = ({ cluck }) => {
+const CluckBox = ({ cluck, loggedInUserId }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedText, setEditedText] = useState(cluck.text);
 
   const handleSave = async () => {
     if (isEditing) {
-      const response = await fetch(
-        `http://localhost:8000/clucks/${cluck._id}`,
-        {
-          method: "PATCH",
+      try {
+        const response = await axios.patch(`/clucks/${cluck._id}`, { text: editedText }, {
+          withCredentials: true,
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ text: editedText }),
+        });
+  
+        if (response.status === 200) {
+          // Update the cluck text and exit editing mode
+          cluck.text = editedText;
+          setIsEditing(false);
+        } else {
+          console.error("Failed to update cluck");
         }
-      );
-
-      if (response.ok) {
-        // Update the cluck text and exit editing mode
-        cluck.text = editedText;
-        setIsEditing(false);
-      } else {
-        // Handle error
-        console.error("Failed to update cluck");
+      } catch (error) {
+        console.error("Failed to update cluck", error);
       }
     }
   };
@@ -58,12 +58,14 @@ const CluckBox = ({ cluck }) => {
             Cancel
           </button>
         )}
-        <button
-          onClick={isEditing ? handleSave : () => setIsEditing(true)}
-          className="edit-button"
-        >
-          {isEditing ? "Save" : "Edit"}
-        </button>
+        {loggedInUserId === cluck.user._id && (
+          <button
+            onClick={isEditing ? handleSave : () => setIsEditing(true)}
+            className="edit-button"
+          >
+            {isEditing ? "Save" : "Edit"}
+          </button>
+        )}
       </div>
 
       <div className="cluck-info">
