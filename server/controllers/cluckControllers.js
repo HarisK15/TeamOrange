@@ -2,10 +2,11 @@ const Cluck = require("../models/cluckModel");
 const User = require("../models/user");
 const mongoose = require("mongoose");
 
-
 // GET all clucks
 const getAllClucks = async (req, res) => {
-  const clucks = await Cluck.find({}).populate("user", "userName").sort({ createdAt: -1 });
+  const clucks = await Cluck.find({})
+    .populate("user", "userName")
+    .sort({ createdAt: -1 });
 
   res.status(200).json(clucks);
 };
@@ -28,13 +29,15 @@ const deleteCluck = async (req, res) => {
   const { id } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(404).json({ error: 'Cluck not found' });
+    return res.status(404).json({ error: "Cluck not found" });
   }
 
   const cluck = await Cluck.findByIdAndDelete(id);
 
   if (!cluck) {
-    return res.status(404).json({ error: 'Cluck not found' });
+    return res.status(404).json({ error: "Cluck not found" });
+  } else {
+    res.status(200).json({ message: "Cluck deleted successfully" });
   }
 };
 
@@ -76,7 +79,11 @@ const editCluck = async (req, res) => {
     return res.status(404).json({ error: "Cluck not found" });
   }
 
-  const updatedCluck = await Cluck.findOneAndUpdate({ _id: id }, { text: req.body.text }, { new: true });
+  const updatedCluck = await Cluck.findOneAndUpdate(
+    { _id: id },
+    { text: req.body.text },
+    { new: true }
+  );
 
   res.status(200).json(updatedCluck);
 };
