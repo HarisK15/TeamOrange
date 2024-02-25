@@ -22,6 +22,19 @@ const getCluck = async (req, res) => {
 };
 
 // DELETE a cluck
+const deleteCluck = async (req, res) => {
+  const { id } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(404).json({ error: 'Cluck not found' });
+  }
+
+  const cluck = await Cluck.findByIdAndDelete(id);
+
+  if (!cluck) {
+    return res.status(404).json({ error: 'Cluck not found' });
+  }
+};
 
 // POST a new cluck
 const postCluck = async (req, res) => {
@@ -57,4 +70,5 @@ module.exports = {
   getCluck,
   postCluck,
   editCluck,
+  deleteCluck,
 };

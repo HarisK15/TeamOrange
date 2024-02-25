@@ -36,6 +36,12 @@ describe("Cluck Routes", () => {
     expect(response.statusCode).toBe(200);
   });
 
+  it("DELETE /:id - should delete a cluck", async () => {
+    const id = newCluckId;
+    const response = await request(app).delete(`/clucks/${id}`);
+    expect(response.statusCode).toBe(200);
+  });
+
   it("PATCH /:id - should edit a cluck", async () => {
     const id = newCluckId;
     const updatedData = {

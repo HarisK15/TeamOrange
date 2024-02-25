@@ -20,6 +20,7 @@ router.get('/', getAllClucks);
 router.get('/:id', getCluck);
 
 // DELETE a cluck
+router.delete('/:id', deleteCluck);
 
 // POST a new cluck
 router.post('/', postCluck);
