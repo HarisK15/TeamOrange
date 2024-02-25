@@ -2,6 +2,7 @@ const Cluck = require("../models/cluckModel");
 const User = require("../models/user");
 const mongoose = require("mongoose");
 
+
 // GET all clucks
 const getAllClucks = async (req, res) => {
   const clucks = await Cluck.find({}).populate("user", "userName").sort({ createdAt: -1 });
@@ -27,8 +28,8 @@ const getCluck = async (req, res) => {
 // POST a new cluck
 const postCluck = async (req, res) => {
   try {
-    const { user, text } = req.body;
-    const author = req.user;
+    const { text } = req.body;
+    const author = await User.findById(req.userId);
 
     if (!author) {
       return res.status(400).json({ error: "User not found" });
@@ -45,10 +46,14 @@ const postCluck = async (req, res) => {
 // PATCH (edit) a cluck
 const editCluck = async (req, res) => {
   const { id } = req.params;
-  const reqUserId = req.user._id;
+  const userId = req.userId;
 
   const cluck = await Cluck.findById(req.params.id);
-  if (cluck.user.toString() !== req.user._id.toString()) {
+  if (!cluck) {
+    return res.status(404).json({ error: "Cluck not found" });
+  }
+
+  if (cluck.user._id.toString() !== userId.toString()) {
     return res
       .status(403)
       .json({ message: "You can only edit your own clucks" });
@@ -58,9 +63,9 @@ const editCluck = async (req, res) => {
     return res.status(404).json({ error: "Cluck not found" });
   }
 
-  Cluck.findOneAndUpdate({ _id: id }, { ...req.body });
+  const updatedCluck = await Cluck.findOneAndUpdate({ _id: id }, { text: req.body.text }, { new: true });
 
-  res.status(200).json(cluck);
+  res.status(200).json(updatedCluck);
 };
 
 module.exports = {
