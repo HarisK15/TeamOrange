@@ -1,11 +1,11 @@
 const Cluck = require("../models/cluckModel");
 const User = require("../models/user");
-const mongoose = require("mongoose");
-
 
 // GET all clucks
 const getAllClucks = async (req, res) => {
-  const clucks = await Cluck.find({}).populate("user", "userName").sort({ createdAt: -1 });
+  const clucks = await Cluck.find({})
+    .populate("user", "userName")
+    .sort({ createdAt: -1 });
 
   res.status(200).json(clucks);
 };
@@ -63,7 +63,11 @@ const editCluck = async (req, res) => {
     return res.status(404).json({ error: "Cluck not found" });
   }
 
-  const updatedCluck = await Cluck.findOneAndUpdate({ _id: id }, { text: req.body.text }, { new: true });
+  const updatedCluck = await Cluck.findOneAndUpdate(
+    { _id: id },
+    { text: req.body.text },
+    { new: true }
+  );
 
   res.status(200).json(updatedCluck);
 };

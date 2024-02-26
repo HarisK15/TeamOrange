@@ -8,7 +8,6 @@ const {
   createSecretToken,
 } = require("../helpers/auth");
 
-
 const test = (req, res) => {
   res.json("test is working");
 };
