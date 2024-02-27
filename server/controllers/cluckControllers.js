@@ -27,12 +27,20 @@ const getCluck = async (req, res) => {
 // DELETE a cluck
 const deleteCluck = async (req, res) => {
   const { id } = req.params;
+  const userId = req.userId;
 
+  const cluck = await Cluck.findById(id);
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(404).json({ error: "Cluck not found" });
   }
 
-  const cluck = await Cluck.findByIdAndDelete(id);
+  if (cluck.user._id.toString() !== userId.toString()) {
+    return res
+      .status(403)
+      .json({ message: "You can only delete your own clucks" });
+  }
+
+  await Cluck.findByIdAndDelete(id);
 
   if (!cluck) {
     return res.status(404).json({ error: "Cluck not found" });
@@ -64,7 +72,7 @@ const editCluck = async (req, res) => {
   const { id } = req.params;
   const userId = req.userId;
 
-  const cluck = await Cluck.findById(req.params.id);
+  const cluck = await Cluck.findById(id);
   if (!cluck) {
     return res.status(404).json({ error: "Cluck not found" });
   }
