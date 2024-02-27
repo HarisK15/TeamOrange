@@ -23,7 +23,7 @@ export default function ChangePasswordForm() {
         e.preventDefault();
         const { currentPassword, newPassword } = data;
         try {
-            const response = await axios.post('change-password', {
+            const response = await axios.post('/change-password', {
                 currentPassword,
                 newPassword,
             });

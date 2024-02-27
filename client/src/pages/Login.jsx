@@ -30,7 +30,7 @@ export default function Login() {
             }
 
         } catch (error) {
-
+            console.log(error)
         }
     }
     return (

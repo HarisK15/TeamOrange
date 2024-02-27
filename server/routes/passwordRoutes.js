@@ -2,7 +2,8 @@
 const express = require('express');
 const router = express.Router();
 const cors = require('cors');
-const { changePassword } = require('../controller/passwordController');
+const { changePassword } = require('../controllers/passwordController');
+const { userVerification } = require("../middleware/verifyUser");
 
 // Middleware
 router.use(
@@ -13,6 +14,6 @@ router.use(
 );
 
 // POST requests
-router.post('/change-password', changePassword); 
+router.post('/change-password', userVerification, changePassword); 
 
 module.exports = router;
