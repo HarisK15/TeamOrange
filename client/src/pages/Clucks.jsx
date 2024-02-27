@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import CluckBox from "../components/CluckBox";
 import CluckForm from "../components/CluckForm";
+import "./Clucks.css";
 
 const Clucks = () => {
   const [clucks, setClucks] = useState(null);
@@ -10,7 +11,7 @@ const Clucks = () => {
   useEffect(() => {
     const fetchClucks = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/clucks");
+        const response = await axios.get("/clucks");
         setClucks(response.data);
       } catch (error) {
         console.error("Failed to fetch clucks", error);
@@ -37,7 +38,6 @@ const Clucks = () => {
     <div className="clucks">
       <CluckForm />
       <div className="clucksList">
-        <h2>Clucks</h2>
         {clucks &&
           clucks.map((cluck) => (
             <CluckBox

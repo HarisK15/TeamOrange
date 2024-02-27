@@ -3,10 +3,10 @@
   flex-direction: column;
   background-color: #ffffff;
   border: 2px solid #657786;
-  border-radius: 5px;
   padding: 10px;
   margin-bottom: 10px;
   box-sizing: border-box;
+  width: 100%;
 }
 
 .cluck-content {
