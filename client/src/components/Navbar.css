@@ -1,0 +1,29 @@
+.navbar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 20vw;
+  background-color: #fff;
+  overflow-x: hidden;
+  padding-top: 20px;
+}
+
+.navbar button {
+  display: block;
+  font-size: larger;
+  font-weight: 600;
+  color: #000;
+  background-color: #fff;
+  border: none; /* keep this to avoid ugly ghosting when moving over buttons*/
+  border-radius: 25px;
+  padding: 16px;
+  text-align: center;
+  width: 100%;
+  cursor: pointer;
+}
+
+.navbar button:hover {
+  background-color: #000;
+  color: #fff;
+}
