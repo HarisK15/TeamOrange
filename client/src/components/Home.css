@@ -16,7 +16,13 @@ body{
     
 
 }
-button{
+.login-button{
+    background-color: #30c3fd !important;
+    color : white;
+    width: 300px;
+    margin-bottom: 30px;
+}
+.register-button{
     background-color: #30c3fd !important;
     color : white;
     width: 300px;
