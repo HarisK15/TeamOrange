@@ -6,6 +6,7 @@ const {
   editCluck,
   deleteCluck,
 } = require("../controllers/cluckControllers");
+const { userVerification } = require("../middleware/verifyUser");
 const cors = require("cors");
 
 const router = express.Router();
@@ -24,12 +25,12 @@ router.get("/", getAllClucks);
 router.get("/:id", getCluck);
 
 // DELETE a cluck
-router.delete("/:id", deleteCluck);
+router.delete("/:id", userVerification, deleteCluck);
 
 // POST a new cluck
-router.post("/", postCluck);
+router.post("/", userVerification, postCluck);
 
 // PATCH (edit) a cluck
-router.patch("/:id", editCluck);
+router.patch("/:id", userVerification, editCluck);
 
 module.exports = router;
