@@ -5,6 +5,7 @@ import profilePicUrl from "../images/default-pic.jpg";
 const CluckBox = ({ cluck }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedText, setEditedText] = useState(cluck.text);
+  const [isDeleted, setIsDeleted] = useState(false);
 
   const handleSave = async () => {
     if (isEditing) {
@@ -29,6 +30,29 @@ const CluckBox = ({ cluck }) => {
       }
     }
   };
+
+  const handleDelete = async () => {
+    const response = await fetch(
+      `http://localhost:8000/clucks/${cluck._id}`,
+      {
+        method: "DELETE",
+      }
+    );
+
+    if (response.ok) {
+      // Sets the isDeleted flag to true if the cluck is successfully deleted
+      setIsDeleted(true);
+      console.log("Cluck deleted successfully");
+    } else {
+      // Handle error
+      console.error("Failed to delete cluck");
+    }
+  };
+
+  // Cluck is not rendered if the isDeleted flag is True
+  if (isDeleted) {
+    return null;
+  }
 
   return (
     <div className="cluckBox">
@@ -63,6 +87,9 @@ const CluckBox = ({ cluck }) => {
           className="edit-button"
         >
           {isEditing ? "Save" : "Edit"}
+        </button>
+        <button onClick={handleDelete} className="delete-button">
+          Delete
         </button>
       </div>
 
