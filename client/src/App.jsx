@@ -6,6 +6,8 @@ import Home from '../src/pages/Home'
 import Register from './pages/Register';
 import Login from './pages/Login';
 import Clucks from './pages/Clucks';
+import Profile from './pages/Profile';
+import ChangePassword from './pages/PasswordUpdate';
 import axios from'axios';
 import { Toaster } from 'react-hot-toast'
 
@@ -23,6 +25,8 @@ function App() {
         <Route path='/register' element={<Register />} />
         <Route path='/login' element={<Login />} />
         <Route path='/clucks' element={<Clucks />} />
+        <Route path='/change-password' element={<ChangePassword />} />
+        <Route path='/profile' element={<Profile />} />
       </Routes>
     </>
   )

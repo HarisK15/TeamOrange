@@ -35,6 +35,8 @@ export default function Navbar() {
                 <>
                     <Link to="/">Home</Link>
                     <Link to="/Clucks">Clucks</Link>
+                    <Link to='/Profile'>Profile</Link>
+                    <Link to='/Change-Password'>Change Password</Link>
                     <button onClick={logout}>Logout</button>
                 </>
             ) : (
