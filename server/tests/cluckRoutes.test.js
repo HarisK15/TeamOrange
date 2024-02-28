@@ -17,14 +17,6 @@ beforeAll(async () => {
   }
 
   await mongoose.connect(mongoUri);
-
-  // Create a user
-  const hashedPassword = await hashPassword("password123");
-  await User.create({
-    email: "test@test.test",
-    password: hashedPassword,
-    userName: "testUser",
-  });
 });
 
 afterAll(async () => {
@@ -37,14 +29,22 @@ describe("Cluck Routes", () => {
   let token;
 
   beforeEach(async () => {
-    const user = await User.findOne({ userName: "testUser" });
+    // Clear the database
+    await User.deleteMany({});
+    await Cluck.deleteMany({});
+
+    // Create a user
+    const hashedPassword = await hashPassword("password123");
+    const user = await User.create({
+      email: "test@test.test",
+      password: hashedPassword,
+      userName: "testUser",
+    });
 
     token = await createSecretToken(
       user._id.toString(),
       process.env.JWT_SECRET
     );
-
-    await Cluck.deleteMany({});
 
     // Create a new cluck
     const newCluck = await Cluck.create({
@@ -86,6 +86,34 @@ describe("Cluck Routes", () => {
     const response = await request(app).get(`/clucks/${nonExistentId}`);
     expect(response.statusCode).toBe(404);
     expect(response.body.error).toBe("Cluck not found");
+  });
+
+  it("DELETE /:id - should delete a cluck", async () => {
+    const id = newCluckId;
+    const response = await request(app)
+      .delete(`/clucks/${id}`)
+      .set("Cookie", `token=${token}`);
+    expect(response.statusCode).toBe(200);
+    expect(response.body.message).toBe("Cluck deleted successfully");
+  });
+
+  it("DELETE /:id - should not delete a cluck if the user is not the author", async () => {
+    const user = await User.create({
+      email: "test2@test.test",
+      password: "password123",
+      userName: "testUser2",
+    });
+
+    const token2 = await createSecretToken(
+      user._id.toString(),
+      process.env.JWT_SECRET
+    );
+
+    const response = await request(app)
+      .delete(`/clucks/${newCluckId}`)
+      .set("Cookie", `token=${token2}`);
+    expect(response.statusCode).toBe(403);
+    expect(response.body.message).toBe("You can only delete your own clucks");
   });
 
   it("PATCH /:id - should edit a cluck", async () => {

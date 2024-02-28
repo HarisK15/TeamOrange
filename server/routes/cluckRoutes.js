@@ -4,6 +4,7 @@ const {
   getCluck,
   postCluck,
   editCluck,
+  deleteCluck,
 } = require("../controllers/cluckControllers");
 const { userVerification } = require("../middleware/verifyUser");
 const cors = require("cors");
@@ -24,6 +25,7 @@ router.get("/", getAllClucks);
 router.get("/:id", getCluck);
 
 // DELETE a cluck
+router.delete("/:id", userVerification, deleteCluck);
 
 // POST a new cluck
 router.post("/", userVerification, postCluck);

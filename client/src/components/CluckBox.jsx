@@ -6,22 +6,28 @@ import profilePicUrl from "../images/default-pic.jpg";
 const CluckBox = ({ cluck, loggedInUserId }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedText, setEditedText] = useState(cluck.text);
+  const [isDeleted, setIsDeleted] = useState(false);
 
   const handleSave = async () => {
     if (isEditing) {
       try {
-        const response = await axios.patch(`/clucks/${cluck._id}`, { text: editedText }, {
-          withCredentials: true,
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-  
+        const response = await axios.patch(
+          `/clucks/${cluck._id}`,
+          { text: editedText },
+          {
+            withCredentials: true,
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
         if (response.status === 200) {
           // Update the cluck text and exit editing mode
           cluck.text = editedText;
           setIsEditing(false);
         } else {
+          // Handle error
           console.error("Failed to update cluck");
         }
       } catch (error) {
@@ -29,6 +35,30 @@ const CluckBox = ({ cluck, loggedInUserId }) => {
       }
     }
   };
+
+  const handleDelete = async () => {
+    try {
+      const response = await axios.delete(`clucks/${cluck._id}`, {
+        withCredentials: true,
+      });
+
+      if (response.status === 200) {
+        // Sets the isDeleted flag to true if the cluck is successfully deleted
+        setIsDeleted(true);
+        console.log("Cluck deleted successfully");
+      } else {
+        // Handle error
+        console.error("Failed to delete cluck");
+      }
+    } catch (error) {
+      console.error("Failed to delete cluck", error);
+    }
+  };
+
+  // Cluck is not rendered if the isDeleted flag is True
+  if (isDeleted) {
+    return null;
+  }
 
   return (
     <div className="cluckBox">
@@ -59,12 +89,17 @@ const CluckBox = ({ cluck, loggedInUserId }) => {
           </button>
         )}
         {loggedInUserId === cluck.user._id && (
-          <button
-            onClick={isEditing ? handleSave : () => setIsEditing(true)}
-            className="edit-button"
-          >
-            {isEditing ? "Save" : "Edit"}
-          </button>
+          <div>
+            <button
+              onClick={isEditing ? handleSave : () => setIsEditing(true)}
+              className="edit-button"
+            >
+              {isEditing ? "Save" : "Edit"}
+            </button>
+            <button onClick={handleDelete} className="delete-button">
+              Delete
+            </button>
+          </div>
         )}
       </div>
 
