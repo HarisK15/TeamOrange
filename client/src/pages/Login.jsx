@@ -32,11 +32,10 @@ export default function Login() {
     } catch (error) {
       console.log(error);
     }
+    return (
+      <div className="login">
+        <LoginForm data={data} setData={setData} loginUser={loginUser} />
+      </div>
+    );
   };
-
-  return (
-    <div className="login">
-      <LoginForm data={data} setData={setData} loginUser={loginUser} />
-    </div>
-  );
 }
