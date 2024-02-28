@@ -1,24 +1,12 @@
-import { Link, useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { LoggedInContext } from "../contexts/LoggedInContext"; // Import the context, not the provider
 import "./Navbar.css";
 
 export default function Navbar() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { isLoggedIn, setIsLoggedIn } = useContext(LoggedInContext); // Use the context here
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const checkLoginStatus = async () => {
-      try {
-        const response = await axios.get("/check-login");
-        setIsLoggedIn(response.data.isLoggedIn);
-      } catch (error) {
-        console.error("Failed to check login status:", error);
-      }
-    };
-
-    checkLoginStatus();
-  }, []);
 
   const logout = async () => {
     try {
