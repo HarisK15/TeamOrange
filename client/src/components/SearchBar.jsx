@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import axios from "axios";
 import _ from "lodash";
 import CluckBox from "./CluckBox";
+import "./SearchBar.css";
 
 const SearchBar = () => {
   const [query, setQuery] = useState("");
@@ -58,8 +59,8 @@ const SearchBar = () => {
             <>
               <h3>Users</h3>
               {results.users.map((user) => (
-                <div key={user._id}>
-                  <h2>{user.userName}</h2>
+                <div key={user._id} className="user">
+                  <h4>{user.userName}</h4>
                 </div>
               ))}
             </>

@@ -1,0 +1,11 @@
+.search-bar {
+  font-family: "Arial", sans-serif;
+  color: #000;
+  padding: 0;
+  height: 100%;
+}
+
+.user {
+  color: #000;
+  font-size: small;
+}
