@@ -18,7 +18,7 @@ app.use(cookieParser());
 
 app.use("/", require("./routes/authRoutes"));
 app.use("/clucks", require("./routes/cluckRoutes"));
-app.use("/", require("./routes/passwordRoutes") );
+app.use("/change-password", require("./routes/passwordRoutes") );
 app.use("/profile", require("./routes/profileRoutes"))
 
 //set up port to listen

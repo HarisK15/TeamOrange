@@ -45,7 +45,7 @@ export default function ChangeProfileForm() {
         e.preventDefault();
         const { bio } = data;
         try {
-            const response = await axios.post('profile', {
+            const response = await axios.post('/profile', {
                 bio
             });
             toast.success(response.data.message);

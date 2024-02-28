@@ -14,11 +14,11 @@ router.use(
 );
 
 // POST requests
-router.post('/profile', userVerification, changeBio);
+router.post('/', userVerification, changeBio);
 
 // GET requests
-router.get('/profile/bio', userVerification, getUserBio);
-router.get('/profile/username', userVerification, getUserUsername);
-router.get('/profile/email', userVerification, getUserEmail);
+router.get('/bio', userVerification, getUserBio);
+router.get('/username', userVerification, getUserUsername);
+router.get('/email', userVerification, getUserEmail);
 
 module.exports = router;

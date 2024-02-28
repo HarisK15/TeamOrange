@@ -14,6 +14,6 @@ router.use(
 );
 
 // POST requests
-router.post('/change-password', userVerification, changePassword); 
+router.post('/', userVerification, changePassword); 
 
 module.exports = router;

@@ -11,9 +11,8 @@ const userSchema = new Schema({
         type : String,
         unique :true,
     },
-    profile: {
-        type: Schema.Types.ObjectId,
-        ref: 'Profile'
+    bio : {
+        type : String,
     },
     
     password : String

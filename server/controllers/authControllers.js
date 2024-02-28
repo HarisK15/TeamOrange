@@ -1,6 +1,5 @@
 //logic file/code for the routes/ api end points
 const User = require("../models/user");
-const Profile = require("../models/profile")
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const {
@@ -37,14 +36,13 @@ const registerUser = async (req, res) => {
       });
     }
 
-    const profile = await Profile.create({})
     const hashedPassword = await hashPassword(password);
     //create user in database
     // still needs to hash the password
     const user = await User.create({
       userName,
       email,
-      profile,
+      bio: "",
       password: hashedPassword,
     });
 

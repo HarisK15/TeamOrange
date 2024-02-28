@@ -3,17 +3,17 @@ const User = require('../models/user')
 
 const changeBio = async (req, res) => {
     try {
-        const { newBio } = req.body;
+        const { bio } = req.body;
 
         let user = await User.findById(req.userId);
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
-        if (newBio.length > 200) {
+        if (bio.length > 200) {
             return res.status(400).json({ error: 'A bio should not be longer than 200 characters' })
         }
         
-        user.profile.bio = newBio 
+        user.bio = bio 
         await user.save();
         return res.status(200).json({ message: 'Bio updated successfully' });
         
@@ -31,7 +31,7 @@ const getUserBio = async (req, res) => {
             return res.status(404).json({ error: 'User not found' });
         }
   
-        return res.status(200).json({ bio: user.profile.bio });
+        return res.status(200).json({ bio: user.bio });
     } catch (error) {
         console.error('Error fetching bio:', error);
         return res.status(500).json({ error: 'Internal server error' });
@@ -46,7 +46,7 @@ const getUserUsername = async (req, res) => {
             return res.status(404).json({ error: 'User not found' });
         }
   
-        return res.status(200).json({ username: user.username });
+        return res.status(200).json({ username: user.userName });
     } catch (error) {
         console.error('Error fetching username:', error);
         return res.status(500).json({ error: 'Internal server error' });
