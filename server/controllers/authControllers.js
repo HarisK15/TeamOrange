@@ -42,6 +42,7 @@ const registerUser = async (req, res) => {
     const user = await User.create({
       userName,
       email,
+      bio: "",
       password: hashedPassword,
     });
 
@@ -65,7 +66,7 @@ const loginUser = async (req, res) => {
     const user = await User.findOne({ email });
     if (!user) {
       return res.json({
-        error: "No user found",
+        error: "No user found, please register first",
       });
     }
     //check if password match

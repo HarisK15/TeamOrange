@@ -2,6 +2,7 @@ import { useState } from "react";
 import axios from 'axios';
 import {toast} from 'react-hot-toast';
 import { useNavigate } from "react-router-dom";
+import RegisterForm from "../components/RegisterForm";
 
 export default function Register() {
     //variable navigate is used to navigate to another page
@@ -39,17 +40,13 @@ export default function Register() {
     }
 
     return (
-        // page to submit and register user, with function registerUser on press of submit button
+        // Render the RegisterForm component with the registration form fields and logic
         <div>
-            <form onSubmit={registerUser}>
-                <label>User Name</label>
-                <input type='text' placeholder='enter user name...' value ={data.userName} onChange={(e) => setData({...data,userName: e.target.value})}></input>
-                <label>Email</label>
-                <input type='email' placeholder='enter email address..' value ={data.email} onChange={(e) => setData({...data,email: e.target.value})}></input>
-                <label>Password</label>
-                <input type='password' placeholder='enter password...' value ={data.password} onChange={(e) => setData({...data,password: e.target.value})}></input>
-                <button type='submit'>Submit</button>
-            </form>
+            <RegisterForm 
+                registerUser={registerUser} 
+                data={data} 
+                setData={setData} 
+            />
         </div>
-    )
+    );
 }

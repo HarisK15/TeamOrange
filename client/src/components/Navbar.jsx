@@ -1,11 +1,11 @@
 import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { LoggedInContext } from "../contexts/LoggedInContext"; // Import the context, not the provider
+import { LoggedInContext } from "../contexts/LoggedInContext";
 import "./Navbar.css";
 
 export default function Navbar() {
-  const { isLoggedIn, setIsLoggedIn } = useContext(LoggedInContext); // Use the context here
+  const { isLoggedIn, setIsLoggedIn } = useContext(LoggedInContext);
   const navigate = useNavigate();
 
   const logout = async () => {
@@ -24,6 +24,10 @@ export default function Navbar() {
         <>
           <button onClick={() => navigate("/")}>Home</button>
           <button onClick={() => navigate("/Clucks")}>Clucks</button>
+          <button onClick={() => navigate("/Profile")}>Profile</button>
+          <button onClick={() => navigate("/Change-Password")}>
+            Change Password
+          </button>
           <button onClick={logout}>Logout</button>
         </>
       ) : (
