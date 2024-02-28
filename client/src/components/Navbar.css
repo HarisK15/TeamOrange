@@ -1,18 +1,29 @@
 .navbar {
-    background: white;
-    padding: 10px;
-    position: fixed;
-    top:0;
-    left:0;
-    width:100%;
-    z-index: 1000;
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 20vw;
+  background-color: #fff;
+  overflow-x: hidden;
+  padding-top: 20px;
 }
 
-.navbar a{
-    color: black;
-    text-decoration: none;
-    margin-right: 10px;
+.navbar button {
+  display: block;
+  font-size: larger;
+  font-weight: 600;
+  color: #000;
+  background-color: #fff;
+  border: none; /* keep this to avoid ugly ghosting when moving over buttons*/
+  border-radius: 25px;
+  padding: 16px;
+  text-align: center;
+  width: 100%;
+  cursor: pointer;
 }
-.navbar a:hover{
-    background-color: white;
+
+.navbar button:hover {
+  background-color: #000;
+  color: #fff;
 }

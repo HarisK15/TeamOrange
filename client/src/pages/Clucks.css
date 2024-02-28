@@ -1,0 +1,40 @@
+body {
+  background-color: #000000;
+}
+
+.clucks-page {
+  display: flex;
+  flex-direction: column;
+  width: 58vw;
+}
+
+.clucks-content {
+  display: flex;
+  justify-content: space-between;
+}
+
+.clucksList {
+  width: 58vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.page-title {
+  color: #ffffff;
+  font-size: 24px;
+  text-align: left;
+  margin-top: -20px;
+  margin-bottom: -5px;
+}
+
+.search-bar {
+  background-color: #ffffff;
+  width: 25vw;
+  height: 100vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-left: 10px;
+  border-radius: 5px;
+}
