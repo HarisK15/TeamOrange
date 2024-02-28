@@ -1,25 +1,13 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import CluckBox from "../components/CluckBox";
 import CluckForm from "../components/CluckForm";
+import { UpdateClucksContext } from "../contexts/UpdateClucksContext";
 import "./Clucks.css";
 
 const Clucks = () => {
-  const [clucks, setClucks] = useState(null);
+  const { clucks } = useContext(UpdateClucksContext);
   const [loggedInUserId, setLoggedInUserId] = useState(null);
-
-  useEffect(() => {
-    const fetchClucks = async () => {
-      try {
-        const response = await axios.get("/clucks");
-        setClucks(response.data);
-      } catch (error) {
-        console.error("Failed to fetch clucks", error);
-      }
-    };
-
-    fetchClucks();
-  }, []);
 
   useEffect(() => {
     const fetchUser = async () => {
