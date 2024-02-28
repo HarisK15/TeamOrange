@@ -37,9 +37,7 @@ const registerUser = async (req, res) => {
       });
     }
 
-    const profile = await Profile.create({
-      bio: "This is your bio"
-    })
+    const profile = await Profile.create({})
     const hashedPassword = await hashPassword(password);
     //create user in database
     // still needs to hash the password

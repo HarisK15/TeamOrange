@@ -4,9 +4,8 @@ const { hashPassword, comparePassword } = require('../helpers/auth')
 const changePassword = async (req, res) => {
     try {
         const { currentPassword, newPassword } = req.body;
-        const { id } = req.params;
 
-        let user = await User.findById(id);
+        let user = await User.findById(req.userId);
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }

@@ -4,9 +4,8 @@ const User = require('../models/user')
 const changeBio = async (req, res) => {
     try {
         const { newBio } = req.body;
-        const { id } = req.params;
 
-        let user = await User.findById(id);
+        let user = await User.findById(req.userId);
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
@@ -26,9 +25,8 @@ const changeBio = async (req, res) => {
 
 const getUserBio = async (req, res) => {
     try {
-        const { id } = req.params;
 
-        const user = await User.findById(id);
+        const user = await User.findById(req.userId);
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
@@ -42,9 +40,8 @@ const getUserBio = async (req, res) => {
 
 const getUserUsername = async (req, res) => {
     try {
-        const { id } = req.params;
 
-        const user = await User.findById(id);
+        const user = await User.findById(req.userId);
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
@@ -58,9 +55,8 @@ const getUserUsername = async (req, res) => {
 
 const getUserEmail = async (req, res) => {
     try {
-        const { id } = req.params;
 
-        const user = await User.findById(id);
+        const user = await User.findById(req.userId);
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
