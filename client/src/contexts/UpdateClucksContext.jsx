@@ -23,8 +23,16 @@ export const UpdateClucksProvider = ({ children }) => {
     setClucks((prevClucks) => [cluck, ...prevClucks]);
   };
 
+  const updateCluck = (updatedCluck) => {
+    setClucks((prevClucks) =>
+      prevClucks.map((cluck) =>
+        cluck._id === updatedCluck._id ? updatedCluck : cluck
+      )
+    );
+  };
+
   return (
-    <UpdateClucksContext.Provider value={{ clucks, addCluck }}>
+    <UpdateClucksContext.Provider value={{ clucks, addCluck, updateCluck }}>
       {children}
     </UpdateClucksContext.Provider>
   );

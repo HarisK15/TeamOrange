@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import axios from "axios";
+import { UpdateClucksContext } from "../contexts/UpdateClucksContext";
 import "./CluckBox.css";
 import profilePicUrl from "../images/default-pic.jpg";
 
@@ -7,6 +8,7 @@ const CluckBox = ({ cluck, loggedInUserId }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedText, setEditedText] = useState(cluck.text);
   const [isDeleted, setIsDeleted] = useState(false);
+  const { updateCluck } = useContext(UpdateClucksContext);
 
   const handleSave = async () => {
     if (isEditing) {
@@ -24,8 +26,14 @@ const CluckBox = ({ cluck, loggedInUserId }) => {
 
         if (response.status === 200) {
           // Update the cluck text and exit editing mode
-          cluck.text = editedText;
+          const updatedCluck = {
+            ...cluck,
+            text: editedText,
+            updatedAt: new Date().toISOString(),
+          };
           setIsEditing(false);
+          updateCluck(updatedCluck);
+          console.log("Cluck updated successfully");
         } else {
           // Handle error
           console.error("Failed to update cluck");
@@ -84,7 +92,13 @@ const CluckBox = ({ cluck, loggedInUserId }) => {
 
       <div className="buttons">
         {isEditing && (
-          <button onClick={() => setIsEditing(false)} className="cancel-button">
+          <button
+            onClick={() => {
+              setIsEditing(false);
+              setEditedText(cluck.text);
+            }}
+            className="cancel-button"
+          >
             Cancel
           </button>
         )}
