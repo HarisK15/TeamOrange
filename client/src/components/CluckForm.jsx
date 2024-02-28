@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import axios from "axios";
 import "./CluckForm.css";
 import profilePicUrl from "../images/default-pic.jpg";
 
@@ -11,23 +12,19 @@ const CluckForm = () => {
 
     const cluck = { text };
 
-    const response = await fetch("http://localhost:8000/clucks/", {
-      method: "POST",
-      body: JSON.stringify(cluck),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    const json = await response.json();
+    try {
+      const response = await axios.post("/clucks", cluck, {
+        withCredentials: true,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
-    if (!response.ok) {
-      setError(json.error);
-    }
-
-    if (response.ok) {
       setText("");
       setError(null);
-      console.log("new cluck posted", json);
+      console.log("new cluck posted", response.data);
+    } catch (error) {
+      setError(error.response.data.error);
     }
   };
 
