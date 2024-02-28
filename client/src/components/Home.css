@@ -1,0 +1,29 @@
+body{
+    font-family: 'Arial', sans-serif;
+    background-color: #fcfcfc;
+    padding: 0;
+    justify-content: center;
+    height: 100vh;
+}
+.form-container {
+    background: white;
+    padding: 100px;
+    width: 400px;
+    border-radius: 8px;
+    box-shadow: 0 5px 5px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    border: #333;
+    
+
+}
+.login-button{
+    background-color: #30c3fd !important;
+    color : white;
+    width: 300px;
+    margin-bottom: 30px;
+}
+.register-button{
+    background-color: #30c3fd !important;
+    color : white;
+    width: 300px;
+}
