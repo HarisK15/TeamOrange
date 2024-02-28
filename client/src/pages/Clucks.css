@@ -5,8 +5,7 @@ body {
 .clucks {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  margin-top: 20px;
+  width: 58vw;
 }
 
 .clucksList {
@@ -14,4 +13,12 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+.page-title {
+  color: #ffffff;
+  font-size: 24px;
+  text-align: left;
+  margin-top: -20px;
+  margin-bottom: -5px;
 }

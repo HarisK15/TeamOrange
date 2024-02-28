@@ -36,6 +36,7 @@ const Clucks = () => {
 
   return (
     <div className="clucks">
+      <h2 className="page-title">Clucks</h2>
       <CluckForm />
       <div className="clucksList">
         {clucks &&
