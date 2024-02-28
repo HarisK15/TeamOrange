@@ -18,6 +18,7 @@ app.use(cookieParser());
 
 app.use("/", require("./routes/authRoutes"));
 app.use("/clucks", require("./routes/cluckRoutes"));
+app.use("/search", require("./routes/searchRoutes"));
 
 //set up port to listen
 const port = 8000;
