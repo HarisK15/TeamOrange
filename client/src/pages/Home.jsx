@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
-import "../components/Home.css";
+import "./Home.css";
 
 export default function Home() {
   const navigate = useNavigate();

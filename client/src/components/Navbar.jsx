@@ -22,7 +22,6 @@ export default function Navbar() {
     <nav className="navbar">
       {isLoggedIn ? (
         <>
-          <button onClick={() => navigate("/")}>Home</button>
           <button onClick={() => navigate("/Clucks")}>Clucks</button>
           <button onClick={() => navigate("/Profile")}>Profile</button>
           <button onClick={() => navigate("/Change-Password")}>
@@ -32,6 +31,7 @@ export default function Navbar() {
         </>
       ) : (
         <>
+          <button onClick={() => navigate("/")}>Home</button>
           <button onClick={() => navigate("/Register")}>Register</button>
           <button onClick={() => navigate("/Login")}>Login</button>
         </>
