@@ -1,11 +1,11 @@
 require("dotenv").config();
 const request = require("supertest");
-const app = require("../index");
+const app = require("../../index");
 const mongoose = require("mongoose");
 const { MongoMemoryServer } = require("mongodb-memory-server");
-const User = require("../models/user.js");
-const Cluck = require("../models/cluckModel.js");
-const { hashPassword, createSecretToken } = require("../helpers/auth.js");
+const User = require("../../models/user.js");
+const Cluck = require("../../models/cluckModel.js");
+const { hashPassword, createSecretToken } = require("../../helpers/auth.js");
 
 jest.setTimeout(60000); // allow time for MongoDB in-memory server to start
 

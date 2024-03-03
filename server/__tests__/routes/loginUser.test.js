@@ -1,10 +1,10 @@
 const supertest = require("supertest");
-const app = require("../index.js");
+const app = require("../../index.js");
 const request = supertest(app);
 const mongoose = require("mongoose");
 const { MongoMemoryServer } = require("mongodb-memory-server");
-const User = require("../models/user.js");
-const { hashPassword, comparePassword } = require("../helpers/auth.js");
+const User = require("../../models/user.js");
+const { hashPassword, comparePassword } = require("../../helpers/auth.js");
 
 jest.setTimeout(60000); // allow time for MongoDB in-memory server to start
 
