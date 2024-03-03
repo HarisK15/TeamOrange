@@ -1,26 +1,24 @@
-const request = require("supertest");
-const app = require("../../index");
+require("dotenv").config();
+const supertest = require("supertest");
+const app = require("../../index.js");
+const request = supertest(app);
 const mongoose = require("mongoose");
-require("dotenv").config("../.env");
 const { MongoMemoryServer } = require("mongodb-memory-server");
 const User = require("../../models/user.js");
-const { hashPassword } = require("../../helpers/auth.js");
+const { hashPassword, createSecretToken } = require("../../helpers/auth.js");
 
-let mongoServer;
+jest.setTimeout(60000); // allow time for MongoDB in-memory server to start
 
+const mongoServer = new MongoMemoryServer();
 beforeAll(async () => {
-  if (
-    mongoose.connection.readyState === 1 ||
-    mongoose.connection.readyState === 2
-  ) {
+  await mongoServer.start();
+  const mongoUri = await mongoServer.getUri();
+
+  if (mongoose.connection.readyState) {
     await mongoose.disconnect();
   }
-  mongoServer = await MongoMemoryServer.create();
-  const mongoUri = mongoServer.getUri();
-  await mongoose.connect(mongoUri, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  });
+
+  await mongoose.connect(mongoUri);
 });
 
 afterAll(async () => {
@@ -28,61 +26,96 @@ afterAll(async () => {
   await mongoServer.stop();
 });
 
-beforeEach(async () => {
-  await User.deleteMany({});
-
-  const hashedPassword = await hashPassword("password123");
-  await User.create({
-    email: "test@example.com",
-    password: hashedPassword,
-    userName: "testUser",
-  });
-});
-
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: true,
-  })
-);
-
 describe("Password Routes", () => {
-  it("POST /change-password - should update a user model with a new password", async () => {
-    const agent = request.agent(app);
+  let token;
 
-    // Simulate a session with userEmail set
-    const sessionData = { userEmail: "test@example.com" };
+  beforeEach(async () => {
+    // Clear the users collection before each test
+    await User.deleteMany({});
 
-    const cookie = session.serialize("testCookie", sessionData);
+    // Creating a user
+    const hashedPassword = await hashPassword("password123");
+    const user = await User.create({
+      email: "test@example.com",
+      password: hashedPassword,
+      userName: "testUser",
+    });
 
-    const response = await agent
-      .post("/change-password")
-      .set("Cookie", cookie)
-      .send({
-        currentPassword: "password123",
-        newPassword: "Password123",
-      });
-
-    expect(response.statusCode).toBe(200);
+    token = await createSecretToken(
+      user._id.toString(),
+      process.env.JWT_SECRET
+    );
   });
 
-  it("POST /change-password - will fail to update a user model with a new password", async () => {
-    const agent = request.agent(app);
+  afterEach(async () => {
+    // Clear the users collection after each test
+    await User.deleteMany({});
 
-    // Simulate a session with userEmail set
-    const sessionData = { userEmail: "test@example.com" };
+    // Logging out the user
+    await request.post("/logout");
+  });
 
-    const cookie = session.serialize("testCookie", sessionData);
-
-    const response = await agent
+  it("should change password successfully", async () => {
+    const response = await request
       .post("/change-password")
-      .set("Cookie", cookie)
+      .set("Cookie", `token=${token}`)
       .send({
+        email: "test@example.com",
         currentPassword: "password123",
-        newPassword: "short",
+        newPassword: "newPassword123",
       });
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toHaveProperty(
+      "message",
+      "Password updated successfully"
+    );
+  });
 
+  it("should fail if the current password is incorrect", async () => {
+    const response = await request
+      .post("/change-password")
+      .set("Cookie", `token=${token}`)
+      .send({
+        email: "test@example.com",
+        currentPassword: "wrongpassword",
+        newPassword: "newPassword123",
+      });
     expect(response.statusCode).toBe(400);
+    expect(response.body).toHaveProperty(
+      "error",
+      "Current password is incorrect"
+    );
+  });
+
+  it("should fail if the new password is too short", async () => {
+    const response = await request
+      .post("/change-password")
+      .set("Cookie", `token=${token}`)
+      .send({
+        email: "test@example.com",
+        currentPassword: "password123",
+        newPassword: "123",
+      });
+    expect(response.statusCode).toBe(400);
+    expect(response.body).toHaveProperty(
+      "error",
+      "A new password is required and should be at least 6 characters long"
+    );
+  });
+
+  it("should fail if the new password is the same as the current password", async () => {
+    const response = await request
+      .post("/change-password")
+      .set("Cookie", `token=${token}`)
+      .send({
+        email: "test@example.com",
+        currentPassword: "password123",
+        newPassword: "password123",
+      });
+    expect(response.statusCode).toBe(400);
+    expect(response.body).toHaveProperty(
+      "error",
+      "A new password is required and should be at least 6 characters long"
+    );
   });
 });
