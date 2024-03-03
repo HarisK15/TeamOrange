@@ -71,7 +71,7 @@ const CluckBox = ({ cluck }) => {
   }
 
   return (
-    <div className="cluckBox">
+    <div className="cluckBox" data-testid="cluck-box">
       <div className="cluck-header">
         <img src={profilePicUrl} alt="Profile" className="profile-pic" />
         <div className="name-username">
@@ -88,7 +88,7 @@ const CluckBox = ({ cluck }) => {
             onChange={(e) => setEditedText(e.target.value)}
           />
         ) : (
-          <p>{cluck.text}</p>
+          <p data-testid="cluck-text">{cluck.text}</p>
         )}
       </div>
 
@@ -109,10 +109,15 @@ const CluckBox = ({ cluck }) => {
             <button
               onClick={isEditing ? handleSave : () => setIsEditing(true)}
               className="edit-button"
+              data-testid="edit-button"
             >
               {isEditing ? "Save" : "Edit"}
             </button>
-            <button onClick={handleDelete} className="delete-button">
+            <button
+              onClick={handleDelete}
+              className="delete-button"
+              data-testid="delete-button"
+            >
               Delete
             </button>
           </div>
@@ -123,7 +128,9 @@ const CluckBox = ({ cluck }) => {
         <div className="cluck-timestamp">
           <p>Posted at: {new Date(cluck.createdAt).toLocaleString()}</p>
           {cluck.updatedAt != cluck.createdAt && (
-            <p>Last edited: {new Date(cluck.updatedAt).toLocaleString()}</p>
+            <p data-testid="last-edited">
+              Last edited: {new Date(cluck.updatedAt).toLocaleString()}
+            </p>
           )}
         </div>
       </div>
