@@ -32,7 +32,11 @@ const CluckForm = () => {
   };
 
   return (
-    <form className="cluck-form" onSubmit={handleSubmit}>
+    <form
+      className="cluck-form"
+      data-testid="cluck-form"
+      onSubmit={handleSubmit}
+    >
       <div className="form-content">
         <img src={profilePicUrl} alt="Profile" className="profile-pic" />
         <div className="cluck-content">
