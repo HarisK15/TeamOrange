@@ -7,6 +7,8 @@ const User = require("../models/user.js");
 const Cluck = require("../models/cluckModel.js");
 const { hashPassword, createSecretToken } = require("../helpers/auth.js");
 
+jest.setTimeout(60000); // allow time for MongoDB in-memory server to start
+
 const mongoServer = new MongoMemoryServer();
 beforeAll(async () => {
   await mongoServer.start();

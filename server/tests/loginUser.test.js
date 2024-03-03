@@ -6,17 +6,17 @@ const { MongoMemoryServer } = require("mongodb-memory-server");
 const User = require("../models/user.js");
 const { hashPassword, comparePassword } = require("../helpers/auth.js");
 
-let mongoServer;
+jest.setTimeout(60000); // allow time for MongoDB in-memory server to start
 
+const mongoServer = new MongoMemoryServer();
 beforeAll(async () => {
-  if (
-    mongoose.connection.readyState === 1 ||
-    mongoose.connection.readyState === 2
-  ) {
+  await mongoServer.start();
+  const mongoUri = await mongoServer.getUri();
+
+  if (mongoose.connection.readyState) {
     await mongoose.disconnect();
   }
-  mongoServer = await MongoMemoryServer.create();
-  const mongoUri = mongoServer.getUri();
+
   await mongoose.connect(mongoUri);
 });
 
@@ -54,7 +54,10 @@ describe("User Login", () => {
       password: "password123",
     });
     expect(response.statusCode).toBe(200);
-    expect(response.body).toHaveProperty("error", "No user found");
+    expect(response.body).toHaveProperty(
+      "error",
+      "No user found, please register first"
+    );
   });
 
   it("should fail if the password is incorrect", async () => {
