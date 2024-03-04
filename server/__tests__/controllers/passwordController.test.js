@@ -1,4 +1,4 @@
-const app = require("../../index.js");
+const app = require("../../app.js");
 const mongoose = require("mongoose");
 const { MongoMemoryServer } = require("mongodb-memory-server");
 const User = require("../../models/user.js");
