@@ -32,7 +32,7 @@ export default function ChangePasswordForm() {
                 currentPassword: '',
                 newPassword: '',
             });
-            navigate('/')
+            navigate('/Clucks')
         } catch (error) {
             if (error.response && error.response.data) {
                 toast.error(error.response.data.error);

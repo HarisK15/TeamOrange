@@ -1,5 +1,6 @@
 import { useState, useContext } from "react";
 import axios from "axios";
+import { Link } from 'react-router-dom';
 import { UpdateClucksContext } from "../contexts/UpdateClucksContext";
 import { LoggedInContext } from "../contexts/LoggedInContext";
 import "./CluckBox.css";
@@ -76,7 +77,9 @@ const CluckBox = ({ cluck }) => {
         <img src={profilePicUrl} alt="Profile" className="profile-pic" />
         <div className="name-username">
           <h4 className="name">Name</h4>
-          <h4 className="username">@{cluck.user.userName}</h4>
+          <Link to={`/Profile/${cluck.user._id}`}>
+            <h4 className="username">@{cluck.user.userName}</h4>
+          </Link>
         </div>
       </div>
 
