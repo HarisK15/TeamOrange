@@ -6,6 +6,10 @@ import CluckBox from "../../src/components/CluckBox";
 import { UpdateClucksContext } from "../../src/contexts/UpdateClucksContext";
 import { LoggedInContext } from "../../src/contexts/LoggedInContext";
 
+vitest.mock('react-router-dom', async () => {
+  const module = await import('../helpers/react-router-dom.mock');
+  return module.default || module;
+});
 vitest.mock("axios");
 
 afterEach(() => {
