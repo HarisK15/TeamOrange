@@ -2,28 +2,18 @@ require("dotenv").config();
 const supertest = require("supertest");
 const app = require("../../app.js");
 const request = supertest(app);
-const mongoose = require("mongoose");
-const { MongoMemoryServer } = require("mongodb-memory-server");
 const User = require("../../models/user.js");
 const { hashPassword, createSecretToken } = require("../../helpers/auth.js");
+const { setupDatabase, teardownDatabase } = require("../utils/dbSetup.js");
 
 jest.setTimeout(60000); // allow time for MongoDB in-memory server to start
 
-const mongoServer = new MongoMemoryServer();
 beforeAll(async () => {
-  await mongoServer.start();
-  const mongoUri = await mongoServer.getUri();
-
-  if (mongoose.connection.readyState) {
-    await mongoose.disconnect();
-  }
-
-  await mongoose.connect(mongoUri);
+  setupDatabase();
 });
 
 afterAll(async () => {
-  await mongoose.disconnect();
-  await mongoServer.stop();
+  teardownDatabase();
 });
 
 describe("Password Routes", () => {

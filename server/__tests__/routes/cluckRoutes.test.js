@@ -2,71 +2,60 @@ require("dotenv").config();
 const request = require("supertest");
 const app = require("../../app");
 const mongoose = require("mongoose");
-const { MongoMemoryServer } = require("mongodb-memory-server");
 const User = require("../../models/user.js");
 const Cluck = require("../../models/cluckModel.js");
 const { hashPassword, createSecretToken } = require("../../helpers/auth.js");
+const { setupDatabase, teardownDatabase } = require("../utils/dbSetup.js");
 
 jest.setTimeout(60000); // allow time for MongoDB in-memory server to start
 
-const mongoServer = new MongoMemoryServer();
-beforeAll(async () => {
-  await mongoServer.start();
-  const mongoUri = await mongoServer.getUri();
+beforeAll(setupDatabase);
+afterAll(teardownDatabase);
 
-  if (mongoose.connection.readyState) {
-    await mongoose.disconnect();
+const createCluck = async (text, user) => {
+  return await Cluck.create({ text, user });
+};
+
+const performRequest = async (method, url, token, body) => {
+  const req = request(app)[method](url);
+  if (token) {
+    req.set("Cookie", `token=${token}`);
   }
+  if (body) {
+    req.send(body);
+  }
+  return await req;
+};
 
-  await mongoose.connect(mongoUri);
-});
+const createUserAndToken = async (email, password, userName) => {
+  const hashedPassword = await hashPassword(password);
+  const user = await User.create({ email, password: hashedPassword, userName });
+  const token = await createSecretToken(
+    user._id.toString(),
+    process.env.JWT_SECRET
+  );
+  return { user, token };
+};
 
-afterAll(async () => {
-  await mongoose.connection.close();
-  await mongoServer.stop();
+beforeEach(async () => {
+  await User.deleteMany({});
+  await Cluck.deleteMany({});
+
+  const { user, token: newToken } = await createUserAndToken(
+    "test@test.test",
+    "password123",
+    "testUser"
+  );
+  token = newToken;
+
+  const newCluck = await createCluck("This is part of a test!", user);
+  newCluckId = newCluck._id;
 });
 
 describe("Cluck Routes", () => {
-  let newCluckId;
-  let token;
-
-  beforeEach(async () => {
-    // Clear the database
-    await User.deleteMany({});
-    await Cluck.deleteMany({});
-
-    // Create a user
-    const hashedPassword = await hashPassword("password123");
-    const user = await User.create({
-      email: "test@test.test",
-      password: hashedPassword,
-      userName: "testUser",
-    });
-
-    token = await createSecretToken(
-      user._id.toString(),
-      process.env.JWT_SECRET
-    );
-
-    // Create a new cluck
-    const newCluck = await Cluck.create({
-      text: "This is part of a test!",
-      user: user,
-    });
-    newCluckId = newCluck._id;
-  });
-
-  afterEach(async () => {
-    // Logout user
-    await request(app).post("/logout");
-  });
-
   it("POST / - should create a new cluck", async () => {
     const newCluck = { text: "This is another test!" };
-    const response = await request(app)
-      .post("/clucks")
-      .set("Cookie", `token=${token}`)
-      .send(newCluck);
+    const response = await performRequest("post", "/clucks", token, newCluck);
     expect(response.statusCode).toBe(200);
     expect(response.body.text).toBe(newCluck.text);
   });
@@ -91,60 +80,55 @@ describe("Cluck Routes", () => {
   });
 
   it("DELETE /:id - should delete a cluck", async () => {
-    const id = newCluckId;
-    const response = await request(app)
-      .delete(`/clucks/${id}`)
-      .set("Cookie", `token=${token}`);
+    const response = await performRequest(
+      "delete",
+      `/clucks/${newCluckId}`,
+      token
+    );
     expect(response.statusCode).toBe(200);
     expect(response.body.message).toBe("Cluck deleted successfully");
   });
 
   it("DELETE /:id - should not delete a cluck if the user is not the author", async () => {
-    const user = await User.create({
-      email: "test2@test.test",
-      password: "password123",
-      userName: "testUser2",
-    });
-
-    const token2 = await createSecretToken(
-      user._id.toString(),
-      process.env.JWT_SECRET
+    const { token: token2 } = await createUserAndToken(
+      "test2@test.test",
+      "password123",
+      "testUser2"
     );
-
-    const response = await request(app)
-      .delete(`/clucks/${newCluckId}`)
-      .set("Cookie", `token=${token2}`);
+    const response = await performRequest(
+      "delete",
+      `/clucks/${newCluckId}`,
+      token2
+    );
     expect(response.statusCode).toBe(403);
     expect(response.body.message).toBe("You can only delete your own clucks");
   });
 
   it("PATCH /:id - should edit a cluck", async () => {
     const updatedData = { text: "This should be the updated text for a test!" };
-    const response = await request(app)
-      .patch(`/clucks/${newCluckId}`)
-      .set("Cookie", `token=${token}`)
-      .send(updatedData);
+    const response = await performRequest(
+      "patch",
+      `/clucks/${newCluckId}`,
+      token,
+      updatedData
+    );
     expect(response.statusCode).toBe(200);
     expect(response.body.text).toBe(updatedData.text);
   });
 
   it("PATCH /:id - should not edit a cluck if the user is not the author", async () => {
-    const user = await User.create({
-      email: "test2@test.test",
-      password: "password123",
-      userName: "testUser2",
-    });
-
-    const token2 = await createSecretToken(
-      user._id.toString(),
-      process.env.JWT_SECRET
+    const { token: token2 } = await createUserAndToken(
+      "test2@test.test",
+      "password123",
+      "testUser2"
     );
-
     const updatedData = { text: "This should be the updated text for a test!" };
-    const response = await request(app)
-      .patch(`/clucks/${newCluckId}`)
-      .set("Cookie", `token=${token2}`)
-      .send(updatedData);
+    const response = await performRequest(
+      "patch",
+      `/clucks/${newCluckId}`,
+      token2,
+      updatedData
+    );
     expect(response.statusCode).toBe(403);
     expect(response.body.message).toBe("You can only edit your own clucks");
   });

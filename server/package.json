@@ -3,6 +3,14 @@
   "version": "1.0.0",
   "description": "",
   "main": "server.js",
+  "jest": {
+    "verbose": true,
+    "testEnvironment": "node",
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "<rootDir>/__tests__/utils/"
+    ]
+  },
   "scripts": {
     "test": "cross-env NODE_ENV=test jest",
     "test:coverage": "jest --coverage",
