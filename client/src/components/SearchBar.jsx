@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
+import { Link } from 'react-router-dom';
 import axios from "axios";
 import _ from "lodash";
 import CluckBox from "./CluckBox";
@@ -60,7 +61,9 @@ const SearchBar = () => {
               <h3>Users</h3>
               {results.users.map((user) => (
                 <div key={user._id} className="user">
-                  <h4>{user.userName}</h4>
+                  <Link to={`/Profile/${user._id}`}>
+                    <h4>{user.userName}</h4>
+                  </Link>
                 </div>
               ))}
             </>
