@@ -44,7 +44,7 @@ const SearchBar = () => {
   }, [query]);
 
   return (
-    <div className="search-bar">
+    <div className="search-bar" data-testid="search-bar">
       <input
         type="text"
         value={query}

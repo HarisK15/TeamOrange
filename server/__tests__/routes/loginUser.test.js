@@ -1,28 +1,18 @@
 const supertest = require("supertest");
-const app = require("../index.js");
+const app = require("../../app.js");
 const request = supertest(app);
-const mongoose = require("mongoose");
-const { MongoMemoryServer } = require("mongodb-memory-server");
-const User = require("../models/user.js");
-const { hashPassword, comparePassword } = require("../helpers/auth.js");
+const User = require("../../models/user.js");
+const { hashPassword } = require("../../helpers/auth.js");
+const { setupDatabase, teardownDatabase } = require("../utils/dbSetup.js");
 
-let mongoServer;
+jest.setTimeout(60000); // allow time for MongoDB in-memory server to start
 
 beforeAll(async () => {
-  if (
-    mongoose.connection.readyState === 1 ||
-    mongoose.connection.readyState === 2
-  ) {
-    await mongoose.disconnect();
-  }
-  mongoServer = await MongoMemoryServer.create();
-  const mongoUri = mongoServer.getUri();
-  await mongoose.connect(mongoUri);
+  setupDatabase();
 });
 
 afterAll(async () => {
-  await mongoose.disconnect();
-  await mongoServer.stop();
+  teardownDatabase();
 });
 
 beforeEach(async () => {
@@ -54,7 +44,10 @@ describe("User Login", () => {
       password: "password123",
     });
     expect(response.statusCode).toBe(200);
-    expect(response.body).toHaveProperty("error", "No user found");
+    expect(response.body).toHaveProperty(
+      "error",
+      "No user found, please register first"
+    );
   });
 
   it("should fail if the password is incorrect", async () => {
