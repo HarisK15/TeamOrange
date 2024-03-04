@@ -19,12 +19,14 @@ describe("CluckBox", () => {
     userName: "TestUser",
   };
 
+  const now = new Date().toISOString();
+
   const cluck = {
     _id: "1",
     text: "Test cluck",
     user: user,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    createdAt: now,
+    updatedAt: now,
   };
 
   // Mock the context providers

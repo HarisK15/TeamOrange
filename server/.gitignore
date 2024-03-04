@@ -266,4 +266,8 @@ $RECYCLE.BIN/
 # and uncomment the following lines
 # .pnp.*
 
+# Ignore test-related files
+/coverage.data
+/coverage
+
 # End of https://www.toptal.com/developers/gitignore/api/linux,macos,windows,visualstudiocode,react,node,dotenv,yarn

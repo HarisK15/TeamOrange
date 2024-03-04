@@ -27,8 +27,8 @@ export default function Login() {
       } else {
         setData({});
         navigate("/Clucks");
+        setIsLoggedIn(true);
       }
-      setIsLoggedIn(true);
     } catch (error) {
       console.log(error);
     }
