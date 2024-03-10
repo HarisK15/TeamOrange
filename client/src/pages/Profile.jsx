@@ -2,6 +2,7 @@ import { useState, useEffect, useContext } from "react";
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
+import "./Profile.css"
 
 
 export default function ChangeProfileForm() {
@@ -52,26 +53,27 @@ export default function ChangeProfileForm() {
         }
     }
     return (
-        <div>
-            <div>
-                <p>Username: {username}</p>
-                <p>Email: {email}</p>
+        <div className="profile-container">
+            <div className="top-left">
+                <p className="profileUsername">@{username}</p>
+                <p className="email">{email}</p>
             </div>
             {isUser ? (
                 <form onSubmit={handleSubmit}>
-                    <label>Bio</label>
-                    <input
+                    <label htmlFor="bio"></label>
+                    <textarea
+                        id="bio"
                         type="text"
                         name="bio"
                         placeholder="Change your bio..."
                         value={bio}
                         onChange={handleChange}
-                    />
+                    ></textarea>
                     <button type="submit">Update Profile</button>
                 </form>
             ) : (
-                <div>
-                    <p>Bio: {bio}</p>
+                <div className="top-left">
+                    <p className="bio">{bio}</p>
                 </div>
             )}
         </div>
