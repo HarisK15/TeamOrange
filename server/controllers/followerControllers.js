@@ -3,33 +3,38 @@ const mongoose = require("mongoose");
 
 // Follow a user
 const followUser = async (req, res) => {
-  const { id } = req.params;
-  const userId = req.userId;
+  try {
+    const { id } = req.params;
+    const userId = req.userId;
+  
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(404).json({ error: "User not found" });
+    }
 
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(404).json({ error: "User not found" });
+    const userToFollow = await User.findById(id);
+    const user = await User.findById(userId);
+
+    if (!userToFollow) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    if (userToFollow.followers.includes(userId)) {
+      return res
+        .status(400)
+        .json({ error: "You are already following this user" });
+    }
+
+    userToFollow.followers.push(userId);
+    user.following.push(id);
+
+    await userToFollow.save();
+    await user.save();
+
+    res.status(200).json({ message: "User followed successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Server error" });
   }
-
-  const userToFollow = await User.findById(id);
-  const user = await User.findById(userId);
-
-  if (!userToFollow) {
-    return res.status(404).json({ error: "User not found" });
-  }
-
-  if (userToFollow.followers.includes(userId)) {
-    return res
-      .status(400)
-      .json({ error: "You are already following this user" });
-  }
-
-  userToFollow.followers.push(userId);
-  user.following.push(id);
-
-  await userToFollow.save();
-  await user.save();
-
-  res.status(200).json({ message: "User followed successfully" });
 };
 
 // Unfollow a user

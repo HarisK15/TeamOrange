@@ -9,6 +9,8 @@ export default function ChangeProfileForm() {
   const [bio, setBio] = useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
+  const [followers, setFollowers] = useState([]);
+  const [following, setFollowing] = useState([]);
   const [isUser, setIsUser] = useState(false);
   const { userId, setUserId } = useContext(LoggedInContext);
 
@@ -28,6 +30,8 @@ export default function ChangeProfileForm() {
         setBio(profileResponse.data.bio);
         setUsername(profileResponse.data.userName);
         setEmail(profileResponse.data.email);
+        setFollowers(profileResponse.data.followers);
+        setFollowing(profileResponse.data.following);
     } catch (error) {
         console.error("Error fetching user data:", error);
       }
@@ -108,6 +112,8 @@ export default function ChangeProfileForm() {
       ) : (
         <div>
           <p>Bio: {bio}</p>
+          <p>Followers: {followers}</p>
+          <p>Following: {following}</p>
           <button onClick={handleFollow}>Follow</button>
           <button onClick={handleUnfollow}>Unfollow</button>
         </div>

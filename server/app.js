@@ -14,6 +14,6 @@ app.use("/clucks", require("./routes/cluckRoutes"));
 app.use("/change-password", require("./routes/passwordRoutes"));
 app.use("/profile", require("./routes/profileRoutes"));
 app.use("/search", require("./routes/searchRoutes"));
-app.use("/follow", require("./routes/followerRoutes"));
+app.use("/", require("./routes/followerRoutes"));
 
 module.exports = app;
