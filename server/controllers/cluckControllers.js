@@ -11,6 +11,19 @@ const getAllClucks = async (req, res) => {
   res.status(200).json(clucks);
 };
 
+//GET all clucks by a user
+const getClucksByUser = async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const clucks = await Cluck.find({ user: userId }).populate("user").exec();
+
+    res.status(200).json(clucks);
+  } catch (error) {
+    console.error('Error fetching clucks by user:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
 // GET a single cluck
 const getCluck = async (req, res) => {
   const { id } = req.params;
@@ -102,4 +115,5 @@ module.exports = {
   postCluck,
   editCluck,
   deleteCluck,
+  getClucksByUser,
 };

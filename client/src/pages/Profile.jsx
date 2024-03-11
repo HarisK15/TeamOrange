@@ -2,6 +2,7 @@ import { useState, useEffect, useContext } from "react";
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
+import CluckBox from "../components/CluckBox";
 
 
 export default function ChangeProfileForm() {
@@ -10,6 +11,7 @@ export default function ChangeProfileForm() {
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [isUser, setIsUser] = useState(false);
+    const [userClucks, setUserClucks] = useState([]);
 
     useEffect(() => {
         const getUserData = async () => {
@@ -23,6 +25,9 @@ export default function ChangeProfileForm() {
                 setBio(response.data.bio);
                 setUsername(response.data.userName);
                 setEmail(response.data.email);
+
+                const clucksResponse = await axios.get(`/clucks/user/${profileId}`);
+                setUserClucks(clucksResponse.data);
 
             } catch (error) {
                 console.error('Error fetching user data:', error);
@@ -51,6 +56,7 @@ export default function ChangeProfileForm() {
             }
         }
     }
+
     return (
         <div>
             <div>
@@ -74,6 +80,11 @@ export default function ChangeProfileForm() {
                     <p>Bio: {bio}</p>
                 </div>
             )}
+            <div>
+                {userClucks.map(cluck => (
+                    <CluckBox key={cluck._id} cluck={cluck} />
+                ))}
+            </div>
         </div>
     );
 }
