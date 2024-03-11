@@ -13,6 +13,13 @@ const cluckSchema = new Schema(
       ref: "User",
       required: true,
     },
+    recluckUser: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
+    recluck: {
+      type: Boolean,
+    }
   },
   { timestamps: true }
 );

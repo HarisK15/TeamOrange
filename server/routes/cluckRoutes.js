@@ -5,6 +5,7 @@ const {
   postCluck,
   editCluck,
   deleteCluck,
+  recluckCluck,
 } = require("../controllers/cluckControllers");
 const { userVerification } = require("../middleware/verifyUser");
 const cors = require("cors");
@@ -32,5 +33,8 @@ router.post("/", userVerification, postCluck);
 
 // PATCH (edit) a cluck
 router.patch("/:id", userVerification, editCluck);
+
+// Recluck a cluck
+router.post('/:id/recluck', userVerification, recluckCluck)
 
 module.exports = router;
