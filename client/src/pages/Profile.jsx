@@ -68,6 +68,7 @@ export default function ChangeProfileForm() {
                         placeholder="Change your bio..."
                         value={bio}
                         onChange={handleChange}
+                        data-testid="bio"
                     ></textarea>
                     <button type="submit">Update Profile</button>
                 </form>

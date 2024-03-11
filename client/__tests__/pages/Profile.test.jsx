@@ -26,6 +26,7 @@ vitest.mock('react-router-dom', () => ({
 
 vitest.mock('react-hot-toast', () => ({
   toast: {
+    success: vitest.fn(),
     error: vitest.fn(),
   },
 }));
@@ -97,9 +98,11 @@ describe('ChangeProfileForm', () => {
   
     renderResult = render(<ChangeProfileForm />);
 
-    expect(screen.getByText('@testUser')).toBeInTheDocument();
-    expect(screen.getByText('test@example.com')).toBeInTheDocument();
-    expect(screen.getByText('Test bio')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('@testUser')).toBeInTheDocument();
+      expect(screen.getByText('test@example.com')).toBeInTheDocument();
+      expect(screen.getByText('Test bio')).toBeInTheDocument();
+    });
   });
   
   it('updates bio and shows success message on form submission', async () => {
@@ -109,24 +112,28 @@ describe('ChangeProfileForm', () => {
       },
     });
   
-    const bioTextarea = screen.getByLabelText('Bio');
+    const bioTextarea = await screen.findByTestId('bio');
     fireEvent.change(bioTextarea, { target: { value: 'New bio' } });
-
-    
+  
     const updateButton = screen.getByRole('button', { name: 'Update Profile' });
     fireEvent.submit(updateButton);
-
-    expect(mockAxiosPost).toHaveBeenCalledWith('/profile', { bio: 'New bio' });
-  
-    expect(toast.error).toHaveBeenCalledWith('Profile updated successfully');
+    
+    await waitFor(() => {
+      expect(mockAxiosPost).toHaveBeenCalledWith('/profile', { bio: 'New bio' });
+      expect(toast.success).toHaveBeenCalledWith('Profile updated successfully');
+    });
   });
   
   it('shows error message if form submission fails', async () => {
     mockAxiosPost.mockRejectedValueOnce({ response: { data: { error: 'Update failed' } } });
   
-    fireEvent.change(screen.getByLabelText('Bio'), { target: { value: 'New bio' } });
-    fireEvent.submit(screen.getByRole('button', { name: 'Update Profile' }));
+    const bioTextarea = await screen.findByTestId('bio');
+    fireEvent.change(bioTextarea, { target: { value: 'New bio' } });
   
-    expect(toast.error).toHaveBeenCalledWith('Update failed');
+    const updateButton = screen.getByRole('button', { name: 'Update Profile' });
+    fireEvent.submit(updateButton);
+  
+    await waitFor(() => expect(toast.error).toHaveBeenCalledWith('Update failed'));
+    toast.error.mockRestore();
   });
   });
