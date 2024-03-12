@@ -100,7 +100,7 @@ async function seedFollowers() {
                 await User.findByIdAndUpdate(currentFollowerId, { $addToSet: { followers: currentUser._id } });
             }
             i++;
-            process.stdout.write(`Seeded user followers ${i}/${allUsers.length - 1}\n`);
+            process.stdout.write(`Seeding user followers ${i}/${allUsers.length}\n`);
         }
 
         console.log('Users seeded successfully.');
