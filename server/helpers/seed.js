@@ -42,13 +42,14 @@ async function seedDatabase() {
                 process.stdout.write(`Seeding users ${ await User.countDocuments({})}/${numberOfUsers}\n`);
                 await seedClucks(user)
             } catch (error){
-                console.error('Seeding error:', error);
+
             }
         }
+        await seedFollowers();
 
         console.log(`Seeding complete. ${numberOfUsers} users created. ${await Cluck.countDocuments({})} clucks created`);
     } catch (error) {
-        console.error('Seeding error:', error);
+
     } finally {
         mongoose.disconnect();
         console.log("Database disconnected");
@@ -56,7 +57,7 @@ async function seedDatabase() {
 }
 
 async function seedClucks(user) {
-    // currently creating 0 - 5 clucks per user, change 6 to vary number of clucks created per user
+    // Generate a random number of clucks per user (currently between 0 to 5)
     const numberOfClucks = Math.floor(Math.random() * 6);
     let i = 0;
     while (i < numberOfClucks) {
@@ -71,11 +72,40 @@ async function seedClucks(user) {
                 updatedAt: updatedAt,
             }
             await Cluck.create(cluckData);
-            i++
+            i++;
             process.stdout.write(`Seeding random clucks per user ${i}/${numberOfClucks}\n`);
         } catch (error){
 
         }
+    }
+}
+
+async function seedFollowers() {
+    try {
+        const allUsers = await User.find({}, '_id'); 
+
+        const randomUserIds = allUsers.map(user => user._id).sort(() => Math.random() - 0.5);
+        let i = 0;
+        for (const currentUser of allUsers) {
+            // Generate a random number of users to follow (currently between 0 and the total number of users - 2)
+            const numberOfFollowing = Math.floor(Math.random() * (allUsers.length - 1));
+
+            const followingUserIds = randomUserIds.filter(userId => userId.toString() !== currentUser._id.toString());
+
+            const followingIds = followingUserIds.slice(0, numberOfFollowing);
+
+            await User.findByIdAndUpdate(currentUser._id, { $addToSet: { following: followingIds } });
+
+            for (const currentFollowerId of followingIds) {
+                await User.findByIdAndUpdate(currentFollowerId, { $addToSet: { followers: currentUser._id } });
+            }
+            i++;
+            process.stdout.write(`Seeded user followers ${i}/${allUsers.length - 1}\n`);
+        }
+
+        console.log('Users seeded successfully.');
+    } catch (error) {
+        console.error('Seeding error:', error);
     }
 }
 
