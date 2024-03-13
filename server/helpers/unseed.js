@@ -30,6 +30,7 @@ async function unseedDatabase() {
         await Cluck.deleteMany({ user: { $ne: excludedUser._id } });
 
         await User.deleteMany({ _id: { $ne: excludedUser._id } });
+        await User.updateOne({ _id: excludedUser._id }, { $set: { followers: [], following: [] } });
 
         console.log(`Unseeding complete. ${numberOfUsers} users deleted. ${numberOfClucks} clucks deleted`);
     } catch (error) {
