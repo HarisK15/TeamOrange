@@ -19,7 +19,7 @@ router.use(
 );
 
 //GET requests
-router.get("/", test);
+//router.get("/", test);
 router.get("/check-login", checkLoginStatus);
 
 //POST requests
