@@ -35,7 +35,7 @@ async function seedDatabase() {
                     userName: faker.person.fullName(),
                     email: faker.internet.email(),
                     bio: faker.lorem.paragraphs(randomNumber, '\n\n'),
-                    password: await hashPassword(faker.internet.password({ length: 8 })),
+                    password: await hashPassword("testPassword"),
                 };
     
                 const user = await User.create(userData);
