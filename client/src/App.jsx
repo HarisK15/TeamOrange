@@ -12,7 +12,7 @@ import { Toaster } from "react-hot-toast";
 import { LoggedInProvider } from "./contexts/LoggedInContext";
 
 //using axios to have a base URL so we don't have to type it everytime
-axios.defaults.baseURL = "http://localhost:8000";
+axios.defaults.baseURL = PROCESS.REACT_APP_API_URL;
 axios.defaults.withCredentials = true;
 
 function App() {
