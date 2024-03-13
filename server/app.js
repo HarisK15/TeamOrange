@@ -8,11 +8,6 @@ const cookieParser = require("cookie-parser");
 app.use(express.json());
 app.use(cookieParser());
 
-// Import and use routes after the database connection is established
-app.use("/", require("./routes/authRoutes"));
-app.use("/clucks", require("./routes/cluckRoutes"));
-app.use("/change-password", require("./routes/passwordRoutes"));
-app.use("/profile", require("./routes/profileRoutes"));
-app.use("/search", require("./routes/searchRoutes"));
+
 
 module.exports = app;

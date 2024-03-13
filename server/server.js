@@ -32,4 +32,9 @@ mongoose
   .catch((err) => console.log("Database connection error", err));
 
 
-
+// Import and use routes after the database connection is established
+  app.use("/", require("./routes/authRoutes"));
+  app.use("/clucks", require("./routes/cluckRoutes"));
+  app.use("/change-password", require("./routes/passwordRoutes"));
+  app.use("/profile", require("./routes/profileRoutes"));
+  app.use("/search", require("./routes/searchRoutes"));
