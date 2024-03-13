@@ -1,8 +1,10 @@
 import { useState, useEffect, useContext } from "react";
-import { useParams } from "react-router-dom";
-import axios from "axios";
-import { toast } from "react-hot-toast";
+import { useParams } from 'react-router-dom';
+import axios from 'axios';
+import { toast } from 'react-hot-toast';
 import { LoggedInContext } from "../contexts/LoggedInContext";
+import "./Profile.css"
+
 
 export default function ChangeProfileForm() {
   let { profileId } = useParams();
@@ -44,80 +46,82 @@ export default function ChangeProfileForm() {
     setBio(e.target.value);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await axios.post("/profile", {
-        bio,
-      });
-      toast.success(response.data.message);
-    } catch (error) {
-      if (error.response && error.response.data) {
-        toast.error(error.response.data.error);
-      } else {
-        toast.error("An error occurred. Please try again.");
-      }
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            const response = await axios.post('/profile', {
+                bio
+            });
+            toast.success(response.data.message);
+        } catch (error) {
+            if (error.response && error.response.data) {
+                toast.error(error.response.data.error);
+            } else {
+                toast.error('An error occurred. Please try again.');
+            }
+        }
     }
-  };
 
-  const handleFollow = async () => {
-    try {
-      const response = await axios.post(`/follow/${profileId}`, {
-        withCredentials: true,
-      });
-      toast.success(response.data.message);
-    } catch (error) {
-      console.error("Error following user:", error);
-      if (error.response && error.response.data) {
-        toast.error(error.response.data.error);
-      } else {
-        toast.error("An error occurred. Please try again.");
+    const handleFollow = async () => {
+      try {
+        const response = await axios.post(`/follow/${profileId}`, {
+          withCredentials: true,
+        });
+        toast.success(response.data.message);
+      } catch (error) {
+        console.error("Error following user:", error);
+        if (error.response && error.response.data) {
+          toast.error(error.response.data.error);
+        } else {
+          toast.error("An error occurred. Please try again.");
+        }
       }
-    }
-  };
-
-  const handleUnfollow = async () => {
-    try {
-      const response = await axios.post(`/unfollow/${profileId}`, {
-        withCredentials: true,
-      });
-      toast.success(response.data.message);
-    } catch (error) {
-      if (error.response && error.response.data) {
-        toast.error(error.response.data.error);
-      } else {
-        toast.error("An error occurred. Please try again.");
+    };
+  
+    const handleUnfollow = async () => {
+      try {
+        const response = await axios.post(`/unfollow/${profileId}`, {
+          withCredentials: true,
+        });
+        toast.success(response.data.message);
+      } catch (error) {
+        if (error.response && error.response.data) {
+          toast.error(error.response.data.error);
+        } else {
+          toast.error("An error occurred. Please try again.");
+        }
       }
-    }
-  };
-
-  return (
-    <div>
-      <div>
-        <p>Username: {username}</p>
-        <p>Email: {email}</p>
-      </div>
-      {isUser ? (
-        <form onSubmit={handleSubmit}>
-          <label>Bio</label>
-          <input
-            type="text"
-            name="bio"
-            placeholder="Change your bio..."
-            value={bio}
-            onChange={handleChange}
-          />
-          <button type="submit">Update Profile</button>
-        </form>
-      ) : (
-        <div>
-          <p>Bio: {bio}</p>
-          <p>Followers: {followers}</p>
-          <p>Following: {following}</p>
-          <button onClick={handleFollow}>Follow</button>
-          <button onClick={handleUnfollow}>Unfollow</button>
+    };
+    
+    return (
+        <div className="profile-container">
+            <div className="top-left">
+                <p className="profileUsername">@{username}</p>
+                <p className="email">{email}</p>
+            </div>
+            {isUser ? (
+                <form onSubmit={handleSubmit}>
+                    <label htmlFor="bio"></label>
+                    <textarea
+                        id="bio"
+                        type="text"
+                        name="bio"
+                        placeholder="Change your bio..."
+                        value={bio}
+                        onChange={handleChange}
+                        data-testid="bio"
+                    ></textarea>
+                    <button type="submit">Update Profile</button>
+                </form>
+            ) : (
+                <div className="top-left">
+                    <p className="bio">{bio}</p>
+                    <p>Followers: {followers}</p>
+                    <p>Following: {following}</p>
+                    <button onClick={handleFollow}>Follow</button>
+                    <button onClick={handleUnfollow}>Unfollow</button>
+                </div>
+            )}
         </div>
-      )}
-    </div>
-  );
+    );
 }
