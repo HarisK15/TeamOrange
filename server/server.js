@@ -17,7 +17,7 @@ mongoose
     //   });
     // }
     if(process.env.NODE_ENV === "production") {
-      const PORT = process.env.PORT || 8000;
+      const port = process.env.PORT || 8000;
       app.use(express.static(path.join(__dirname, "../client/dist")));
       app.listen(port, () => console.log(`Server is running on port ${port}`));
       app.get("*", (req, res) => {
