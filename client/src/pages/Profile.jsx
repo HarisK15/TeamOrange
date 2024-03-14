@@ -5,61 +5,66 @@ import { toast } from 'react-hot-toast';
 import { LoggedInContext } from "../contexts/LoggedInContext";
 import "./Profile.css"
 
-
 export default function ChangeProfileForm() {
   let { profileId } = useParams();
-  const [bio, setBio] = useState("");
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [followers, setFollowers] = useState([]);
-  const [following, setFollowing] = useState([]);
-  const [isUser, setIsUser] = useState(false);
+  const [userData, setUserData] = useState({
+    bio: "",
+    username: "",
+    email: "",
+    followers: [],
+    following: [],
+  });
+  const [isFollowing, setFollowing]= useState(false);
   const { userId, setUserId } = useContext(LoggedInContext);
 
   useEffect(() => {
     const getUserData = async () => {
-    try {
-        const loginResponse = await axios.get("/check-login");
+      try {
+        const [loginResponse, followingResponse, profileResponse] = await Promise.all([
+          axios.get("/check-login"),
+          axios.get(`/isFollowing/${profileId}`),
+          axios.get(`/profile/userData/${profileId}`, {})
+        ]);
+  
         if (loginResponse.data.isLoggedIn) {
-            setUserId(loginResponse.data.userId);
+          setUserId(loginResponse.data.userId);
         }
-
-        if (userId === profileId) {
-            setIsUser(true);
-        }
-
-        const profileResponse = await axios.get(`/profile/userData/${profileId}`, {});
-        setBio(profileResponse.data.bio);
-        setUsername(profileResponse.data.userName);
-        setEmail(profileResponse.data.email);
-        setFollowers(profileResponse.data.followers);
-        setFollowing(profileResponse.data.following);
-    } catch (error) {
+  
+        setFollowing(followingResponse.data.isFollowing);
+  
+        setUserData({...userData,
+          bio: profileResponse.data.bio,
+          username: profileResponse.data.userName,
+          email: profileResponse.data.email,
+          followers: profileResponse.data.followers,
+          following: profileResponse.data.following
+        });
+      } catch (error) {
         console.error("Error fetching user data:", error);
       }
     };
-
+  
     getUserData();
-  }, []);
+  }, [userId, profileId, setUserId, userData]);
 
   const handleChange = (e) => {
-    setBio(e.target.value);
+    setUserData(prevState => ({ ...prevState, bio: e.target.value }));
   };
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            const response = await axios.post('/profile', {
-                bio
-            });
-            toast.success(response.data.message);
-        } catch (error) {
-            if (error.response && error.response.data) {
-                toast.error(error.response.data.error);
-            } else {
-                toast.error('An error occurred. Please try again.');
-            }
+      e.preventDefault();
+      try {
+        const response = await axios.post('/profile', {
+          bio: userData.bio
+        });
+        toast.success(response.data.message);
+      } catch (error) {
+        if (error.response && error.response.data) {
+          toast.error(error.response.data.error);
+        } else {
+          toast.error('An error occurred. Please try again.');
         }
+      }
     }
 
     const handleFollow = async () => {
@@ -76,6 +81,9 @@ export default function ChangeProfileForm() {
           toast.error("An error occurred. Please try again.");
         }
       }
+
+      setFollowing(true);
+      setUserData({...userData, followers: [...userData.followers, userId]})
     };
   
     const handleUnfollow = async () => {
@@ -91,15 +99,36 @@ export default function ChangeProfileForm() {
           toast.error("An error occurred. Please try again.");
         }
       }
+
+      setFollowing(false);
+      setUserData({...userData, followers: userData.followers.filter(follower => follower !== userId)});
     };
     
     return (
         <div className="profile-container">
-            <div className="top-left">
-                <p className="profileUsername">@{username}</p>
-                <p className="email">{email}</p>
-            </div>
-            {isUser ? (
+            <div className="profile-info">
+                <div className="top-left">
+                    <p className="profileUsername">@{userData.username}</p>
+                    <p className="email">{userData.email}</p>
+                </div>
+
+                <div className="next-to-top-left">
+                    <p className="followers">Followers: {userData.followers.length}</p>
+                    <p className="following">Following: {userData.following.length}</p>
+                </div>
+            </div>            
+
+            {profileId == userId ? null : 
+                <div className="top-right">
+                    {isFollowing ? (
+                        <button onClick={handleUnfollow} data-testid="unfollow">Unfollow</button>
+                    ) : (
+                        <button onClick={handleFollow} data-testid="follow">Follow</button>
+                    )}
+                </div>
+            }
+
+            {profileId == userId ? (
                 <form onSubmit={handleSubmit}>
                     <label htmlFor="bio"></label>
                     <textarea
@@ -107,7 +136,7 @@ export default function ChangeProfileForm() {
                         type="text"
                         name="bio"
                         placeholder="Change your bio..."
-                        value={bio}
+                        value={userData.bio}
                         onChange={handleChange}
                         data-testid="bio"
                     ></textarea>
@@ -115,11 +144,7 @@ export default function ChangeProfileForm() {
                 </form>
             ) : (
                 <div className="top-left">
-                    <p className="bio">{bio}</p>
-                    <p>Followers: {followers}</p>
-                    <p>Following: {following}</p>
-                    <button onClick={handleFollow}>Follow</button>
-                    <button onClick={handleUnfollow}>Unfollow</button>
+                    <p className="bio">{userData.bio}</p>
                 </div>
             )}
         </div>

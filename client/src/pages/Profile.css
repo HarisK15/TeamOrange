@@ -36,11 +36,51 @@
   margin-top: 100px;
 }
 
-.top-left {
-  position: absolute; 
+.profile-info {
+  display: flex;
+  position: absolute;
   top: -30px; 
   left: 10px; 
+}
+
+.top-left {
   margin: 0px;
+}
+
+.next-to-top-left { 
+  display: flex;
+  flex-direction: column;
+  margin-left:20px;
+  margin-top: 25px;
+}
+
+.followers {
+  font-size: 25px;
+  font-weight: bold;
+  color: black;
+  text-align: left;
+  margin: 0px;
+  padding: 0px;
+}
+
+.following {
+  font-size: 25px;
+  font-weight: bold;
+  color: black;
+  text-align: left;
+  margin: 0px;
+  padding: 0px;
+}
+
+.profile-container .top-right {
+  position: relative;
+  top: -30px;
+}
+
+.profile-container .top-right button {
+  position: absolute;
+  top: -30px;
+  right: 0;
 }
 
 .profile-container textarea[type="text"] {

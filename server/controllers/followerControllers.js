@@ -119,4 +119,21 @@ const getFollowing = async (req, res) => {
   }
 };
 
-module.exports = { followUser, unfollowUser, getFollowers, getFollowing };
+// Check if user is following another user
+const isFollowing = async (req, res) => {
+  const { id } = req.params;
+  const userId = req.userId;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(404).json({ error: "User not found" });
+  }
+
+  const user = await User.findById(userId);
+
+  if (!user.following.includes(id)) {
+    return res.status(200).json({ isFollowing: false });
+  }
+
+  res.status(200).json({ isFollowing: true });
+};
+module.exports = { followUser, unfollowUser, getFollowers, getFollowing, isFollowing};

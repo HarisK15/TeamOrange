@@ -35,8 +35,8 @@ const getProfileData = async (req, res) => {
             bio: user.bio,
             userName: user.userName,
             email: user.email ,
-            followers: user.followers.length,
-            following: user.following.length
+            followers: user.followers,
+            following: user.following
         });
     } catch (error) {
         console.error('Error fetching user data:', error);

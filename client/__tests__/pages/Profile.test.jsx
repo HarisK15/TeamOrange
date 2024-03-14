@@ -5,6 +5,7 @@ import axios from "axios";
 import ChangeProfileForm from "../../src/pages/Profile";
 import { toast } from 'react-hot-toast';
 import { useParams } from 'react-router-dom';
+import { LoggedInContext } from '../../src/contexts/LoggedInContext';
 
 
 vitest.mock('axios', async () => {
@@ -40,22 +41,35 @@ describe('ChangeProfileForm', () => {
     useParams.mockReturnValue({ profileId: '123' });
 
     mockAxiosGet.mockResolvedValueOnce({
-      data: {
-        userId: '123',
-      },
-    });
-    mockAxiosGet.mockResolvedValueOnce({
-      data: {
-        bio: 'Test bio',
-        userName: 'testUser',
-        email: 'test@example.com',
-      },
-    });
-  
+  data: {
+    isLoggedIn: true, 
+    userId: '123' 
+  }
+});
+
+mockAxiosGet.mockResolvedValueOnce({
+  data: {
+    isFollowing: true,
+  }
+});
+
+mockAxiosGet.mockResolvedValueOnce({
+  data: {
+    bio: 'Test bio',
+    userName: 'testUser',
+    email: 'test@example.com',
+    followers: [],
+    following: [],
+  },
+});
     axios.post = mockAxiosPost;
     axios.get = mockAxiosGet;
   
-    renderResult = render(<ChangeProfileForm />);
+    renderResult = render(
+      <LoggedInContext.Provider value={{ userId: '123', setUserId: vitest.fn() }}>
+        <ChangeProfileForm />
+      </LoggedInContext.Provider>
+    );
   });
   
   afterEach(() => {
@@ -77,13 +91,11 @@ describe('ChangeProfileForm', () => {
   });
   
   it('renders user data when profileId does not match', async () => {
-    renderResult.unmount();
-    vitest.clearAllMocks();
-    cleanup()
     useParams.mockReturnValue({ profileId: '123' });
 
     mockAxiosGet.mockResolvedValueOnce({
       data: {
+        isLoggedIn: true,
         userId: '678',
       },
     });
@@ -96,8 +108,11 @@ describe('ChangeProfileForm', () => {
     });
     axios.get = mockAxiosGet;
   
-    renderResult = render(<ChangeProfileForm />);
-
+    renderResult = render(
+      <LoggedInContext.Provider value={{ userId: '123', setUserId: vitest.fn() }}>
+        <ChangeProfileForm />
+      </LoggedInContext.Provider>
+    );
     await waitFor(() => {
       expect(screen.getByText('@testUser')).toBeInTheDocument();
       expect(screen.getByText('test@example.com')).toBeInTheDocument();
@@ -136,4 +151,6 @@ describe('ChangeProfileForm', () => {
     await waitFor(() => expect(toast.error).toHaveBeenCalledWith('Update failed'));
     toast.error.mockRestore();
   });
+
+
   });
