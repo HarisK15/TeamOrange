@@ -14,9 +14,11 @@ const startDatabase = async () => {
         .catch((err) => console.log("Database connection error", err));
 }
 
-const numberOfUsers = 10; 
+const numberOfUsers = 100; 
 
-const randomNumber = Math.floor(Math.random() * 6);
+async function randomNumber() {
+    return Math.floor(Math.random() * 6);
+}
 
 function randomDate(start, end) {
     const startTimestamp = start.getTime();
@@ -34,7 +36,7 @@ async function seedDatabase() {
                 const userData = {
                     userName: faker.person.fullName(),
                     email: faker.internet.email(),
-                    bio: faker.lorem.paragraphs(randomNumber, '\n\n'),
+                    bio: faker.lorem.paragraphs(await randomNumber(), '\n\n'),
                     password: await hashPassword("testPassword"),
                 };
     
@@ -49,7 +51,7 @@ async function seedDatabase() {
 
         console.log(`Seeding complete. ${numberOfUsers} users created. ${await Cluck.countDocuments({})} clucks created`);
     } catch (error) {
-
+        console.error('Seeding Database error:', error);
     } finally {
         mongoose.disconnect();
         console.log("Database disconnected");
@@ -66,7 +68,7 @@ async function seedClucks(user) {
             const updatedAt = randomDate(createdAt, new Date());
 
             const cluckData = {
-                text: faker.lorem.paragraphs(randomNumber, '\n\n'),
+                text: faker.lorem.paragraphs(await randomNumber(), '\n\n'),
                 user: user._id,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
@@ -87,8 +89,8 @@ async function seedFollowers() {
         const randomUserIds = allUsers.map(user => user._id).sort(() => Math.random() - 0.5);
         let i = 0;
         for (const currentUser of allUsers) {
-            // Generate a random number of users to follow (currently between 0 and the total number of users - 2)
-            const numberOfFollowing = Math.floor(Math.random() * (allUsers.length - 1));
+            // Generate a random number of users to follow (currently (between 0 and the total number of users - 2)/2)
+            const numberOfFollowing = Math.floor((Math.random() * (allUsers.length - 1))/2);
 
             const followingUserIds = randomUserIds.filter(userId => userId.toString() !== currentUser._id.toString());
 
@@ -105,7 +107,7 @@ async function seedFollowers() {
 
         console.log('Users seeded successfully.');
     } catch (error) {
-        console.error('Seeding error:', error);
+
     }
 }
 
