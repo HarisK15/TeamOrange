@@ -41,27 +41,27 @@ describe('ChangeProfileForm', () => {
     useParams.mockReturnValue({ profileId: '123' });
 
     mockAxiosGet.mockResolvedValueOnce({
-  data: {
-    isLoggedIn: true, 
-    userId: '123' 
-  }
-});
+      data: {
+      isLoggedIn: true, 
+      userId: '123' 
+    }
+  });
 
-mockAxiosGet.mockResolvedValueOnce({
-  data: {
-    isFollowing: true,
-  }
-});
+  mockAxiosGet.mockResolvedValueOnce({
+    data: {
+      isFollowing: true,
+    }
+  });
 
-mockAxiosGet.mockResolvedValueOnce({
-  data: {
-    bio: 'Test bio',
-    userName: 'testUser',
-    email: 'test@example.com',
-    followers: [],
-    following: [],
-  },
-});
+  mockAxiosGet.mockResolvedValueOnce({
+    data: {
+      bio: 'Test bio',
+      userName: 'testUser',
+      email: 'test@example.com',
+      followers: [],
+      following: [],
+    },
+  });
     axios.post = mockAxiosPost;
     axios.get = mockAxiosGet;
   
@@ -152,5 +152,219 @@ mockAxiosGet.mockResolvedValueOnce({
     toast.error.mockRestore();
   });
 
+  it('shows generic error message if form submission fails and no error from server', async () => {
+    mockAxiosPost.mockRejectedValueOnce(new Error());
+
+    const bioTextarea = await screen.findByTestId('bio');
+    fireEvent.change(bioTextarea, { target: { value: 'New bio' } });
+
+    const updateButton = screen.getByRole('button', { name: 'Update Profile' });
+    fireEvent.submit(updateButton);
+
+    await waitFor(() => expect(toast.error).toHaveBeenCalledWith('An error occurred. Please try again.'));
+    toast.error.mockRestore();
+  });
+  
+  describe("Following features", () => {
+
+    const setupTest = async (isLoggedIn, isFollowing, userData, postResponse) => {
+      // Mock the /check-login endpoint
+      mockAxiosGet.mockResolvedValueOnce({
+        data: {
+          isLoggedIn,
+          userId: "123",
+        },
+      });
+    
+      // Mock the /isFollowing/:profileId endpoint
+      mockAxiosGet.mockResolvedValueOnce({
+        data: {
+          isFollowing,
+        },
+      });
+    
+      // Mock the /profile/userData/:profileId endpoint
+      mockAxiosGet.mockResolvedValueOnce({
+        data: userData,
+      });
+    
+      axios.get = mockAxiosGet;
+    
+      if (postResponse) {
+        if (postResponse instanceof Error) {
+          mockAxiosPost.mockRejectedValueOnce(postResponse);
+        } else {
+          mockAxiosPost.mockResolvedValueOnce({
+            data: postResponse,
+          });
+        }
+        axios.post = mockAxiosPost;
+      }
+        
+      renderResult = render(
+        <LoggedInContext.Provider
+          value={{ userId: "123", setUserId: vitest.fn() }}
+        >
+          <ChangeProfileForm />
+        </LoggedInContext.Provider>
+      );
+    };
+
+    beforeEach(() => {
+      useParams.mockReturnValue({ profileId: "456" });
+    });
+
+    afterEach(() => {
+      renderResult.unmount();
+      vitest.clearAllMocks();
+      cleanup();
+    });
+
+    it('renders Unfollow button when user is following', async () => {
+      await setupTest(true, true, {
+        bio: "Bio",
+        userName: "Username",
+        email: "email@example.com",
+        followers: [],
+        following: [],
+      });
+  
+      await waitFor(() => {
+        expect(
+          screen.getByRole("button", { name: "Unfollow" })
+        ).toBeInTheDocument();
+      });
+    });
+    
+    it('shows success message when user unfollows profile', async () => {
+      await setupTest(true, true, {
+        bio: "Bio",
+        userName: "Username",
+        email: "email@example.com",
+        followers: [],
+        following: [],
+      }, {
+        message: "Unfollowed user",
+      });
+    
+      const unfollowButton = screen.getByRole("button", { name: "Unfollow" });
+      fireEvent.click(unfollowButton);
+    
+      await waitFor(() => {
+        expect(mockAxiosPost).toHaveBeenCalledWith("/unfollow/456", { withCredentials: true });
+        expect(toast.success).toHaveBeenCalledWith("Unfollowed user");
+      });
+    });
+
+    it('shows error message when user fails to unfollow profile', async () => {
+      const error = new Error();
+      error.response = { data: { error: "Failed to unfollow user" } };
+
+      await setupTest(true, true, {
+        bio: "Bio",
+        userName: "Username",
+        email: "email@example.com",
+        followers: [],
+        following: [],
+      }, error);
+
+      const unfollowButton = screen.getByRole("button", { name: "Unfollow" });
+      fireEvent.click(unfollowButton);
+      
+      await waitFor(() => {
+        expect(toast.error).toHaveBeenCalledWith("Failed to unfollow user");
+      });
+    });
+
+    it('shows generic error message when user fails to unfollow profile and no error from server', async () => {
+      await setupTest(true, true, {
+        bio: "Bio",
+        userName: "Username",
+        email: "email@example.com",
+        followers: [],
+        following: [],
+      }, new Error());
+
+      const unfollowButton = screen.getByRole("button", { name: "Unfollow" });
+      fireEvent.click(unfollowButton);
+
+      await waitFor(() => {
+        expect(toast.error).toHaveBeenCalledWith("An error occurred. Please try again.");
+      });
+    });
+
+    it('renders Follow button when user is not following', async () => {
+      await setupTest(true, false, {
+        bio: "Bio",
+        userName: "Username",
+        email: "email@example.com",
+        followers: [],
+        following: [],
+      });
+  
+      await waitFor(() => {
+        expect(
+          screen.getByRole("button", { name: "Follow" })
+        ).toBeInTheDocument();
+      });
+    });
+  
+    it('shows success message when user follows profile', async () => {
+      await setupTest(true, false, {
+        bio: "Bio",
+        userName: "Username",
+        email: "email@example.com",
+        followers: [],
+        following: [],
+      }, {
+        message: "Following user",
+      });
+  
+      const followButton = screen.getByRole("button", { name: "Follow" });
+      fireEvent.click(followButton);
+  
+      await waitFor(() => {
+        expect(mockAxiosPost).toHaveBeenCalledWith("/follow/456", { withCredentials: true });
+        expect(toast.success).toHaveBeenCalledWith("Following user");
+      });
+    });
+
+    it('shows error message when user fails to follow profile', async () => {
+      const error = new Error();
+      error.response = { data: { error: "Failed to follow user" } };
+      
+      await setupTest(true, false, {
+        bio: "Bio",
+        userName: "Username",
+        email: "email@test.com",
+        followers: [],
+        following: [],
+      }, error);
+      
+      const followButton = screen.getByRole("button", { name: "Follow" });
+      fireEvent.click(followButton);
+    
+      await waitFor(() => {
+        expect(toast.error).toHaveBeenCalledWith("Failed to follow user");
+      });
+    });
+    
+    it ("shows generic error message when user fails to follow profile and no error from server", async () => {
+      await setupTest(true, false, {
+        bio: "Bio",
+        userName: "Username",
+        email: "email@test.com",
+        followers: [],
+        following: [],
+      }, new Error());
+    
+      const followButton = screen.getByRole("button", { name: "Follow" });
+      fireEvent.click(followButton);
+    
+      await waitFor(() => {
+        expect(toast.error).toHaveBeenCalledWith("An error occurred. Please try again.");
+      });
+    });
 
   });
+});

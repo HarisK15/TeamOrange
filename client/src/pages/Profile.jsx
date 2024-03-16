@@ -121,9 +121,9 @@ export default function ChangeProfileForm() {
             {profileId == userId ? null : 
                 <div className="top-right">
                     {isFollowing ? (
-                        <button onClick={handleUnfollow} data-testid="unfollow">Unfollow</button>
+                        <button onClick={handleUnfollow}>Unfollow</button>
                     ) : (
-                        <button onClick={handleFollow} data-testid="follow">Follow</button>
+                        <button onClick={handleFollow}>Follow</button>
                     )}
                 </div>
             }
