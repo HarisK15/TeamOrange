@@ -83,12 +83,13 @@ const getFollowers = async (req, res) => {
     }
 
     const user = await User.findById(id);
-
+    console.log(user);
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
 
-    const populatedUser = await user.populate("followers").execPopulate();
+    const populatedUser = await user.populate("followers")
+
     res.status(200).json(populatedUser.followers);
   } catch (error) {
     console.log(error);
@@ -111,7 +112,7 @@ const getFollowing = async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
 
-    const populatedUser = await user.populate("following").execPopulate();
+    const populatedUser = await user.populate("following");
 
     res.status(200).json(populatedUser.following);
   } catch (error) {
@@ -121,19 +122,33 @@ const getFollowing = async (req, res) => {
 
 // Check if user is following another user
 const isFollowing = async (req, res) => {
-  const { id } = req.params;
-  const userId = req.userId;
-
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(404).json({ error: "User not found" });
+  try {
+    const { id } = req.params;
+    const userId = req.userId;
+  
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(404).json({ error: "User not found" });
+    }
+  
+    const user = await User.findById(userId);
+    
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    
+    if (!user.following.includes(id)) {
+      return res.status(200).json({ isFollowing: false });
+    }
+  
+    res.status(200).json({ isFollowing: true });
+  } catch (error) {
+    res.status(500).json({ error: "Server error" });
   }
-
-  const user = await User.findById(userId);
-
-  if (!user.following.includes(id)) {
-    return res.status(200).json({ isFollowing: false });
-  }
-
-  res.status(200).json({ isFollowing: true });
 };
-module.exports = { followUser, unfollowUser, getFollowers, getFollowing, isFollowing};
+module.exports = {
+  followUser,
+  unfollowUser,
+  getFollowers,
+  getFollowing,
+  isFollowing,
+};

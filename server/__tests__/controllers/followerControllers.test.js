@@ -5,6 +5,7 @@ const {
   unfollowUser,
   getFollowers,
   getFollowing,
+  isFollowing,
 } = require("../../controllers/followerControllers");
 
 jest.mock("../../models/user", () => ({
@@ -257,8 +258,7 @@ describe("Follower Controllers", () => {
 
       mongoose.Types.ObjectId.isValid.mockReturnValue(true);
       User.findById.mockResolvedValue(user);
-      user.populate = jest.fn().mockReturnThis();
-      user.execPopulate = jest.fn().mockResolvedValue(populatedUser);
+      user.populate = jest.fn().mockResolvedValue(populatedUser);
 
       await getFollowers(mockReq, mockRes);
 
@@ -330,8 +330,7 @@ describe("Follower Controllers", () => {
 
       mongoose.Types.ObjectId.isValid.mockReturnValue(true);
       User.findById.mockResolvedValue(user);
-      user.populate = jest.fn().mockReturnThis();
-      user.execPopulate = jest.fn().mockResolvedValue(populatedUser);
+      user.populate = jest.fn().mockResolvedValue(populatedUser);
 
       await getFollowing(mockReq, mockRes);
 
@@ -385,5 +384,93 @@ describe("Follower Controllers", () => {
 
     expect(mockRes.status).toHaveBeenCalledWith(500);
     expect(mockRes.json).toHaveBeenCalledWith({ error: "Server error" });
+  });
+
+  describe("isFollowing", () => {
+    it("should return 404 if user not found", async () => {
+      const mockReq = { params: { id: "123" }, userId: "456" };
+      const mockRes = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      };
+
+      mongoose.Types.ObjectId.isValid.mockReturnValue(false);
+
+      await isFollowing(mockReq, mockRes);
+
+      expect(mockRes.status).toHaveBeenCalledWith(404);
+      expect(mockRes.json).toHaveBeenCalledWith({ error: "User not found" });
+    });
+
+    it("should return 404 if user to check if following is not found", async () => {
+      const mockReq = {
+        params: { id: "123" },
+        userId: "456",
+      };
+      const mockRes = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      };
+
+      mongoose.Types.ObjectId.isValid.mockReturnValue(true);
+      User.findById.mockResolvedValueOnce(null);
+
+      await isFollowing(mockReq, mockRes);
+
+      expect(mockRes.status).toHaveBeenCalledWith(404);
+      expect(mockRes.json).toHaveBeenCalledWith({ error: "User not found" });
+    });
+
+    it("should return 200 if user is not following", async () => {
+      const mockReq = { params: { id: "123" }, userId: "456" };
+      const mockRes = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      };
+
+      mongoose.Types.ObjectId.isValid.mockReturnValue(true);
+      User.findById.mockResolvedValueOnce({
+        following: [],
+      });
+
+      await isFollowing(mockReq, mockRes);
+
+      expect(mockRes.status).toHaveBeenCalledWith(200);
+      expect(mockRes.json).toHaveBeenCalledWith({ isFollowing: false });
+    });
+
+    it("should return 200 if user is following", async () => {
+      const mockReq = { params: { id: "123" }, userId: "456" };
+      const mockRes = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      };
+
+      mongoose.Types.ObjectId.isValid.mockReturnValue(true);
+      User.findById.mockResolvedValueOnce({
+        following: ["123"],
+      });
+
+      await isFollowing(mockReq, mockRes);
+
+      expect(mockRes.status).toHaveBeenCalledWith(200);
+      expect(mockRes.json).toHaveBeenCalledWith({ isFollowing: true });
+    });
+
+    it("should return 500 if an unexpected error occurs", async () => {
+      const mockReq = { params: { id: "123" } };
+      const mockRes = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      };
+
+      mongoose.Types.ObjectId.isValid.mockReturnValue(true);
+      User.findById.mockRejectedValue(new Error("Error getting following"));
+
+      await isFollowing(mockReq, mockRes);
+
+      expect(mockRes.status).toHaveBeenCalledWith(500);
+      expect(mockRes.json).toHaveBeenCalledWith({ error: "Server error" });
+    });
   });
 });

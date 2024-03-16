@@ -4,9 +4,6 @@ const request = supertest(app);
 const User = require("../../models/user.js");
 const { hashPassword, createSecretToken } = require("../../helpers/auth.js");
 const { setupDatabase, teardownDatabase } = require("../utils/dbSetup.js");
-const { before } = require("lodash");
-const { beforeEach, afterEach } = require("node:test");
-const { default: mongoose } = require("mongoose");
 
 jest.setTimeout(60000); // allow time for MongoDB in-memory server to start
 
@@ -15,11 +12,7 @@ afterAll(teardownDatabase);
 
 describe("Follower Routes", () => {
   beforeEach(async () => {
-    try {
-      await User.deleteMany({});
-    } catch (err) {
-      console.error("Failed to delete users:", err);
-    }
+    await User.deleteMany({});
   });
 
   it("POST /follow/:id - should follow a user", async () => {
@@ -44,15 +37,15 @@ describe("Follower Routes", () => {
 
   it("POST /unfollow/:id - should unfollow a user", async () => {
     const user = await User.create({
-      email: "test2@test.com",
+      email: "test@test.com",
       password: await hashPassword("password123"),
-      userName: "testUser2",
+      userName: "testUser",
     });
 
     const user2 = await User.create({
-      email: "test3@test.com",
+      email: "test2@test.com",
       password: await hashPassword("password123"),
-      userName: "testUser3",
+      userName: "testUser2",
       followers: [user._id],
     });
 
@@ -78,23 +71,26 @@ describe("Follower Routes", () => {
 
   it("GET /followers/:id - should get a user's followers", async () => {
     const follower1 = await User.create({
-      email: "a@a.com",
+      email: "follower1@test.com",
       password: await hashPassword("password123"),
-      userName: "a",
+      userName: "follower",
     });
 
     const follower2 = await User.create({
-      email: "b@b.com",
+      email: "follower2@test.com",
       password: await hashPassword("password123"),
-      userName: "b",
+      userName: "follower2",
     });
 
     const user = await User.create({
-      email: "test4@test.com",
+      email: "test@test.com",
       password: await hashPassword("password123"),
-      userName: "testUser4",
+      userName: "testUser",
       followers: [follower1._id, follower2._id],
     });
+
+    follower1.following.push(user._id);
+    follower2.following.push(user._id);
 
     const token = await createSecretToken(
       user._id.toString(),
