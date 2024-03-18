@@ -98,7 +98,7 @@ const CluckBox = ({ cluck }) => {
     <div className="cluckBox" data-testid="cluck-box">
     {cluck.recluck && (
     <div className="cluck-recluck">
-      <p> Reclucked by @{cluck.recluckUser.userName}</p>
+      <p>Reclucked by @{cluck.recluckUser.userName}</p>
     </div>
     )}
     <div className="cluck-header">

@@ -102,6 +102,7 @@ const recluckCluck = async (req, res) => {
     const { id } = req.params;
     const userId = req.userId;
 
+    const recluckUser = await User.findById(userId);
     const cluck = await Cluck.findById(id)
 
     if (!cluck) {
@@ -111,7 +112,13 @@ const recluckCluck = async (req, res) => {
     const cluckText = cluck.text;
     const cluckAuthor = cluck.user;
 
-    const recluck = await Cluck.create({ text: cluckText, user: cluckAuthor, recluckUser: userId, recluck: true});
+    const recluck = await Cluck.create({ 
+      text: cluckText,
+      user: cluckAuthor,
+      recluckUser: recluckUser, 
+      recluck: true
+    });
+
     await recluck.save();
     
     return res.status(200).json({ message: "Cluck successfully reclucked"});
