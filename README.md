@@ -21,7 +21,7 @@ The project is called `Clucker` and utilises the MERN stack. This project is org
 ## Deployed version of the application
 The deployed version of the application can be found at https://cluckerteamorange-b4381c5c6c08.herokuapp.com/
 
-*Could we please get an email as soon as you have finished marking our work? Thank you.*
+**Could we please get an email as soon as you have finished marking our work? Thank you.**
 
 ## Installation instructions
 To install the software and use it in your local development environment, you must first git clone the project:  
