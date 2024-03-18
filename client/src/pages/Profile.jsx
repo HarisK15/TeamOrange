@@ -25,7 +25,8 @@ export default function ChangeProfileForm() {
         const [loginResponse, followingResponse, profileResponse, cluckResponse] = await Promise.all([
           axios.get("/check-login"),
           axios.get(`/isFollowing/${profileId}`),
-          axios.get(`/profile/userData/${profileId}`, {})
+          axios.get(`/profile/userData/${profileId}`, {}),
+          axios.get(`/clucks/user/${profileId}`)
         ]);
   
         if (loginResponse.data.isLoggedIn) {
@@ -43,9 +44,6 @@ export default function ChangeProfileForm() {
         });
         
         setUserClucks(cluckResponse.data);
-        
-        const clucksResponse = await axios.get(`/clucks/user/${profileId}`);
-        setUserClucks(clucksResponse.data);
         
       } catch (error) {
         console.error("Error fetching user data:", error);
