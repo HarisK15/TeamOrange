@@ -6,7 +6,7 @@
   border-radius: 8px;
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: fit-content;
   width: 50vw;
   margin: 0 auto;
   position: relative;
