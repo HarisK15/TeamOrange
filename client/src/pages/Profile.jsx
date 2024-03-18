@@ -4,6 +4,7 @@ import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { LoggedInContext } from "../contexts/LoggedInContext";
 import "./Profile.css"
+import CluckBox from "../components/CluckBox";
 
 export default function ChangeProfileForm() {
   let { profileId } = useParams();
@@ -16,11 +17,12 @@ export default function ChangeProfileForm() {
   });
   const [isFollowing, setFollowing]= useState(false);
   const { userId, setUserId } = useContext(LoggedInContext);
+  const [userClucks, setUserClucks] = useState([]);
 
   useEffect(() => {
     const getUserData = async () => {
       try {
-        const [loginResponse, followingResponse, profileResponse] = await Promise.all([
+        const [loginResponse, followingResponse, profileResponse, cluckResponse] = await Promise.all([
           axios.get("/check-login"),
           axios.get(`/isFollowing/${profileId}`),
           axios.get(`/profile/userData/${profileId}`, {})
@@ -39,6 +41,12 @@ export default function ChangeProfileForm() {
           followers: profileResponse.data.followers,
           following: profileResponse.data.following
         });
+        
+        setUserClucks(cluckResponse.data);
+        
+        const clucksResponse = await axios.get(`/clucks/user/${profileId}`);
+        setUserClucks(clucksResponse.data);
+        
       } catch (error) {
         console.error("Error fetching user data:", error);
       }
@@ -103,7 +111,7 @@ export default function ChangeProfileForm() {
       setFollowing(false);
       setUserData({...userData, followers: userData.followers.filter(follower => follower !== userId)});
     };
-    
+ 
     return (
         <div className="profile-container">
             <div className="profile-info">
@@ -147,6 +155,11 @@ export default function ChangeProfileForm() {
                     <p className="bio">{userData.bio}</p>
                 </div>
             )}
+            <div>
+                {userClucks.map(cluck => (
+                    <CluckBox key={cluck._id} cluck={cluck} />
+                ))}
+            </div>
         </div>
     );
 }
