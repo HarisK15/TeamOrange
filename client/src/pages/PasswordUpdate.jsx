@@ -2,6 +2,7 @@ import { useState } from "react";
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { useNavigate } from "react-router-dom";
+import "./PasswordUpdate.css"
 
 
 export default function ChangePasswordForm() {
@@ -32,7 +33,7 @@ export default function ChangePasswordForm() {
                 currentPassword: '',
                 newPassword: '',
             });
-            navigate('/')
+            navigate('/Clucks')
         } catch (error) {
             if (error.response && error.response.data) {
                 toast.error(error.response.data.error);
@@ -42,25 +43,28 @@ export default function ChangePasswordForm() {
         }
     }
     return (
-        <div>
+        <div class="form-container">
+            <h2 class="title">Change Your Password</h2>
             <form onSubmit={handleSubmit}>
-                <label>Current Password</label>
-                <input
-                    type="password"
-                    name="currentPassword"
-                    placeholder="Enter current password..."
-                    value={data.currentPassword}
-                    onChange={handleChange}
-                />
-                <label>New Password</label>
-                <input
-                    type="password"
-                    name="newPassword"
-                    placeholder="Enter new password..."
-                    value={data.newPassword}
-                    onChange={handleChange}
-                />
-                <button type="submit">Change Password</button>
+              <label htmlFor="currentPassword">Current Password</label>
+              <input
+                  id="currentPassword"
+                  type="password"
+                  name="currentPassword"
+                  placeholder="Enter current password..."
+                  value={data.currentPassword}
+                  onChange={handleChange}
+              />
+              <label htmlFor="newPassword">New Password</label>
+              <input
+                  id="newPassword"
+                  type="password"
+                  name="newPassword"
+                  placeholder="Enter new password..."
+                  value={data.newPassword}
+                  onChange={handleChange}
+              />
+              <button type="submit" className="change-button">Change Password</button>
             </form>
         </div>
     );

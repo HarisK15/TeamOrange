@@ -5,7 +5,7 @@ import { LoggedInContext } from "../contexts/LoggedInContext";
 import "./Navbar.css";
 
 export default function Navbar() {
-  const { isLoggedIn, setIsLoggedIn } = useContext(LoggedInContext);
+  const { isLoggedIn, setIsLoggedIn, userId } = useContext(LoggedInContext);
   const navigate = useNavigate();
 
   const logout = async () => {
@@ -23,7 +23,7 @@ export default function Navbar() {
       {isLoggedIn ? (
         <>
           <button onClick={() => navigate("/Clucks")}>Clucks</button>
-          <button onClick={() => navigate("/Profile")}>Profile</button>
+          <button onClick={() => navigate(`/Profile/${userId}`)}>Profile</button>
           <button onClick={() => navigate("/Change-Password")}>
             Change Password
           </button>

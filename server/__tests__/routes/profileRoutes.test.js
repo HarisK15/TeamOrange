@@ -2,6 +2,7 @@ require("dotenv").config();
 const supertest = require("supertest");
 const app = require("../../app.js");
 const request = supertest(app);
+const mongoose = require("mongoose");
 const User = require("../../models/user.js");
 const { hashPassword, createSecretToken } = require("../../helpers/auth.js");
 const { setupDatabase, teardownDatabase } = require("../utils/dbSetup.js");
@@ -16,7 +17,7 @@ afterAll(async () => {
   teardownDatabase();
 });
 
-describe("Password Routes", () => {
+describe("Profile Routes", () => {
   let token;
 
   beforeEach(async () => {
@@ -30,6 +31,7 @@ describe("Password Routes", () => {
       password: hashedPassword,
       userName: "testUser",
     });
+    profileId = user._id;
 
     token = await createSecretToken(
       user._id.toString(),
@@ -45,63 +47,51 @@ describe("Password Routes", () => {
     await request.post("/logout");
   });
 
-  it("POST / - should change password successfully", async () => {
+  it("GET /userData - should get profile data successfully", async () => {
     const response = await request
-      .post("/change-password")
+      .get(`/profile/userData/${profileId}`)
+      .set("Cookie", `token=${token}`)
+    expect(response.statusCode).toBe(200);
+  });
+
+  it("GET /userData - should fail to get profile data", async () => {
+    const nonExistentId = new mongoose.Types.ObjectId();
+    const response = await request
+      .get(`/profile/userData/${nonExistentId}`)
+      .set("Cookie", `token=${token}`)
+    expect(response.statusCode).toBe(404);
+    expect(response.body).toHaveProperty(
+      "error",
+      "User not found"
+    );
+  });
+
+  it("POST / - should change the user's bio", async () => {
+    const response = await request
+      .post("/profile")
       .set("Cookie", `token=${token}`)
       .send({
-        currentPassword: "password123",
-        newPassword: "newPassword123",
+        bio: 'This is a test'
       });
     expect(response.statusCode).toBe(200);
     expect(response.body).toHaveProperty(
       "message",
-      "Password updated successfully"
+      "Bio updated successfully"
     );
   });
 
-  it("POST / - should fail if the current password is incorrect", async () => {
+  it("POST / - should fail to change user's bio if the bio is longer than 200 characters", async () => {
     const response = await request
-      .post("/change-password")
+      .post("/profile")
       .set("Cookie", `token=${token}`)
       .send({
-        currentPassword: "wrongpassword",
-        newPassword: "newPassword123",
+        bio: "b".repeat(201)
       });
     expect(response.statusCode).toBe(400);
     expect(response.body).toHaveProperty(
       "error",
-      "Current password is incorrect"
+      "A bio should not be longer than 200 characters"
     );
   });
 
-  it("POST / - should fail if the new password is too short", async () => {
-    const response = await request
-      .post("/change-password")
-      .set("Cookie", `token=${token}`)
-      .send({
-        currentPassword: "password123",
-        newPassword: "123",
-      });
-    expect(response.statusCode).toBe(400);
-    expect(response.body).toHaveProperty(
-      "error",
-      "A new password is required and should be at least 6 characters long"
-    );
-  });
-
-  it("POST / - should fail if the new password is the same as the current password", async () => {
-    const response = await request
-      .post("/change-password")
-      .set("Cookie", `token=${token}`)
-      .send({
-        currentPassword: "password123",
-        newPassword: "password123",
-      });
-    expect(response.statusCode).toBe(400);
-    expect(response.body).toHaveProperty(
-      "error",
-      "A new password is required and should be at least 6 characters long"
-    );
-  });
 });

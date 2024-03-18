@@ -27,7 +27,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/clucks" element={<Clucks />} />
           <Route path="/change-password" element={<ChangePassword />} />
-          <Route path="/profile" element={<Profile />} />
+          <Route path="/profile/:profileId" element={<Profile />} />
         </Routes>
       </LoggedInProvider>
     </>
