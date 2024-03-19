@@ -1,10 +1,11 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useMemo } from "react";
 import axios from "axios";
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
 import { UpdateClucksContext } from "../contexts/UpdateClucksContext";
 import { LoggedInContext } from "../contexts/LoggedInContext";
 import "./CluckBox.css";
 import profilePicUrl from "../images/default-pic.jpg";
+import HeartIcon from "./HeartIcon";
 
 const CluckBox = ({ cluck }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -12,6 +13,8 @@ const CluckBox = ({ cluck }) => {
   const [isDeleted, setIsDeleted] = useState(false);
   const { updateCluck } = useContext(UpdateClucksContext);
   const { userId } = useContext(LoggedInContext);
+
+  const liked = useMemo(() => cluck.likedBy.includes(userId), [cluck.likedBy]);
 
   const handleSave = async () => {
     if (isEditing) {
@@ -66,6 +69,37 @@ const CluckBox = ({ cluck }) => {
     }
   };
 
+  const handleLike = async () => {
+    try {
+      const response = await axios.patch(
+        `/clucks/like/${cluck._id}`,
+        { liked: !liked },
+        {
+          withCredentials: true,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log("response :", response);
+
+      if (response.status === 200) {
+        // Update the cluck liked
+        const updatedCluck = {
+          ...cluck,
+          likedBy: response.data.likedBy,
+        };
+        updateCluck(updatedCluck);
+        console.log("Cluck updated successfully");
+      } else {
+        // Handle error
+        console.error("Failed to update cluck");
+      }
+    } catch (error) {
+      console.error("Failed to update cluck", error);
+    }
+  };
+
   // Cluck is not rendered if the isDeleted flag is True
   if (isDeleted) {
     return null;
@@ -96,6 +130,12 @@ const CluckBox = ({ cluck }) => {
       </div>
 
       <div className="buttons">
+        {userId !== cluck.user._id && (
+          <button className="like-button" onClick={handleLike}>
+            <HeartIcon fillColor={liked ? "red" : "lightgray"} />
+            {cluck.likedBy.length}
+          </button>
+        )}
         {isEditing && (
           <button
             onClick={() => {

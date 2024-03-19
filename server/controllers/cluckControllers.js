@@ -15,12 +15,28 @@ const getAllClucks = async (req, res) => {
 const getClucksByUser = async (req, res) => {
   try {
     const userId = req.params.userId;
+    const requestingUser = req.userId;
+
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const user = await User.findById(requestingUser);
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    if (requestingUser !== userId && !user.following.includes(userId)) {
+      res.status(200).json([]);
+      return;
+    }
     const clucks = await Cluck.find({ user: userId }).populate("user").exec();
 
     res.status(200).json(clucks);
   } catch (error) {
-    console.error('Error fetching clucks by user:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    console.error("Error fetching clucks by user:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
@@ -80,6 +96,38 @@ const postCluck = async (req, res) => {
   }
 };
 
+const likeCluck = async (req, res) => {
+  const { id } = req.params;
+  const userId = req.userId;
+  console.log("userId :", userId);
+
+  const cluck = await Cluck.findById(id);
+  if (!cluck) {
+    return res.status(404).json({ error: "Cluck not found" });
+  }
+
+  if (cluck.user._id.toString() == userId.toString()) {
+    return res.status(403).json({ message: "You cannot like your own clucks" });
+  }
+  console.log("id :", id);
+  let updatedCluck = cluck;
+  if (req.body.liked) {
+    updatedCluck = await Cluck.findOneAndUpdate(
+      { _id: id },
+      { $addToSet: { likedBy: userId } },
+      { new: true }
+    );
+  } else {
+    updatedCluck = await Cluck.findOneAndUpdate(
+      { _id: id },
+      { $pull: { likedBy: userId } },
+      { new: true }
+    );
+  }
+
+  res.status(200).json(updatedCluck);
+};
+
 // PATCH (edit) a cluck
 const editCluck = async (req, res) => {
   const { id } = req.params;
@@ -115,5 +163,6 @@ module.exports = {
   postCluck,
   editCluck,
   deleteCluck,
+  likeCluck,
   getClucksByUser,
 };

@@ -6,6 +6,7 @@ const {
   editCluck,
   deleteCluck,
   getClucksByUser,
+  likeCluck,
 } = require("../controllers/cluckControllers");
 const { userVerification } = require("../middleware/verifyUser");
 const cors = require("cors");
@@ -23,13 +24,16 @@ router.use(
 router.get("/", getAllClucks);
 
 //Get all clucks by a user
-router.get("/user/:userId", getClucksByUser);
+router.get("/user/:userId", userVerification, getClucksByUser);
 
 // GET a single cluck
 router.get("/:id", getCluck);
 
 // DELETE a cluck
 router.delete("/:id", userVerification, deleteCluck);
+
+// Like a cluck
+router.patch("/like/:id", userVerification, likeCluck);
 
 // POST a new cluck
 router.post("/", userVerification, postCluck);
