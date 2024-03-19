@@ -43,7 +43,7 @@ export default function ChangeProfileForm() {
           following: profileResponse.data.following
         });
         
-        setUserClucks(cluckResponse.data);
+        setUserClucks(cluckResponse?.data);
         
       } catch (error) {
         console.error("Error fetching user data:", error);
