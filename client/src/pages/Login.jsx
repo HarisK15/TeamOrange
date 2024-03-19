@@ -13,7 +13,7 @@ export default function Login() {
     password: "",
   });
   const { setIsLoggedIn } = useContext(LoggedInContext);
-  const { userId } = useContext(userId);
+  const userId = useContext(LoggedInContext);
   // sends a get request to the root page without the bowser automatically refreshing the page
   const loginUser = async (e) => {
     e.preventDefault();
