@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 import { LoggedInContext } from "../contexts/LoggedInContext";
 import LoginForm from "../components/LoginForm";
 
-
 export default function Login() {
   const navigate = useNavigate();
   const [data, setData] = useState({
@@ -13,28 +12,22 @@ export default function Login() {
     password: "",
   });
   const { setIsLoggedIn } = useContext(LoggedInContext);
-  const userId = useContext(LoggedInContext);
   // sends a get request to the root page without the bowser automatically refreshing the page
   const loginUser = async (e) => {
     e.preventDefault();
     const { email, password } = data;
     try {
-      const { data } = await axios.post("login", {
-        email,
-        password,
-      });
-      if (data.error) {
-        toast.error(data.error);
+      const response = await axios.post("/login", {email, password});
+      if (response.data.error) {
+        toast.error(response.data.error);
       } else {
         setData({});
         navigate("/Clucks");
         setIsLoggedIn(true);
-
       }
     } catch (error) {
-      console.log(error);
+      toast.error(error);
     }
-    
   };
 
   return (
