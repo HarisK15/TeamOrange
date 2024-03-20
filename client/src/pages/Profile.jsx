@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useContext, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
@@ -15,9 +15,16 @@ export default function ChangeProfileForm() {
     followers: [],
     following: [],
   });
+
+  const [loggedInUser, setLoggedInUser] = useState({});
   const [isFollowing, setFollowing] = useState(false);
   const { userId, setUserId } = useContext(LoggedInContext);
   const [userClucks, setUserClucks] = useState([]);
+
+  const isBlocked = useMemo(
+    () => loggedInUser.blocked?.includes(profileId),
+    [loggedInUser?.blocked]
+  );
 
   useEffect(() => {
     const getUserData = async () => {
@@ -27,14 +34,16 @@ export default function ChangeProfileForm() {
           followingResponse,
           profileResponse,
           cluckResponse,
+          loggedInUserResponse,
         ] = await Promise.all([
           axios.get('/check-login'),
           axios.get(`/isFollowing/${profileId}`),
           axios.get(`/profile/userData/${profileId}`, {}),
           axios.get(`/clucks/user/${profileId}`),
+          axios.get(`/profile/userData/${userId}`),
         ]);
 
-        if (loginResponse.data.isLoggedIn) {
+        if (loginResponse?.data.isLoggedIn) {
           setUserId(loginResponse.data.userId);
         }
 
@@ -47,7 +56,10 @@ export default function ChangeProfileForm() {
           email: profileResponse.data.email,
           followers: profileResponse.data.followers,
           following: profileResponse.data.following,
+          privacy: profileResponse.data.privacy,
         });
+
+        setLoggedInUser(loggedInUserResponse?.data);
 
         setUserClucks(cluckResponse?.data);
       } catch (error) {
@@ -56,7 +68,7 @@ export default function ChangeProfileForm() {
     };
 
     getUserData();
-  }, [userId, profileId, setUserId, userData]);
+  }, [userId, profileId, setUserId, isFollowing]);
 
   const handleChange = (e) => {
     setUserData((prevState) => ({ ...prevState, bio: e.target.value }));
@@ -67,6 +79,21 @@ export default function ChangeProfileForm() {
     try {
       const response = await axios.post('/profile', {
         bio: userData.bio,
+      });
+      toast.success(response.data.message);
+    } catch (error) {
+      if (error.response && error.response.data) {
+        toast.error(error.response.data.error);
+      } else {
+        toast.error('An error occurred. Please try again.');
+      }
+    }
+  };
+
+  const updatePrivacy = async (newVal) => {
+    try {
+      const response = await axios.post('/profile/privacy', {
+        privacy: newVal,
       });
       toast.success(response.data.message);
     } catch (error) {
@@ -118,6 +145,34 @@ export default function ChangeProfileForm() {
     });
   };
 
+  const handleBlock = async (e) => {
+    const blocked = e.target.checked;
+    try {
+      const response = await axios.post(
+        `/profile/block/${profileId}`,
+        {
+          block: blocked,
+        },
+        {
+          withCredentials: true,
+        }
+      );
+      toast.success(response.data.message);
+    } catch (error) {
+      if (error.response && error.response.data) {
+        toast.error(error.response.data.error);
+      } else {
+        toast.error('An error occurred. Please try again.');
+      }
+    }
+
+    setFollowing(false);
+    setUserData({
+      ...userData,
+      followers: userData.followers.filter((follower) => follower !== userId),
+    });
+  };
+
   return (
     <div className='profile-container'>
       <div className='profile-info'>
@@ -143,22 +198,64 @@ export default function ChangeProfileForm() {
       )}
 
       {profileId == userId ? (
-        <form onSubmit={handleSubmit}>
-          <label htmlFor='bio'></label>
-          <textarea
-            id='bio'
-            type='text'
-            name='bio'
-            placeholder='Change your bio...'
-            value={userData.bio}
-            onChange={handleChange}
-            data-testid='bio'
-          ></textarea>
-          <button type='submit'>Update Profile</button>
-        </form>
+        <div>
+          <div className='radio-group'>
+            <div className='radio-item'>
+              <input
+                className='radio-btn'
+                id='private'
+                type='radio'
+                name='privacy'
+                onClick={() => updatePrivacy(true)}
+                defaultChecked={userData.privacy}
+              />
+              <label htmlFor='private'>Private</label>
+            </div>
+            <div className='radio-item'>
+              <input
+                className='radio-btn'
+                id='public'
+                type='radio'
+                name='privacy'
+                onClick={() => updatePrivacy(false)}
+                defaultChecked={!userData.privacy}
+              />
+              <label htmlFor='public'>Public</label>
+            </div>
+          </div>
+          <form onSubmit={handleSubmit}>
+            <label htmlFor='bio'></label>
+            <textarea
+              id='bio'
+              type='text'
+              name='bio'
+              placeholder='Change your bio...'
+              value={userData.bio}
+              onChange={handleChange}
+              data-testid='bio'
+            ></textarea>
+            <button type='submit'>Update Profile</button>
+          </form>
+        </div>
       ) : (
-        <div className='top-left'>
-          <p className='bio'>{userData.bio}</p>
+        <div>
+          <div className='check-container'>
+            <label htmlFor='block'>Block</label>
+            <input
+              id='block'
+              type='checkbox'
+              defaultChecked={isBlocked}
+              onChange={handleBlock}
+              style={{
+                width: 'fit-content',
+                margin: 0,
+                marginBottom: 4,
+              }}
+            />
+          </div>
+          <div className='top-left'>
+            <p className='bio'>{userData.bio}</p>
+          </div>
         </div>
       )}
       <div>

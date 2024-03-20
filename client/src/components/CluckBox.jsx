@@ -14,6 +14,16 @@ const CluckBox = ({ cluck }) => {
   const { updateCluck } = useContext(UpdateClucksContext);
   const { userId } = useContext(LoggedInContext);
 
+  const showContent = useMemo(
+    () =>
+      !cluck.user.blocked?.includes(userId) &&
+      (userId === cluck.user._id ||
+        !cluck.user.privacy ||
+        (cluck.user.following?.includes(userId) &&
+          cluck.user.followers?.includes(userId))),
+    [(userId, cluck.user.followers, cluck.user.following)]
+  );
+
   const liked = useMemo(
     () => cluck?.likedBy?.includes(userId),
     [cluck.likedBy]
@@ -84,7 +94,6 @@ const CluckBox = ({ cluck }) => {
           },
         }
       );
-      console.log('response :', response);
 
       if (response.status === 200) {
         // Update the cluck liked
@@ -128,7 +137,7 @@ const CluckBox = ({ cluck }) => {
             onChange={(e) => setEditedText(e.target.value)}
           />
         ) : (
-          <p data-testid='cluck-text'>{cluck.text}</p>
+          <p data-testid='cluck-text'>{showContent ? cluck.text : ''}</p>
         )}
       </div>
 

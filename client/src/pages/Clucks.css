@@ -6,7 +6,6 @@ body {
 .clucks-page {
   display: flex;
   flex-direction: column;
-  width: 58vw;
 }
 
 .clucks-content {
@@ -15,7 +14,6 @@ body {
 }
 
 .clucksList {
-  width: 58vw;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -31,7 +29,7 @@ body {
 
 .search-bar {
   background-color: #ffffff;
-  width: 25vw;
+  width: 40vw;
   height: 100vw;
   display: flex;
   flex-direction: column;

@@ -1,5 +1,5 @@
 // user schema to define types of data we want to store in the user form
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const userSchema = new Schema({
@@ -20,20 +20,30 @@ const userSchema = new Schema({
   bio: {
     type: String,
   },
+  privacy: {
+    type: Boolean,
+    default: true,
+  },
+  blocked: [
+    {
+      type: mongoose.Types.ObjectId,
+      ref: 'User',
+    },
+  ],
   followers: [
     {
       type: mongoose.Types.ObjectId,
-      ref: "User",
+      ref: 'User',
     },
   ],
   following: [
     {
       type: mongoose.Types.ObjectId,
-      ref: "User",
+      ref: 'User',
     },
   ],
 });
 
-const userModel = mongoose.model("User", userSchema);
+const userModel = mongoose.model('User', userSchema);
 
 module.exports = userModel;
