@@ -13,6 +13,12 @@ const cluckSchema = new Schema(
       ref: "User",
       required: true,
     },
+    likedBy: [
+      {
+        type: mongoose.Types.ObjectId,
+        ref: "User",
+      },
+    ],
   },
   { timestamps: true }
 );

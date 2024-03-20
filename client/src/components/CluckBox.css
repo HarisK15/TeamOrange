@@ -124,3 +124,25 @@
 .cluck-textarea::-webkit-scrollbar {
   display: none;
 }
+
+.like-button {
+  background-color: transparent;
+  border: none;
+  color: black;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: color 0.3s;
+  transition: all 0.3s;
+  position: relative;
+}
+
+.like-button:hover {
+  transform: scale(1.2);
+}
+.like-button:focus {
+  border: none;
+  outline: none;
+}
