@@ -54,7 +54,7 @@ describe('Login Component', () => {
     fireEvent.click(getByRole('button'));
 
     await waitFor(() => {
-      expect(axios.post).toHaveBeenCalledWith('login', {
+      expect(axios.post).toHaveBeenCalledWith('/login', {
         email: 'test@example.com',
         password: 'password123',
       });
@@ -83,7 +83,7 @@ describe('Login Component', () => {
   
     // Assertions
     await waitFor(() => {
-      expect(axios.post).toHaveBeenCalledWith('login', {
+      expect(axios.post).toHaveBeenCalledWith('/login', {
         email: 'wrong@example.com',
         password: 'wrongpassword',
       });
