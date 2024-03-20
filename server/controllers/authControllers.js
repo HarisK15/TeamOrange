@@ -59,16 +59,15 @@ const loginUser = async (req, res) => {
 
     //check if email and password were entered
     if (!email || !password) {
-      return res.json({ message: "All fields are required" });
+      return res.json({ error: "All fields are required" });
     }
 
     //Check if user exists
     const user = await User.findOne({ email });
     if (!user) {
-      return res.json({
-        error: "No user found, please register first",
-      });
+      return res.json({ error: "No user found, please register first" });
     }
+
     //check if password match
     const match = await comparePassword(password, user.password);
     if (!match) {

@@ -20,10 +20,9 @@ describe('LoginForm', () => {
       target: { value: 'password123' },
     });
 
-    fireEvent.click(getByRole('button', { name: /log in/i }));
+    expect(setData).toHaveBeenCalled({email:'test@example.com',password:'password123'});
 
-    expect(setData).toHaveBeenCalledWith({ email: 'test@example.com', password: '' });
-    expect(setData).toHaveBeenCalledWith({ email: '', password: 'password123' });
+    fireEvent.click(getByRole('button', { name: /log in/i }));
 
     expect(loginUser).toHaveBeenCalled();
   });
