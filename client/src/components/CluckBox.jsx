@@ -116,6 +116,10 @@ const CluckBox = ({ cluck }) => {
             >
               {isEditing ? "Save" : "Edit"}
             </button>
+          </div>
+        )}
+        {userId === cluck.user._id && (
+          <div>
             <button
               onClick={handleDelete}
               className="delete-button"

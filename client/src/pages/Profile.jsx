@@ -136,7 +136,7 @@ export default function ChangeProfileForm() {
 
             {profileId == userId ? (
                 <form onSubmit={handleSubmit}>
-                    <label htmlFor="bio"></label>
+                    <label htmlFor="bio" className="bio"></label>
                     <textarea
                         id="bio"
                         type="text"
@@ -153,7 +153,7 @@ export default function ChangeProfileForm() {
                     <p className="bio">{userData.bio}</p>
                 </div>
             )}
-            <div>
+            <div className="clucks">
                 {userClucks.map(cluck => (
                     <CluckBox key={cluck._id} cluck={cluck} />
                 ))}
