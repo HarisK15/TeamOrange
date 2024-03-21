@@ -55,6 +55,8 @@ npm start
 
 
 Seed/Unseed the MongoDB with (in the server directory):
+All seeded users will have the password 'testPassword'. 
+If you create a user with the email 'admin@admin.com' their model will not be unseeded. 
 
 ```
 $ npm run seed
@@ -81,5 +83,5 @@ $ npm run test:coverage
 ## Sources
 The packages used by this application are specified in the `package.json` files in the root, server and client directories.
 
-## Uses of chatGPT:
+
 
