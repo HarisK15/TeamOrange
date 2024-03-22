@@ -5,7 +5,7 @@ const mongoose = require("mongoose");
 // GET all clucks
 const getAllClucks = async (req, res) => {
   const clucks = await Cluck.find({})
-    .populate("user", "userName")
+    .populate("user", "userName").populate("recluckUser", "userName")
     .sort({ createdAt: -1 });
 
   res.status(200).json(clucks);
@@ -15,7 +15,7 @@ const getAllClucks = async (req, res) => {
 const getCluck = async (req, res) => {
   const { id } = req.params;
 
-  const cluck = await Cluck.findById(id).populate("user", "userName");
+  const cluck = await Cluck.findById(id).populate("user", "userName").populate("recluckUser", "userName");
 
   if (!cluck) {
     res.status(404).json({ error: "Cluck not found" });

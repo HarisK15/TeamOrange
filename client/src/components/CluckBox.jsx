@@ -10,7 +10,7 @@ const CluckBox = ({ cluck }) => {
   const [editedText, setEditedText] = useState(cluck.text);
   const [isDeleted, setIsDeleted] = useState(false);
   const [isReclucked, setIsReclucked] = useState(false);
-  const { updateCluck } = useContext(UpdateClucksContext);
+  const { addCluck, updateCluck } = useContext(UpdateClucksContext);
   const { userId } = useContext(LoggedInContext);
 
   const handleSave = async () => {
@@ -83,7 +83,6 @@ const CluckBox = ({ cluck }) => {
         },
       }
     );
-    setIsReclucked(true);
       if (response.status === 200) {
         console.log("Cluck successfully reclucked");
       } else {
@@ -133,7 +132,7 @@ const CluckBox = ({ cluck }) => {
           Cancel
         </button>
       )}
-      {userId != cluck.user._id && userId != cluck.recluckUser && (
+      {userId != cluck.user._id && userId != cluck.recluckUser && !cluck.recluck && (
       <button
           onClick={handleRecluck}
           className="recluck-button"
