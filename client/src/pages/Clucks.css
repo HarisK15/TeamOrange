@@ -3,9 +3,9 @@ body {
 }
 
 .clucks-page {
+  margin-left: -20px;
   display: flex;
   flex-direction: column;
-  width: 58vw;
 }
 
 .clucks-content {
@@ -14,7 +14,6 @@ body {
 }
 
 .clucksList {
-  width: 58vw;
   display: flex;
   flex-direction: column;
   align-items: center;
