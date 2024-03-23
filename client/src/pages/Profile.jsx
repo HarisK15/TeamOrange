@@ -26,47 +26,46 @@ export default function ChangeProfileForm() {
     [loggedInUser?.blocked]
   );
 
-  useEffect(() => {
-    const getUserData = async () => {
-      try {
-        const [
-          loginResponse,
-          followingResponse,
-          profileResponse,
-          cluckResponse,
-          loggedInUserResponse,
-        ] = await Promise.all([
-          axios.get('/check-login'),
-          axios.get(`/isFollowing/${profileId}`),
-          axios.get(`/profile/userData/${profileId}`, {}),
-          axios.get(`/clucks/user/${profileId}`),
-          axios.get(`/profile/userData/${userId}`),
-        ]);
+  const getUserData = async () => {
+    try {
+      const [
+        loginResponse,
+        followingResponse,
+        profileResponse,
+        cluckResponse,
+        loggedInUserResponse,
+      ] = await Promise.all([
+        axios.get('/check-login'),
+        axios.get(`/isFollowing/${profileId}`),
+        axios.get(`/profile/userData/${profileId}`, {}),
+        axios.get(`/clucks/user/${profileId}`),
+        axios.get(`/profile/userData/${userId}`),
+      ]);
 
-        if (loginResponse?.data.isLoggedIn) {
-          setUserId(loginResponse.data.userId);
-        }
-
-        setFollowing(followingResponse.data.isFollowing);
-
-        setUserData({
-          ...userData,
-          bio: profileResponse.data.bio,
-          username: profileResponse.data.userName,
-          email: profileResponse.data.email,
-          followers: profileResponse.data.followers,
-          following: profileResponse.data.following,
-          privacy: profileResponse.data.privacy,
-        });
-
-        setLoggedInUser(loggedInUserResponse?.data);
-
-        setUserClucks(cluckResponse?.data);
-      } catch (error) {
-        console.error('Error fetching user data:', error);
+      if (loginResponse?.data.isLoggedIn) {
+        setUserId(loginResponse.data.userId);
       }
-    };
 
+      setFollowing(followingResponse.data.isFollowing);
+
+      setUserData({
+        ...userData,
+        bio: profileResponse.data.bio,
+        username: profileResponse.data.userName,
+        email: profileResponse.data.email,
+        followers: profileResponse.data.followers,
+        following: profileResponse.data.following,
+        privacy: profileResponse.data.privacy,
+      });
+
+      setLoggedInUser(loggedInUserResponse?.data);
+
+      setUserClucks(cluckResponse?.data);
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    }
+  };
+  useEffect(() => {
     getUserData();
   }, [userId, profileId, setUserId, isFollowing]);
 
@@ -208,6 +207,7 @@ export default function ChangeProfileForm() {
                 name='privacy'
                 onClick={() => updatePrivacy(true)}
                 defaultChecked={userData.privacy}
+                data-testid='private-radio'
               />
               <label htmlFor='private'>Private</label>
             </div>
@@ -219,6 +219,7 @@ export default function ChangeProfileForm() {
                 name='privacy'
                 onClick={() => updatePrivacy(false)}
                 defaultChecked={!userData.privacy}
+                data-testid='public-radio'
               />
               <label htmlFor='public'>Public</label>
             </div>
@@ -251,6 +252,7 @@ export default function ChangeProfileForm() {
                 margin: 0,
                 marginBottom: 4,
               }}
+              data-testid='block-checkbox'
             />
           </div>
           <div className='top-left'>
@@ -260,7 +262,7 @@ export default function ChangeProfileForm() {
       )}
       <div>
         {userClucks?.map((cluck) => (
-          <CluckBox key={cluck._id} cluck={cluck} />
+          <CluckBox key={cluck._id} cluck={cluck} onUpdate={getUserData} />
         ))}
       </div>
     </div>

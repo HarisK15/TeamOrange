@@ -65,6 +65,7 @@ describe('ChangeProfileForm', () => {
         email: 'test@example.com',
         followers: [],
         following: [],
+        privacy: true,
       },
     });
     axios.post = mockAxiosPost;
@@ -186,12 +187,41 @@ describe('ChangeProfileForm', () => {
     toast.error.mockRestore();
   });
 
+  it('renders privacy options when profileId matches userId', () => {
+    expect(screen.getByTestId('private-radio')).toBeInTheDocument();
+    expect(screen.getByTestId('public-radio')).toBeInTheDocument();
+  });
+
+  it('shows success message and update privacy when user updates privacy settings', async () => {
+    mockAxiosPost.mockResolvedValueOnce({
+      data: {
+        message: 'Privacy updated successfully',
+      },
+    });
+
+    const publicToggle = await screen.findByTestId('public-radio');
+    const privateToggle = await screen.findByTestId('private-radio');
+
+    expect(privateToggle).toBeChecked();
+    expect(publicToggle).not.toBeChecked();
+    fireEvent.click(publicToggle, { target: { checked: true } });
+    expect(privateToggle).not.toBeChecked();
+    expect(publicToggle).toBeChecked();
+
+    await waitFor(() => {
+      expect(toast.success).toHaveBeenCalledWith(
+        'Privacy updated successfully'
+      );
+    });
+  });
+
   describe('Following features', () => {
     const setupTest = async (
       isLoggedIn,
       isFollowing,
       userData,
-      postResponse
+      postResponse,
+      loggedInUserResponse
     ) => {
       // Mock the /check-login endpoint
       mockAxiosGet.mockResolvedValueOnce({
@@ -427,6 +457,17 @@ describe('ChangeProfileForm', () => {
           'An error occurred. Please try again.'
         );
       });
+    });
+
+    it('renders block checkbox when profileId does not match userId', () => {
+      expect(screen.getByTestId('block-checkbox')).toBeInTheDocument();
+    });
+
+    it('updates block when user updates block settings', () => {
+      const blockCheckbox = screen.getByTestId('block-checkbox');
+      expect(blockCheckbox).not.toBeChecked();
+      fireEvent.change(blockCheckbox, { target: { checked: true } });
+      expect(blockCheckbox).toBeChecked();
     });
   });
 });

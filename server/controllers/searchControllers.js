@@ -20,7 +20,9 @@ const searchClucks = async (query, userId) => {
       return true;
     } else {
       // If privacy is true, check if user is a follower or is being followed by the cluck author
-      return user.followers.includes(userId) && user.following.includes(userId);
+      return (
+        user.followers?.includes(userId) && user.following?.includes(userId)
+      );
     }
   });
 

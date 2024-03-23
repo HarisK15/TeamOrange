@@ -29,6 +29,7 @@ describe('CluckBox', () => {
     _id: '1',
     text: 'Test cluck',
     user: user,
+    likedBy: [],
     createdAt: now,
     updatedAt: now,
   };
@@ -72,6 +73,49 @@ describe('CluckBox', () => {
       </UpdateClucksContext.Provider>
     );
     expect(renderResult.getByTestId('last-edited')).toBeInTheDocument();
+  });
+
+  it('handles like correctly', async () => {
+    let testCluck = cluck;
+    axios.patch.mockImplementation((url, data) => {
+      testCluck = { ...testCluck, ...data };
+      return Promise.resolve({ status: 200 });
+    });
+
+    renderResult.rerender(
+      <UpdateClucksContext.Provider value={{ updateCluck: mockUpdateCluck }}>
+        <LoggedInContext.Provider value={{ userId: '2' }}>
+          <CluckBox cluck={testCluck} />
+        </LoggedInContext.Provider>
+      </UpdateClucksContext.Provider>
+    );
+
+    fireEvent.click(renderResult.getByTestId('like-button'));
+
+    await waitFor(() => expect(axios.patch).toHaveBeenCalledTimes(1));
+    expect(axios.patch).toHaveBeenCalledWith(
+      '/clucks/like/1',
+      { liked: true },
+      expect.objectContaining({
+        headers: { 'Content-Type': 'application/json' },
+        withCredentials: true,
+      })
+    );
+
+    testCluck = { ...testCluck, likedBy: ['2'] };
+
+    // Rerender CluckBox with the updated cluck text
+    renderResult.rerender(
+      <UpdateClucksContext.Provider value={{ updateCluck: mockUpdateCluck }}>
+        <LoggedInContext.Provider value={{ userId: '2' }}>
+          <CluckBox cluck={testCluck} />
+        </LoggedInContext.Provider>
+      </UpdateClucksContext.Provider>
+    );
+
+    const likeButton = renderResult.getByTestId('like-button');
+    expect(likeButton).toBeInTheDocument();
+    expect(likeButton).toHaveTextContent('1');
   });
 
   it('handles edit correctly', async () => {
@@ -123,6 +167,17 @@ describe('CluckBox', () => {
     );
     expect(renderResult.queryByTestId('edit-button')).not.toBeInTheDocument();
     expect(renderResult.queryByTestId('delete-button')).not.toBeInTheDocument();
+  });
+
+  it('does show like button if the user is not the author', () => {
+    renderResult.rerender(
+      <UpdateClucksContext.Provider value={{ updateCluck: mockUpdateCluck }}>
+        <LoggedInContext.Provider value={{ userId: '2' }}>
+          <CluckBox cluck={cluck} />
+        </LoggedInContext.Provider>
+      </UpdateClucksContext.Provider>
+    );
+    expect(renderResult.queryByTestId('like-button')).toBeInTheDocument();
   });
 
   it('shows edit and delete buttons if the user is the author', () => {

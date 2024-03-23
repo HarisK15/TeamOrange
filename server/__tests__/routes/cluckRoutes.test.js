@@ -1,6 +1,7 @@
 require('dotenv').config();
 const request = require('supertest');
 const app = require('../../app');
+const requestApp = request(app);
 const mongoose = require('mongoose');
 const User = require('../../models/user.js');
 const Cluck = require('../../models/cluckModel.js');
@@ -13,7 +14,7 @@ beforeAll(setupDatabase);
 afterAll(teardownDatabase);
 
 const createCluck = async (text, user) => {
-  return await Cluck.create({ text, user });
+  return await Cluck.create({ text, user, likedBy: [] });
 };
 
 const performRequest = async (method, url, token, body) => {
@@ -27,13 +28,14 @@ const performRequest = async (method, url, token, body) => {
   return await req;
 };
 
-const createUserAndToken = async (email, password, userName) => {
+const createUserAndToken = async (email, password, userName, blocked = []) => {
   const hashedPassword = await hashPassword(password);
   const user = await User.create({
     email,
     password: hashedPassword,
     userName,
     privacy: false,
+    blocked,
   });
   const token = await createSecretToken(
     user._id.toString(),
@@ -46,15 +48,23 @@ beforeEach(async () => {
   await User.deleteMany({});
   await Cluck.deleteMany({});
 
-  const { user, token: newToken } = await createUserAndToken(
+  const { user: newBlockedUser, token: newBlockedUserToken } =
+    await createUserAndToken('test@test.blocked', 'password123', 'blockedUser');
+
+  const { user: newUser, token: newToken } = await createUserAndToken(
     'test@test.test',
     'password123',
-    'testUser'
+    'testUser',
+    [newBlockedUser._id]
   );
   token = newToken;
 
-  const newCluck = await createCluck('This is part of a test!', user);
+  newCluck = await createCluck('This is part of a test!', newUser);
+  await createCluck('This is part of a test by blocked!', newBlockedUser);
   newCluckId = newCluck._id;
+  user = newUser;
+  blockedUser = newBlockedUser;
+  blockedUserToken = newBlockedUserToken;
 });
 
 describe('Cluck Routes', () => {
@@ -129,5 +139,177 @@ describe('Cluck Routes', () => {
     );
     expect(response.statusCode).toBe(403);
     expect(response.body.message).toBe('You can only edit your own clucks');
+  });
+
+  it('PATCH /like/:id - should like and unlike a cluck', async () => {
+    const user2 = await User.create({
+      email: 'test2@test.com',
+      password: await hashPassword('password123'),
+      userName: 'testUser2',
+    });
+
+    const token2 = createSecretToken(user2._id);
+
+    const response = await performRequest(
+      'patch',
+      `/clucks/like/${newCluckId}`,
+      token2,
+      { liked: true }
+    );
+    expect(response.statusCode).toBe(200);
+    expect(response.body.likedBy.length).toBe(1);
+
+    const response2 = await performRequest(
+      'patch',
+      `/clucks/like/${newCluckId}`,
+      token2,
+      { liked: false }
+    );
+    expect(response2.statusCode).toBe(200);
+    expect(response2.body.likedBy.length).toBe(0);
+  });
+
+  it('GET / - should get clucks whose authors have not blocked ', async () => {
+    const response = await performRequest('get', `/clucks`, blockedUserToken);
+    console.log('response :', response);
+    expect(response.statusCode).toBe(200);
+    expect(response.body.length).toBe(1);
+    expect(response.body.filter((el) => el.user._id == user._id).length).toBe(
+      0
+    );
+  });
+  it('GET / - should get clucks whose authors have followed each other when privacy is on ', async () => {
+    const user2 = await User.create({
+      email: 'test2@test.com',
+      password: await hashPassword('password123'),
+      userName: 'testUser2',
+    });
+
+    //Following each other
+    await User.updateOne(
+      { _id: user._id },
+      {
+        $set: { privacy: true, followers: [user2._id], following: [user2._id] },
+      }
+    );
+
+    const user2Token = await createSecretToken(user2._id);
+
+    const response = await performRequest('get', `/clucks`, user2Token);
+    expect(response.statusCode).toBe(200);
+    expect(response.body.length).toBe(2);
+    expect(response.body.filter((el) => el.user._id == user._id).length).toBe(
+      1
+    );
+
+    //Not Following each other
+    await User.updateOne(
+      { _id: user._id },
+      {
+        $set: { following: [] },
+      }
+    );
+
+    const response2 = await performRequest('get', `/clucks`, user2Token);
+    expect(response2.statusCode).toBe(200);
+    expect(response2.body.length).toBe(1);
+    expect(response2.body.filter((el) => el.user._id == user._id).length).toBe(
+      0
+    );
+
+    //Not Following each other but have privacy disabled on author
+    await User.updateOne(
+      { _id: user._id },
+      {
+        $set: { privacy: false, following: [] },
+      }
+    );
+
+    const response3 = await performRequest('get', `/clucks`, user2Token);
+    expect(response3.statusCode).toBe(200);
+    expect(response3.body.length).toBe(2);
+    expect(response3.body.filter((el) => el.user._id == user._id).length).toBe(
+      1
+    );
+  });
+
+  it('GET /user/:id - should not get clucks by user who have blocked', async () => {
+    const user2 = await User.create({
+      email: 'test2@test.com',
+      password: await hashPassword('password123'),
+      userName: 'testUser2',
+    });
+
+    //Author blocked the requesting user
+    await User.updateOne(
+      { _id: user._id },
+      {
+        $set: { blocked: [user2._id] },
+      }
+    );
+
+    const user2Token = await createSecretToken(user2._id);
+
+    const response = await performRequest(
+      'get',
+      `/clucks/user/${user._id}`,
+      user2Token
+    );
+    expect(response.statusCode).toBe(200);
+    expect(response.body.length).toBe(0);
+  });
+
+  it('GET /user/:id - should not get clucks by user who have not followed each other if privacy is on by author', async () => {
+    const user2 = await User.create({
+      email: 'test2@test.com',
+      password: await hashPassword('password123'),
+      userName: 'testUser2',
+    });
+
+    //Author enabled privacy and not following each other
+    await User.updateOne(
+      { _id: user._id },
+      {
+        $set: { privacy: true, following: [], followers: [] },
+      }
+    );
+
+    const user2Token = await createSecretToken(user2._id);
+
+    const response = await performRequest(
+      'get',
+      `/clucks/user/${user._id}`,
+      user2Token
+    );
+    expect(response.statusCode).toBe(200);
+    expect(response.body.length).toBe(0);
+  });
+
+  it('GET /user/:id - should get clucks by user who have followed each other if privacy is on by author', async () => {
+    const user2 = await User.create({
+      email: 'test2@test.com',
+      password: await hashPassword('password123'),
+      userName: 'testUser2',
+      following: [user._id],
+    });
+
+    //Author enabled privacy and following each other
+    await User.updateOne(
+      { _id: user._id },
+      {
+        $set: { privacy: true, following: [user2._id], followers: [user2._id] },
+      }
+    );
+
+    const user2Token = createSecretToken(user2._id);
+
+    const response = await performRequest(
+      'get',
+      `/clucks/user/${user._id}`,
+      user2Token
+    );
+    console.log('response ::', response);
+    expect(response.statusCode).toBe(200);
+    expect(response.body.length).toBe(1);
   });
 });
