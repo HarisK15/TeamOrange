@@ -7,7 +7,7 @@ import './CluckBox.css';
 import profilePicUrl from '../images/default-pic.jpg';
 import HeartIcon from './HeartIcon';
 
-const CluckBox = ({ cluck }) => {
+const CluckBox = ({ cluck, onUpdate = () => {} }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedText, setEditedText] = useState(cluck.text);
   const [isDeleted, setIsDeleted] = useState(false);
@@ -102,6 +102,7 @@ const CluckBox = ({ cluck }) => {
           likedBy: response.data.likedBy,
         };
         updateCluck(updatedCluck);
+        onUpdate();
         console.log('Cluck updated successfully');
       } else {
         // Handle error
@@ -143,7 +144,11 @@ const CluckBox = ({ cluck }) => {
 
       <div className='buttons'>
         {userId !== cluck.user._id && (
-          <button className='like-button' onClick={handleLike}>
+          <button
+            className='like-button'
+            onClick={handleLike}
+            data-testid='like-button'
+          >
             <HeartIcon fillColor={liked ? 'red' : 'lightgray'} />
             {cluck?.likedBy?.length}
           </button>
