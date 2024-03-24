@@ -1,6 +1,9 @@
 //logic file/code for the routes/ api end points
 const User = require("../models/user");
 const jwt = require("jsonwebtoken");
+const nodemailer = require('nodemailer');
+const transporter = require('../helpers/emailHelper');
+const crypto = require('crypto');
 require("dotenv").config();
 const {
   hashPassword,
@@ -36,6 +39,8 @@ const registerUser = async (req, res) => {
       });
     }
 
+    const verificationToken = crypto.randomBytes(20).toString('hex');
+
     const hashedPassword = await hashPassword(password);
     //create user in database
     // still needs to hash the password
@@ -44,6 +49,21 @@ const registerUser = async (req, res) => {
       email,
       bio: "",
       password: hashedPassword,
+      verificationToken: verificationToken,
+    });
+
+    const verificationLink = `http://localhost:5173/verify-email/${verificationToken}`;
+    transporter.sendMail({
+      from: 'cluckeradmn@gmail.com',
+      to: email,
+      subject: 'Email Verification',
+      text: `Please click the following link to verify your email address: \n ${verificationLink}`,
+    })
+    .then(info => {
+      console.log('Email sent:', info.response);
+    })
+    .catch(error => {
+      console.error('Error sending email:', error);
     });
 
     return res.json(user);
@@ -73,6 +93,12 @@ const loginUser = async (req, res) => {
     if (!match) {
       return res.json({
         error: "Passwords do not match",
+      });
+    }
+
+    if (!user.isVerified) {
+      return res.json({
+        error: "Please verify your account by clicking on the link we sent to you",
       });
     }
 
