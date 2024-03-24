@@ -39,6 +39,7 @@ async function seedDatabase() {
           bio: faker.lorem.paragraphs(await randomNumber(), '\n\n'),
           password: await hashPassword('testPassword'),
           privacy: true,
+          isVerified: true,
         };
 
         const user = await User.create(userData);

@@ -25,6 +25,7 @@ beforeEach(async () => {
     email: "test@example.com",
     password: hashedPassword,
     userName: "testUser",
+    isVerified: true,
   });
 });
 
@@ -47,6 +48,25 @@ describe("User Login", () => {
     expect(response.body).toHaveProperty(
       "error",
       "No user found, please register first"
+    );
+  });
+
+  it("should fail if the user is not verified", async () => {
+    const hashedPassword = await hashPassword("password123");
+    await User.create({
+      email: "test@test.com",
+      password: hashedPassword,
+      userName: "secondTestUser",
+      isVerified: false,
+    });
+    const response = await request.post("/login").send({
+      email: "test@test.com",
+      password: "password123",
+    });
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toHaveProperty(
+      "error",
+      "Please verify your account by clicking on the link we sent to you"
     );
   });
 

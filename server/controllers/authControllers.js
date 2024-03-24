@@ -2,7 +2,6 @@
 const User = require("../models/user");
 const jwt = require("jsonwebtoken");
 const nodemailer = require('nodemailer');
-const transporter = require('../helpers/emailHelper');
 const crypto = require('crypto');
 require("dotenv").config();
 const {
@@ -53,14 +52,19 @@ const registerUser = async (req, res) => {
     });
 
     const verificationLink = `http://localhost:5173/verify-email/${verificationToken}`;
-    transporter.sendMail({
+    await nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: 'cluckeradmn@gmail.com', 
+        pass: 'kbxtfjkwucdafbyt', 
+      },
+      debug: true 
+    })
+    .sendMail({
       from: 'cluckeradmn@gmail.com',
       to: email,
       subject: 'Email Verification',
       text: `Please click the following link to verify your email address: \n ${verificationLink}`,
-    })
-    .then(info => {
-      console.log('Email sent:', info.response);
     })
     .catch(error => {
       console.error('Error sending email:', error);
@@ -96,6 +100,7 @@ const loginUser = async (req, res) => {
       });
     }
 
+    //check if user is verified
     if (!user.isVerified) {
       return res.json({
         error: "Please verify your account by clicking on the link we sent to you",

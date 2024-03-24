@@ -3,8 +3,16 @@ const app = require("../../app.js");
 const request = supertest(app);
 const User = require("../../models/user.js");
 const { setupDatabase, teardownDatabase } = require("../utils/dbSetup.js");
+const nodemailer = require('nodemailer');
+const { mockCryptoRandomBytes } = require('crypto');
 
 jest.setTimeout(60000); // allow time for MongoDB in-memory server to start
+jest.mock('nodemailer', () => ({
+  createTransport: jest.fn().mockReturnValue({
+    sendMail: jest.fn().mockResolvedValue(),
+  }),
+}));
+
 beforeAll(async () => {
   setupDatabase();
 });
@@ -49,6 +57,25 @@ describe("User Registration", () => {
       "error",
       "Password is required and should be at least 6 characters long"
     );
+  });
+
+  it('should send a verification email with the correct parameters', async () => {
+    mockCryptoRandomBytes.mockReturnValueOnce(Buffer.from('0123456789abcdef'));
+    const res = await request.post("/register").send({
+      userName: "testUser",
+      email: "test@example.com",
+      password: "123456",
+    });
+
+    expect(nodemailer.createTransport).toHaveBeenCalledTimes(2);
+    expect(nodemailer.createTransport).toHaveBeenCalledWith(expect.any(Object));
+    expect(nodemailer.createTransport().sendMail).toHaveBeenCalledTimes(2);
+    expect(nodemailer.createTransport().sendMail).toHaveBeenCalledWith({
+      from: 'cluckeradmn@gmail.com',
+      to: "test@example.com",
+      subject: 'Email Verification',
+      text: `Please click the following link to verify your email address: \n 0123456789abcdef`,
+    });
   });
 
   it("should fail if email is already taken", async () => {
