@@ -45,12 +45,11 @@ describe("Password Routes", () => {
     await request.post("/logout");
   });
 
-  it("should change password successfully", async () => {
+  it("POST / - should change password successfully", async () => {
     const response = await request
       .post("/change-password")
       .set("Cookie", `token=${token}`)
       .send({
-        email: "test@example.com",
         currentPassword: "password123",
         newPassword: "newPassword123",
       });
@@ -61,12 +60,11 @@ describe("Password Routes", () => {
     );
   });
 
-  it("should fail if the current password is incorrect", async () => {
+  it("POST / - should fail if the current password is incorrect", async () => {
     const response = await request
       .post("/change-password")
       .set("Cookie", `token=${token}`)
       .send({
-        email: "test@example.com",
         currentPassword: "wrongpassword",
         newPassword: "newPassword123",
       });
@@ -77,12 +75,11 @@ describe("Password Routes", () => {
     );
   });
 
-  it("should fail if the new password is too short", async () => {
+  it("POST / - should fail if the new password is too short", async () => {
     const response = await request
       .post("/change-password")
       .set("Cookie", `token=${token}`)
       .send({
-        email: "test@example.com",
         currentPassword: "password123",
         newPassword: "123",
       });
@@ -93,12 +90,11 @@ describe("Password Routes", () => {
     );
   });
 
-  it("should fail if the new password is the same as the current password", async () => {
+  it("POST / - should fail if the new password is the same as the current password", async () => {
     const response = await request
       .post("/change-password")
       .set("Cookie", `token=${token}`)
       .send({
-        email: "test@example.com",
         currentPassword: "password123",
         newPassword: "password123",
       });

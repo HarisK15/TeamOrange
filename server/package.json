@@ -14,11 +14,14 @@
   "scripts": {
     "test": "cross-env NODE_ENV=test jest",
     "test:coverage": "jest --coverage",
-    "start": "nodemon server.js"
+    "start": "nodemon server.js",
+    "seed": "node helpers/seed.js",
+    "unseed": "node helpers/unseed.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@faker-js/faker": "^8.4.1",
     "bcrypt": "^5.1.1",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
