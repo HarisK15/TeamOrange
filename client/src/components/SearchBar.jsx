@@ -1,12 +1,13 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import axios from "axios";
-import _ from "lodash";
-import CluckBox from "./CluckBox";
-import "./SearchBar.css";
+import axios from 'axios';
+import _ from 'lodash';
+import CluckBox from './CluckBox';
+import './SearchBar.css';
+import UsersList from './UsersList';
 
 const SearchBar = () => {
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState('');
   const [results, setResults] = useState({ users: [], clucks: [] });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -44,11 +45,13 @@ const SearchBar = () => {
   }, [query]);
 
   return (
-    <div className="search-bar" data-testid="search-bar">
-      <input className="input"
-        type="text"
+    <div className='search-bar' data-testid='search-bar'>
+      <input
+        className='search-field'
+        type='text'
         value={query}
         onChange={(e) => setQuery(e.target.value)}
+        placeholder='Search ...'
       />
       {loading ? (
         <p>Loading...</p>
@@ -60,7 +63,7 @@ const SearchBar = () => {
             <>
               <h3 className="users-title">Users</h3>
               {results.users.map((user) => (
-                <div key={user._id} className="user">
+                <div key={user._id} className='user'>
                   <Link to={`/Profile/${user._id}`}>
                     <h4>{user.userName}</h4>
                   </Link>
@@ -76,6 +79,7 @@ const SearchBar = () => {
               ))}
             </>
           )}
+          <UsersList />
         </div>
       )}
     </div>

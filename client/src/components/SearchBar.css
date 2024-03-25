@@ -14,14 +14,11 @@
     font-size: small;
   }
   
-  .input {
-    margin-top: 2px;
-  }
-  
   .search-field {
     background-color: white;
     color: black;
     border: 2px solid gray;
     border-radius: 20px;
     padding: 10px;
+    margin-top: 2px;
   }
