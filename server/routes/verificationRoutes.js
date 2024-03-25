@@ -12,7 +12,7 @@ router.use(
   })
 );
 
-// GET requests
-router.get('/:verificationToken', verifyEmail);
+// POST requests
+router.post('/:verificationToken', verifyEmail);
 
 module.exports = router;

@@ -31,18 +31,20 @@ describe("EmailVerification", () => {
   it("renders email verification status correctly", async () => {
     axios.get.mockResolvedValueOnce({ data: { message: 'Email verified successfully!' } });
 
-    await waitFor(() => expect(axios.get).toHaveBeenCalledWith('/verify-email/verificationToken'));
+    await waitFor(() => expect(axios.post).toHaveBeenCalledWith('/verify-email/verificationToken'));
 
     expect(screen.getByText('Your email verification status:')).toBeInTheDocument();
     expect(screen.getByText('Email verified successfully!')).toBeInTheDocument();
   });
 
   it("handles failed email verification", async () => {
-    axios.get.mockResolvedValueOnce(new Error('Email verification failed.'));
+    axios.get.mockResolvedValueOnce(new Error('Internal server error'));
 
-    await waitFor(() => expect(axios.get).toHaveBeenCalledWith('/verify-email/verificationToken'));
+    await waitFor(() => expect(axios.post).toHaveBeenCalledWith('/verify-email/verificationToken'));
 
-    expect(screen.getByText('Your email verification status:')).toBeInTheDocument();
-    expect(screen.getByText('Email verification failed.')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('Your email verification status:')).toBeInTheDocument();
+      expect(screen.getByText('Email verification failed.')).toBeInTheDocument();
+    });
   });
 });

@@ -11,6 +11,7 @@ import EmailVerification from "./pages/Verification";
 import axios from "axios";
 import { Toaster } from "react-hot-toast";
 import { LoggedInProvider } from "./contexts/LoggedInContext";
+import { UpdateClucksProvider } from "./contexts/UpdateClucksContext.jsx";
 
 //using axios to have a base URL so we don't have to type it everytime
 axios.defaults.baseURL = "http://localhost:8000";
@@ -20,17 +21,19 @@ function App() {
   return (
     <>
       <LoggedInProvider>
-        <Navbar />
-        <Toaster position="bottom-right" toastOptions={{ duration: 2000 }} />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/clucks" element={<Clucks />} />
-          <Route path="/change-password" element={<ChangePassword />} />
-          <Route path="/profile/:profileId" element={<Profile />} />
-          <Route path="/verify-email/:verificationToken" element={<EmailVerification />} />
+        <UpdateClucksProvider>
+          <Navbar />
+          <Toaster position="bottom-right" toastOptions={{ duration: 2000 }} />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/clucks" element={<Clucks />} />
+            <Route path="/change-password" element={<ChangePassword />} />
+            <Route path="/profile/:profileId" element={<Profile />} />
+            <Route path="/verify-email/:verificationToken" element={<EmailVerification />} />
         </Routes>
+        </UpdateClucksProvider>
       </LoggedInProvider>
     </>
   );

@@ -9,7 +9,7 @@ export default function EmailVerification() {
   useEffect(() => {
     const verifyEmail = async () => {
       try {
-        await axios.get(`/verify-email/${verificationToken}`); 
+        await axios.post(`/verify-email/${verificationToken}`); 
         
         setVerificationResult('Email verified successfully!');
       } catch (error) {

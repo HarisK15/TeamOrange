@@ -33,29 +33,29 @@ describe('Email Verification Routes', () => {
     await User.deleteMany({});
   });
 
-  it('GET /:verificationToken - should verify the email successfully', async () => {
+  it('POST /:verificationToken - should verify the email successfully', async () => {
     const response = await request(app)
-      .get(`/verify-email/${verificationToken}`)
+      .post(`/verify-email/${verificationToken}`)
       .send();
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual({ message: 'Email verification successful' });
   });
 
-  it('GET /:verificationToken - should return the 404 error for an invalid token', async () => {
+  it('POST /:verificationToken - should return the 404 error for an invalid token', async () => {
     const response = await request(app)
-      .get(`/verify-email/invalidToken`)
+      .post(`/verify-email/invalidToken`)
       .send();
 
     expect(response.status).toBe(404);
     expect(response.body).toEqual({ error: 'Invalid verification token' });
   });
 
-  it('GET /:verificationToken - should raise an internal server error', async () => {
+  it('POST /:verificationToken - should raise an internal server error', async () => {
     User.findOne = jest.fn().mockRejectedValue(new Error('Internal Server Error'));
 
     const response = await request(app)
-      .get(`/verify-email/${verificationToken}`)
+      .post(`/verify-email/${verificationToken}`)
       .send();
   
     expect(response.status).toBe(500);
