@@ -9,8 +9,6 @@ app.use(express.json());
 app.use(cookieParser());
 
 
-
-
 // Import and use routes after the database connection is established
 app.use("/", require("./routes/authRoutes"));
 app.use("/clucks", require("./routes/cluckRoutes"));
