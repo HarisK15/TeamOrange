@@ -46,7 +46,7 @@ export default function ChangePasswordForm() {
         <div class="form-container">
             <h2 className="title">Change Your Password</h2>
             <form onSubmit={handleSubmit} className="password-form">
-                <label htmlFor="currentPassword"></label>
+                <label htmlFor="currentPassword">Current Password</label>
               <input
                   id="currentPassword"
                   type="password"
@@ -55,7 +55,7 @@ export default function ChangePasswordForm() {
                   value={data.currentPassword}
                   onChange={handleChange}
               />
-              <label htmlFor="currentPassword"></label>
+              <label htmlFor="newPassword">New Password</label>
               <input
                   id="newPassword"
                   type="password"
