@@ -3,42 +3,48 @@ require("dotenv").config();
 const User = require("../models/user")
 const Cluck = require("../models/cluckModel");
 
-//Email of the user who's user model will not be deleted
-const excludeUserEmail = "admin@admin.com";
+//Username of the user who's user model and related clucks will not be deleted
+const excludeUserName = "admin";
 
 const startDatabase = async () => {
-    await mongoose
-        .connect(process.env.MONGO_URL)
-        .then(() => {
-          console.log("Database connected");
-        })
-        .catch((err) => console.log("Database connection error", err));
+  await mongoose
+    .connect(process.env.MONGO_URL)
+    .then(() => {
+      console.log("Database connected");
+    })
+    .catch((err) => console.log("Database connection error", err));
 }
 
 async function unseedDatabase() {
-    try {
-        await startDatabase();
-        const excludedUser = await User.findOne({ email: excludeUserEmail });
-        const numberOfUsers = await User.countDocuments({}) - 1;
-        const numberOfClucks = await Cluck.countDocuments({ user: { $ne: excludedUser._id } });
+  try {
+    await startDatabase();
+    const excludedUser = await User.findOne({ userName: excludeUserName });
 
-        if (!excludedUser) {
-            console.error('User with the specified email not found.');
-            return;
-        }
-
+    let numberOfClucks;
+    if (excludedUser) {
+        numberOfClucks = await Cluck.countDocuments({ user: { $ne: excludedUser._id } });
         await Cluck.deleteMany({ user: { $ne: excludedUser._id } });
+    } else {
+        numberOfClucks = await Cluck.countDocuments();
+        await Cluck.deleteMany();
+    }
 
+    const numberOfUsers = await User.countDocuments();
+
+    if (excludedUser) {
         await User.deleteMany({ _id: { $ne: excludedUser._id } });
         await User.updateOne({ _id: excludedUser._id }, { $set: { followers: [], following: [], blocked: [] } });
-
+        console.log(`Unseeding complete. ${numberOfUsers - 1} users deleted. ${numberOfClucks} clucks deleted`);
+    } else {
+        await User.deleteMany();
         console.log(`Unseeding complete. ${numberOfUsers} users deleted. ${numberOfClucks} clucks deleted`);
-    } catch (error) {
-        console.error('Seeding error:', error);
-    } finally {
-        mongoose.disconnect();
-        console.log("Database disconnected");
     }
+  } catch (error) {
+      console.error('Unseeding error:', error);
+  } finally {
+      mongoose.disconnect();
+      console.log("Database disconnected");
+  }
 }
 
 

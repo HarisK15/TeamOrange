@@ -1,4 +1,4 @@
-import { render, screen, waitFor, cleanup } from '@testing-library/react';
+import { render, screen, waitFor, cleanup, act} from '@testing-library/react';
 import { describe, it, expect, vitest, beforeEach, afterEach } from "vitest";
 import "@testing-library/jest-dom/vitest";
 import axios from "axios";
@@ -29,7 +29,7 @@ describe("EmailVerification", () => {
   });
 
   it("renders email verification status correctly", async () => {
-    axios.get.mockResolvedValueOnce({ data: { message: 'Email verified successfully!' } });
+    axios.post.mockResolvedValueOnce({ data: { message: 'Email verified successfully!' } });
 
     await waitFor(() => expect(axios.post).toHaveBeenCalledWith('/verify-email/verificationToken'));
 
@@ -38,12 +38,24 @@ describe("EmailVerification", () => {
   });
 
   it("handles failed email verification", async () => {
-    axios.get.mockResolvedValueOnce(new Error('Internal server error'));
+    const mockAxiosPost = vitest.fn();
+    mockAxiosPost.mockRejectedValueOnce({
+      response: { data: { error: 'Internal server error' } },
+    });
+    //axios.post.mockResolvedValueOnce(new Error('Internal server error'));
+    renderResult.unmount();
+    renderResult = render(
+      <MemoryRouter initialEntries={['/verify-email/verification']}>
+        <Routes> 
+          <Route path="/verify-email/:verificationToken" element={<EmailVerification />} />
+        </Routes>
+      </MemoryRouter>
+    );
 
-    await waitFor(() => expect(axios.post).toHaveBeenCalledWith('/verify-email/verificationToken'));
+    await waitFor(() => expect(axios.post).toHaveBeenCalledWith('/verify-email/verification'));
 
+    expect(screen.getByText('Your email verification status:')).toBeInTheDocument();
     await waitFor(() => {
-      expect(screen.getByText('Your email verification status:')).toBeInTheDocument();
       expect(screen.getByText('Email verification failed.')).toBeInTheDocument();
     });
   });

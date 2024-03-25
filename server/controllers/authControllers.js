@@ -58,7 +58,6 @@ const registerUser = async (req, res) => {
         user: 'cluckeradmn@gmail.com', 
         pass: 'kbxtfjkwucdafbyt', 
       },
-      debug: true 
     })
     .sendMail({
       from: 'cluckeradmn@gmail.com',
