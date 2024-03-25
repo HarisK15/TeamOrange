@@ -39,8 +39,8 @@ describe("ChangePasswordForm", () => {
     it("should submit form with correct data", async () => {
       axios.post.mockRejectedValueOnce({ response: { data: { error: 'Password changed successfully' } } });
 
-      fireEvent.change(screen.getByLabelText('Current Password'), { target: { value: 'currentPassword' } });
-      fireEvent.change(screen.getByLabelText('New Password'), { target: { value: 'newPassword' } });
+      fireEvent.change(screen.getByLabelText('Current Password:'), { target: { value: 'currentPassword' } });
+      fireEvent.change(screen.getByLabelText('New Password:'), { target: { value: 'newPassword' } });
 
       fireEvent.submit(screen.getByRole('button', { name: 'Change Password' }));
 
@@ -55,8 +55,8 @@ describe("ChangePasswordForm", () => {
     it('should display error message if request fails', async () => {
       axios.post.mockRejectedValueOnce({ response: { data: { error: 'Invalid password' } } });
   
-      fireEvent.change(screen.getByLabelText('Current Password'), { target: { value: 'currentPassword' } });
-      fireEvent.change(screen.getByLabelText('New Password'), { target: { value: 'newPassword' } });
+      fireEvent.change(screen.getByLabelText('Current Password:'), { target: { value: 'currentPassword' } });
+      fireEvent.change(screen.getByLabelText('New Password:'), { target: { value: 'newPassword' } });
 
       fireEvent.submit(screen.getByRole('button', { name: 'Change Password' }));
   

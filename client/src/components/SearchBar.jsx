@@ -61,7 +61,7 @@ const SearchBar = () => {
         <div>
           {results.users.length > 0 && (
             <>
-              <h3>Users</h3>
+              <h3 className="users-title">Users</h3>
               {results.users.map((user) => (
                 <div key={user._id} className='user'>
                   <Link to={`/Profile/${user._id}`}>
@@ -73,7 +73,7 @@ const SearchBar = () => {
           )}
           {results.clucks.length > 0 && (
             <>
-              <h3>Clucks</h3>
+              <h3 className="clucks-title">Clucks</h3>
               {results.clucks.map((cluck) => (
                 <CluckBox key={cluck._id} cluck={cluck} />
               ))}
