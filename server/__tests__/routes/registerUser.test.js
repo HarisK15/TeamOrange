@@ -84,7 +84,7 @@ describe("User Registration", () => {
       from: 'cluckeradmn@gmail.com',
       to: "test@example.com",
       subject: 'Email Verification',
-      text: `Please click the following link to verify your email address: \n http://localhost:5173/verify-email/0123456789abcdef`,
+      text: `Please click the following link to verify your email address on Clucker: \n http://localhost:5173/verify-email/0123456789abcdef`,
     });
   });
 

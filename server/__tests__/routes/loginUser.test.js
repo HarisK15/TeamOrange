@@ -66,7 +66,7 @@ describe("User Login", () => {
     expect(response.statusCode).toBe(200);
     expect(response.body).toHaveProperty(
       "error",
-      "Please verify your account by clicking on the link we sent to you"
+      "Please verify your account by clicking on the link we sent to your email via cluckeradmn@gmail.com."
     );
   });
 

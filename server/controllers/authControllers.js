@@ -63,7 +63,7 @@ const registerUser = async (req, res) => {
       from: 'cluckeradmn@gmail.com',
       to: email,
       subject: 'Email Verification',
-      text: `Please click the following link to verify your email address: \n ${verificationLink}`,
+      text: `Please click the following link to verify your email address on Clucker: \n ${verificationLink}`,
     })
     .catch(error => {
       console.error('Error sending email:', error);
@@ -102,7 +102,7 @@ const loginUser = async (req, res) => {
     //check if user is verified
     if (!user.isVerified) {
       return res.json({
-        error: "Please verify your account by clicking on the link we sent to you",
+        error: "Please verify your account by clicking on the link we sent to your email via cluckeradmn@gmail.com.",
       });
     }
 

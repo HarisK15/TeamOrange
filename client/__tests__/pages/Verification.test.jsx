@@ -9,54 +9,75 @@ vitest.mock("axios");
 
 describe("EmailVerification", () => {
   let renderResult;
+  let sessionStorageMock;
 
   beforeEach(() => {
+    vitest.clearAllMocks();
+    sessionStorageMock = {
+      getItem: vitest.fn(),
+      setItem: vitest.fn(),
+    };
+    Object.defineProperty(window, 'sessionStorage', { value: sessionStorageMock });
+  });
+
+  afterEach(() => {
+    renderResult.unmount();
+    vitest.clearAllMocks();
+    cleanup()
+  });
+
+  async function renderVerification() {
     renderResult = render(
       <MemoryRouter initialEntries={['/verify-email/verificationToken']}>
         <Routes> 
           <Route path="/verify-email/:verificationToken" element={<EmailVerification />} />
         </Routes>
       </MemoryRouter>
-    );
-  });
-
-  afterEach(() => {
-    if (renderResult) {
-      renderResult.unmount();
-    }
-    vitest.clearAllMocks();
-    cleanup()
-  });
+    )
+  };
 
   it("renders email verification status correctly", async () => {
     axios.post.mockResolvedValueOnce({ data: { message: 'Email verified successfully!' } });
+    await renderVerification();
 
     await waitFor(() => expect(axios.post).toHaveBeenCalledWith('/verify-email/verificationToken'));
 
-    expect(screen.getByText('Your email verification status:')).toBeInTheDocument();
+    expect(screen.getByText('Your verification status:')).toBeInTheDocument();
     expect(screen.getByText('Email verified successfully!')).toBeInTheDocument();
   });
 
   it("handles failed email verification", async () => {
-    const mockAxiosPost = vitest.fn();
-    mockAxiosPost.mockRejectedValueOnce({
-      response: { data: { error: 'Internal server error' } },
-    });
-    //axios.post.mockResolvedValueOnce(new Error('Internal server error'));
-    renderResult.unmount();
-    renderResult = render(
-      <MemoryRouter initialEntries={['/verify-email/verification']}>
-        <Routes> 
-          <Route path="/verify-email/:verificationToken" element={<EmailVerification />} />
-        </Routes>
-      </MemoryRouter>
-    );
+    axios.post.mockResolvedValue({ data: { error: 'Internal server error' } });
+    await renderVerification();
 
-    await waitFor(() => expect(axios.post).toHaveBeenCalledWith('/verify-email/verification'));
-
-    expect(screen.getByText('Your email verification status:')).toBeInTheDocument();
     await waitFor(() => {
-      expect(screen.getByText('Email verification failed.')).toBeInTheDocument();
+      console.log('axios.post calls:', axios.post.mock.calls);
+      expect(axios.post).toHaveBeenCalledWith('/verify-email/verificationToken');
     });
+
+    expect(screen.getByText('Your verification status:')).toBeInTheDocument();
+    expect(screen.getByText('Email verification failed.')).toBeInTheDocument();
+  });
+
+  it('sets verification result in session storage after successful email verification', async () => {
+    axios.post.mockResolvedValueOnce();
+    await renderVerification();
+
+    expect(sessionStorageMock.getItem).toHaveBeenCalledWith('verificationStatus');
+
+    await waitFor(() => expect(axios.post).toHaveBeenCalledWith('/verify-email/verificationToken'));
+
+    expect(sessionStorageMock.setItem).toHaveBeenCalledWith('verificationStatus', 'Email verified successfully!');
+  });
+
+  it('does not set verification result in session storage after failed email verification', async () => {
+    axios.post.mockRejectedValueOnce(new Error('Internal server error'));
+    await renderVerification();
+
+    expect(sessionStorageMock.getItem).toHaveBeenCalledWith('verificationStatus');
+
+    await waitFor(() => expect(axios.post).toHaveBeenCalledWith('/verify-email/verificationToken'));
+
+    expect(sessionStorageMock.setItem).not.toHaveBeenCalled();
   });
 });
