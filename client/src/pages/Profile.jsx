@@ -260,7 +260,7 @@ export default function ChangeProfileForm() {
           </div>
         </div>
       )}
-      <div>
+      <div className="clucks-list">
         {userClucks?.map((cluck) => (
           <CluckBox key={cluck._id} cluck={cluck} onUpdate={getUserData} />
         ))}
