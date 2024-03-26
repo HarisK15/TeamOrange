@@ -79,7 +79,9 @@ const SearchBar = () => {
               ))}
             </>
           )}
+          <div className="follow-users">
           <UsersList />
+          </div>
         </div>
       )}
     </div>
