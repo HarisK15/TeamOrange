@@ -1,9 +1,9 @@
 body {
-  background-color: #000000;
   height: 100%;
 }
 
 .clucks-page {
+  margin-left: -20px;
   display: flex;
   flex-direction: column;
 }
@@ -20,11 +20,11 @@ body {
 }
 
 .page-title {
-  color: #ffffff;
+  color:black;
   font-size: 24px;
   text-align: left;
   margin-top: -20px;
-  margin-bottom: -5px;
+  margin-left: 10px;
 }
 
 .search-bar {
