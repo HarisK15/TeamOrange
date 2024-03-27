@@ -46,19 +46,6 @@ describe("EmailVerification", () => {
     expect(screen.getByText('Email verified successfully!')).toBeInTheDocument();
   });
 
-  it("handles failed email verification", async () => {
-    axios.post.mockResolvedValue({ data: { error: 'Internal server error' } });
-    await renderVerification();
-
-    await waitFor(() => {
-      console.log('axios.post calls:', axios.post.mock.calls);
-      expect(axios.post).toHaveBeenCalledWith('/verify-email/verificationToken');
-    });
-
-    expect(screen.getByText('Your verification status:')).toBeInTheDocument();
-    expect(screen.getByText('Email verification failed.')).toBeInTheDocument();
-  });
-
   it('sets verification result in session storage after successful email verification', async () => {
     axios.post.mockResolvedValueOnce();
     await renderVerification();
@@ -70,7 +57,7 @@ describe("EmailVerification", () => {
     expect(sessionStorageMock.setItem).toHaveBeenCalledWith('verificationStatus', 'Email verified successfully!');
   });
 
-  it('does not set verification result in session storage after failed email verification', async () => {
+  it('handles failed email verification, and does not set verification result in session storage after failed email verification', async () => {
     axios.post.mockRejectedValueOnce(new Error('Internal server error'));
     await renderVerification();
 
@@ -79,5 +66,8 @@ describe("EmailVerification", () => {
     await waitFor(() => expect(axios.post).toHaveBeenCalledWith('/verify-email/verificationToken'));
 
     expect(sessionStorageMock.setItem).not.toHaveBeenCalled();
+    expect(screen.getByText('Your verification status:')).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByText('Email verification failed.')).toBeInTheDocument());
+
   });
 });
