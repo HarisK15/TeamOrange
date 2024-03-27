@@ -42,6 +42,14 @@ const userSchema = new Schema({
       ref: 'User',
     },
   ],
+  verificationToken: {
+    type: String,
+    default: null,
+  },
+  isVerified: {
+    type: Boolean,
+    default: false,
+  }
 });
 
 const userModel = mongoose.model('User', userSchema);

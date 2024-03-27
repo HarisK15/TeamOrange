@@ -1,0 +1,25 @@
+.verification {
+  font-family: "Arial", sans-serif;
+  background: white;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 30px;
+  width: 400px; 
+  height: 250px;
+  border-radius: 8px;
+  box-shadow: 0 5px 5px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.verification-status {
+  font-size: 32px;
+  color: #30c3fd;
+  padding-bottom: 60px;
+}
+
+.verification-result {
+  font-size: 20px;
+  color: #000000;
+}
