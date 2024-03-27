@@ -25,7 +25,7 @@ if (response.data.error) {
 toast.error(response.data.error);
 } else {
 setData({});
-navigate('/Clucks');
+navigate('/ClucksPage');
 setIsLoggedIn(true);
 }
 } catch (error) {

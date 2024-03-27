@@ -61,7 +61,7 @@ describe('Login Component', () => {
     });
 
     expect(setIsLoggedIn).toHaveBeenCalledWith(true);
-    expect(mockNavigate).toHaveBeenCalledWith('/Clucks');
+    expect(mockNavigate).toHaveBeenCalledWith('/ClucksPage');
   });
 
   it('displays an error toast on login failure', async () => {

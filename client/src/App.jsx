@@ -28,7 +28,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/clucks" element={<Clucks />} />
+            <Route path="/clucksPage" element={<Clucks />} />
             <Route path="/change-password" element={<ChangePassword />} />
             <Route path="/profile/:profileId" element={<Profile />} />
             <Route path="/verify-email/:verificationToken" element={<EmailVerification />} />
