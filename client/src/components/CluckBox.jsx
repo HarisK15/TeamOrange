@@ -11,7 +11,7 @@ const CluckBox = ({ cluck, onUpdate = () => {} }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedText, setEditedText] = useState(cluck.text);
   const [isDeleted, setIsDeleted] = useState(false);
-  const { updateCluck } = useContext(UpdateClucksContext);
+  const { addCluck, updateCluck } = useContext(UpdateClucksContext);
   const { userId } = useContext(LoggedInContext);
 
   const showContent = useMemo(
@@ -118,7 +118,29 @@ const CluckBox = ({ cluck, onUpdate = () => {} }) => {
     return null;
   }
 
-  return (
+  const handleRecluck = async () => {
+    try {
+      const response = await axios.post(
+      `clucks/${cluck._id}/recluck`,
+      {},
+      {
+        withCredentials: true,
+        headers: { 
+          "Content-Type": "application/json",
+        },
+      }
+    );
+      if (response.status === 200) {
+        console.log("Cluck successfully reclucked");
+      } else {
+        console.error("Failed to recluck cluck");
+      }
+    } catch (error) {
+      console.error("Failed to recluck cluck", error);
+    }
+  };
+
+return (
     <div className='cluckBox' data-testid='cluck-box'>
       <div className='cluck-header'>
         <img src={profilePicUrl} alt='Profile' className='profile-pic' />
@@ -175,6 +197,14 @@ const CluckBox = ({ cluck, onUpdate = () => {} }) => {
             </button>
           </div>
         )}
+      {userId != cluck.user._id && userId != cluck.recluckUser && !cluck.recluck && (
+      <button
+          onClick={handleRecluck}
+          className="recluck-button"
+        >
+          Recluck
+        </button>
+      )}
         {userId === cluck.user._id && (
           <div>
             <button

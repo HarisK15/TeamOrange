@@ -5,6 +5,7 @@ const {
   postCluck,
   editCluck,
   deleteCluck,
+  recluckCluck,
   getClucksByUser,
   likeCluck,
 } = require('../controllers/cluckControllers');
@@ -40,5 +41,8 @@ router.post('/', userVerification, postCluck);
 
 // PATCH (edit) a cluck
 router.patch('/:id', userVerification, editCluck);
+
+// Recluck a cluck
+router.post('/:id/recluck', userVerification, recluckCluck)
 
 module.exports = router;
