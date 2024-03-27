@@ -1,5 +1,6 @@
 import { useState, useContext } from "react";
 import axios from "axios";
+import { Link } from 'react-router-dom';
 import { UpdateClucksContext } from "../contexts/UpdateClucksContext";
 import { LoggedInContext } from "../contexts/LoggedInContext";
 import "./CluckBox.css";

@@ -2,7 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const cors = require('cors');
-const { changeBio, getUserBio, getUserUsername, getUserEmail } = require('../controllers/profileController');
+const { changeBio, getProfileData } = require('../controllers/profileController');
 const { userVerification } = require("../middleware/verifyUser");
 
 // Middleware
@@ -17,8 +17,6 @@ router.use(
 router.post('/', userVerification, changeBio);
 
 // GET requests
-router.get('/bio', userVerification, getUserBio);
-router.get('/username', userVerification, getUserUsername);
-router.get('/email', userVerification, getUserEmail);
+router.get('/userData/:profileId', getProfileData);
 
 module.exports = router;
