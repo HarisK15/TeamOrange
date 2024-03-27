@@ -31,12 +31,8 @@ export const UpdateClucksProvider = ({ children }) => {
     );
   };
 
-  const recluckCluck = (recluckCluck) => {
-    setClucks((prevClucks) => [recluckCluck, ...prevClucks]);
-  }
-
   return (
-    <UpdateClucksContext.Provider value={{ clucks, addCluck, updateCluck, recluckCluck }}>
+    <UpdateClucksContext.Provider value={{ clucks, addCluck, updateCluck }}>
       {children}
     </UpdateClucksContext.Provider>
   );

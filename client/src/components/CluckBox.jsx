@@ -9,7 +9,6 @@ const CluckBox = ({ cluck }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedText, setEditedText] = useState(cluck.text);
   const [isDeleted, setIsDeleted] = useState(false);
-  const [isReclucked, setIsReclucked] = useState(false);
   const { addCluck, updateCluck } = useContext(UpdateClucksContext);
   const { userId } = useContext(LoggedInContext);
 
