@@ -1,0 +1,132 @@
+.profile-container {
+  font-family: 'Arial', sans-serif;
+  background-color: #fff;
+  color: #000;
+  padding: 20px;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  height: fit-content;
+  width: 50vw;
+  margin: 0 auto;
+  position: relative;
+  padding-top: 70px;
+}
+
+.profileUsername {
+  font-size: 30px;
+  font-weight: bold;
+  color: black;
+  text-align: left;
+  margin-bottom: 1px;
+}
+
+.email {
+  font-size: 16px;
+  color: #657786;
+  text-align: left;
+  margin-top: -8px;
+  margin-left: 30px;
+}
+
+.bio {
+  font-size: 16px;
+  color: black;
+  text-align: left;
+  padding-top: 10px;
+}
+
+.profile-info {
+  display: flex;
+  position: absolute;
+  top: -30px;
+  left: 10px;
+}
+
+.top-left {
+  margin: 0px;
+  padding: 10px;
+}
+
+.next-to-top-left {
+  margin-left:20px;
+  margin-top: 37px;
+}
+
+.followers {
+  font-size: 22px;
+  font-weight: bold;
+  color: black;
+  text-align: left;
+  margin: 0px;
+  padding: 0px;
+}
+
+.following {
+  font-size: 22px;
+  font-weight: bold;
+  color: black;
+  text-align: left;
+  margin: 0px;
+  padding: 0px;
+}
+
+.profile-container .top-right {
+  position: relative;
+  top: -30px;
+}
+
+.profile-container .top-right button {
+  position: absolute;
+  top: -30px;
+  right: 0;
+}
+
+.profile-container textarea[type="text"] {
+  background-color: #ddd;
+  color: #444;
+  width: 95%;
+  height: 120px;
+  resize: none;
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  margin-bottom: 10px;
+}
+
+.profile-container button[type="submit"] {
+  background-color: #30c3fd;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.clucks {
+  padding-top: 20px;
+}  
+
+.radio-group {
+  display: flex;
+  gap: 10px;
+}
+
+.radio-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.radio-btn {
+  margin-bottom: 8px;
+}
+
+.check-container {
+  display: flex;
+  gap: 10px;
+}
+
+.clucks-list {
+  margin-top: 20px;
+}
+

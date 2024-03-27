@@ -1,10 +1,12 @@
-import { createContext, useState, useEffect } from "react";
+import { createContext, useState, useEffect, useContext } from "react";
 import axios from "axios";
+import { LoggedInContext } from "./LoggedInContext";
 
 export const UpdateClucksContext = createContext();
 
 export const UpdateClucksProvider = ({ children }) => {
   const [clucks, setClucks] = useState([]);
+  const { isLoggedIn } = useContext(LoggedInContext);
 
   useEffect(() => {
     const fetchClucks = async () => {
@@ -16,8 +18,10 @@ export const UpdateClucksProvider = ({ children }) => {
       }
     };
 
-    fetchClucks();
-  }, []);
+    if (isLoggedIn) {
+      fetchClucks();
+    }
+  }, [isLoggedIn]);
 
   const addCluck = (cluck) => {
     setClucks((prevClucks) => [cluck, ...prevClucks]);

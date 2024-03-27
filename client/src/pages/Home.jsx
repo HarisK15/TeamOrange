@@ -14,14 +14,20 @@ export default function Home() {
     navigate("/register");
   };
   return (
-    <div className="form-container">
-      <h1 className="brand-name">Clucker</h1>
-      <button type="button" className="login-button" onClick={loginRedir}>
-        Login
-      </button>
-      <button type="button" className="register-button" onClick={registerRedir}>
-        Register
-      </button>
+    <div className="home-body">
+      <div className="form-container">
+        <h1 className="brand-name">Clucker</h1>
+        <button type="button" className="login-button" onClick={loginRedir}>
+          Login
+        </button>
+        <button
+          type="button"
+          className="register-button"
+          onClick={registerRedir}
+        >
+          Register
+        </button>
+      </div>
     </div>
   );
 }
