@@ -29,7 +29,9 @@ export default function Register() {
         toast.error(data.error);
       } else {
         setData({});
-        toast.success('Login Successful. Welcome!');
+        toast.success('You have successfully registered. Before logging in, make sure to activate your account by clicking on the link we sent to your email address via cluckeradmn@gmail.com.', {
+          duration: 30000 
+        });
         navigate('/login');
       }
     } catch (error) {}

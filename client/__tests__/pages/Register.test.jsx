@@ -55,7 +55,10 @@ describe('Register Component', () => {
       });
     });
 
-    expect(toast.success).toHaveBeenCalledWith('Login Successful. Welcome!');
+    expect(toast.success).toHaveBeenCalledWith(
+      `You have successfully registered. Before logging in, make sure to activate your account by clicking on the link we sent to your email address via cluckeradmn@gmail.com.`,
+      { duration: 30000 }
+    );
     expect(mockNavigate).toHaveBeenCalledWith('/login');
   });
 

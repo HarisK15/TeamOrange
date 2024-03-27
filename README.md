@@ -56,7 +56,7 @@ npm start
 
 Seed/Unseed the MongoDB with (in the server directory):
 All seeded users will have the password 'testPassword'. 
-If you create a user with the email 'admin@admin.com' their model will not be unseeded. 
+If you create a user with the username 'admin' their model and related clucks will not be unseeded. 
 
 ```
 $ npm run seed

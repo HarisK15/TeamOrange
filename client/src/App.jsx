@@ -7,6 +7,7 @@ import Login from "./pages/Login";
 import Clucks from "./pages/Clucks";
 import Profile from "./pages/Profile";
 import ChangePassword from "./pages/PasswordUpdate";
+import EmailVerification from "./pages/Verification";
 import axios from "axios";
 import { Toaster } from "react-hot-toast";
 import { LoggedInProvider } from "./contexts/LoggedInContext";
@@ -30,7 +31,8 @@ function App() {
             <Route path="/clucks" element={<Clucks />} />
             <Route path="/change-password" element={<ChangePassword />} />
             <Route path="/profile/:profileId" element={<Profile />} />
-          </Routes>
+            <Route path="/verify-email/:verificationToken" element={<EmailVerification />} />
+        </Routes>
         </UpdateClucksProvider>
       </LoggedInProvider>
     </>
