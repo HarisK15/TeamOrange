@@ -31,13 +31,18 @@
 }
 
 .button {
-  background-color: #30c3fd !important;
-  color: white;
-  width: 300px;
+  background-color: #30c3fd;
+  color: #ffffff;
+  width: 100%;
+  padding: 15px;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: background-color 0.3s ease; 
 }
 
 .button:hover {
-  background-color: #333;
+  background-color: #0266a5; 
 }
 
 .label {
