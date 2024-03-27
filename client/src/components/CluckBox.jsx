@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { UpdateClucksContext } from '../contexts/UpdateClucksContext';
 import { LoggedInContext } from '../contexts/LoggedInContext';
+import toast from 'react-hot-toast';
 import './CluckBox.css';
 import profilePicUrl from '../images/default-pic.jpg';
 import HeartIcon from './HeartIcon';
@@ -52,13 +53,13 @@ const CluckBox = ({ cluck, onUpdate = () => {} }) => {
           };
           setIsEditing(false);
           updateCluck(updatedCluck);
-          console.log('Cluck updated successfully');
+          toast.success('Cluck updated successfully');
         } else {
           // Handle error
-          console.error('Failed to update cluck');
+          toast.error('Failed to update cluck');
         }
       } catch (error) {
-        console.error('Failed to update cluck', error);
+        toast.error('Failed to update cluck', error);
       }
     }
   };
@@ -72,18 +73,18 @@ const CluckBox = ({ cluck, onUpdate = () => {} }) => {
       if (response.status === 200) {
         // Sets the isDeleted flag to true if the cluck is successfully deleted
         setIsDeleted(true);
-        console.log('Cluck deleted successfully');
+        toast.success('Cluck deleted successfully');
       } else {
         // Handle error
-        console.error('Failed to delete cluck');
+        toast.error('Failed to delete cluck');
       }
     } catch (error) {
-      console.error('Failed to delete cluck', error);
+      toast.error('Failed to delete cluck', error)
     }
   };
 
   const handleLike = async () => {
-    try {
+  try {
       const response = await axios.patch(
         `/clucks/like/${cluck._id}`,
         { liked: !liked },
@@ -103,13 +104,13 @@ const CluckBox = ({ cluck, onUpdate = () => {} }) => {
         };
         updateCluck(updatedCluck);
         onUpdate();
-        console.log('Cluck updated successfully');
+        toast.success('Cluck updated successfully');
       } else {
         // Handle error
-        console.error('Failed to update cluck');
+        toast.error('Failed to update cluck');
       }
     } catch (error) {
-      console.error('Failed to update cluck', error);
+      toast.error('Failed to update cluck', error);
     }
   };
 
@@ -173,6 +174,10 @@ const CluckBox = ({ cluck, onUpdate = () => {} }) => {
             >
               {isEditing ? 'Save' : 'Edit'}
             </button>
+          </div>
+        )}
+        {userId === cluck.user._id && (
+          <div>
             <button
               onClick={handleDelete}
               className='delete-button'

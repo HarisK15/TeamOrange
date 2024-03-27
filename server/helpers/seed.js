@@ -16,8 +16,9 @@ const startDatabase = async () => {
 
 const numberOfUsers = 100;
 
-async function randomNumber() {
-  return Math.floor(Math.random() * 6);
+//Generates a random number from 0 to the given number
+async function randomNumber(num) {
+  return Math.floor(Math.random() * num);
 }
 
 function randomDate(start, end) {
@@ -36,9 +37,9 @@ async function seedDatabase() {
         const userData = {
           userName: faker.person.fullName(),
           email: faker.internet.email(),
-          bio: faker.lorem.paragraphs(await randomNumber(), '\n\n'),
+          bio: faker.lorem.paragraphs(await randomNumber(4), '\n\n'),
           password: await hashPassword('testPassword'),
-          privacy: true,
+          privacy: Math.random() < 0.5,
         };
 
         const user = await User.create(userData);
@@ -48,7 +49,8 @@ async function seedDatabase() {
         await seedClucks(user);
       } catch (error) {}
     }
-    await seedFollowers();
+    await seedFollowersAndBlocked();
+    await seedLikes();
 
     console.log(
       `Seeding complete. ${numberOfUsers} users created. ${await Cluck.countDocuments(
@@ -64,8 +66,8 @@ async function seedDatabase() {
 }
 
 async function seedClucks(user) {
-  // Generate a random number of clucks per user (currently between 0 to 5)
-  const numberOfClucks = Math.floor(Math.random() * 6);
+  //Create 0 to 6 clucks per user
+  const numberOfClucks = await randomNumber(6);
   let i = 0;
   while (i < numberOfClucks) {
     try {
@@ -73,7 +75,7 @@ async function seedClucks(user) {
       const updatedAt = randomDate(createdAt, new Date());
 
       const cluckData = {
-        text: faker.lorem.paragraphs(await randomNumber(), '\n\n'),
+        text: faker.lorem.paragraphs(await randomNumber(3), '\n\n'),
         user: user._id,
         createdAt: createdAt,
         updatedAt: updatedAt,
@@ -87,28 +89,30 @@ async function seedClucks(user) {
   }
 }
 
-async function seedFollowers() {
+async function seedFollowersAndBlocked() {
   try {
     const allUsers = await User.find({}, '_id');
 
-    const randomUserIds = allUsers
-      .map((user) => user._id)
-      .sort(() => Math.random() - 0.5);
     let i = 0;
     for (const currentUser of allUsers) {
-      // Generate a random number of users to follow (currently (between 0 and the total number of users - 2)/2)
+      const shuffledUserIds = allUsers.map((user) => user._id).sort(() => Math.random() - 0.5);
+      // Generate a random number of users to follow (currently between (0 and the total number of users - 1)/2)
       const numberOfFollowing = Math.floor(
-        (Math.random() * (allUsers.length - 1)) / 2
+        (Math.random() * (shuffledUserIds.length - 1)/2)
       );
 
-      const followingUserIds = randomUserIds.filter(
+      const AllOtherUserIds = shuffledUserIds.filter(
         (userId) => userId.toString() !== currentUser._id.toString()
       );
 
-      const followingIds = followingUserIds.slice(0, numberOfFollowing);
+      const followingIds = AllOtherUserIds.slice(0, numberOfFollowing);
+      const blockedIds = AllOtherUserIds.slice((AllOtherUserIds.length-(numberOfFollowing/5)));
 
       await User.findByIdAndUpdate(currentUser._id, {
-        $addToSet: { following: followingIds },
+        $addToSet: { 
+          following: { $each: followingIds },
+          blocked: { $each: blockedIds }
+        }
       });
 
       for (const currentFollowerId of followingIds) {
@@ -117,11 +121,42 @@ async function seedFollowers() {
         });
       }
       i++;
-      process.stdout.write(`Seeding user followers ${i}/${allUsers.length}\n`);
+      process.stdout.write(`Seeding user followers/Blocked users ${i}/${shuffledUserIds.length}\n`);
     }
 
-    console.log('Users seeded successfully.');
-  } catch (error) {}
+    console.log('User Followers/Blocked seeded successfully.');
+  } catch (error) {
+    console.error('Error seeding followers/blocked:', error);
+  }
+}
+
+async function seedLikes() {
+  try {
+    const allUsers = await User.find({}, '_id');
+
+    const allClucks = await Cluck.find({}, '_id');
+
+    let i = 0;
+    for (const currentCluck of allClucks) {
+      const shuffledUserIds = allUsers.map((user) => user._id).sort(() => Math.random() - 0.5);
+
+      // Generate a random number of users to like the cluck (currently between (0 and the total number of users - 1)/2)
+      const numberOfLiking = Math.floor(
+        (Math.random() * (shuffledUserIds.length - 1)/2)
+      );
+        
+      const followingIds = shuffledUserIds.slice(0, numberOfLiking);
+
+      await Cluck.findByIdAndUpdate(currentCluck._id, {
+        $addToSet: { likedBy: followingIds}
+      });
+      i++;
+      process.stdout.write(`Seeding cluck likes ${i}/${allClucks.length}\n`);
+    }
+    console.log('Likes seeded successfully.');
+  } catch (error) {
+    console.error('Error seeding likes:', error);
+  }
 }
 
 seedDatabase();

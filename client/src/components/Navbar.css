@@ -3,8 +3,9 @@
   left: 0;
   top: 0;
   height: 100%;
-  width: 20vw;
+  width: 20%;
   background-color: #fff;
+  box-shadow: 0 5px 5px rgba(0, 0, 0, 0.1);
   overflow-x: hidden;
   padding-top: 20px;
 }
@@ -13,17 +14,19 @@
   display: block;
   font-size: larger;
   font-weight: 600;
-  color: #000;
-  background-color: #fff;
-  border: none; /* keep this to avoid ugly ghosting when moving over buttons*/
+  color: #30c3fd;
+  background-color: #ffffff;
+  border: 0px;/* keep this to avoid ugly ghosting when moving over buttons*/
+  border-color: #30c3fd;
   border-radius: 25px;
   padding: 16px;
   text-align: center;
   width: 100%;
+  right: 0;
   cursor: pointer;
 }
 
 .navbar button:hover {
-  background-color: #000;
+  background-color: #30c3fd;
   color: #fff;
 }
