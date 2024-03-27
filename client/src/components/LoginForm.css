@@ -1,4 +1,3 @@
-/* LoginForm.css */
 .body {
   font-family: "Arial", sans-serif;
   background-color: #fcfcfc;
@@ -19,14 +18,14 @@
 
 .h1 {
   color: #333;
-  margin-bottom: 20px;
 }
 
 .input-field {
+  color: #666 !important;
+  background-color: #ddd !important;
   width: 100%;
-  margin-bottom: 20px;
   padding: 15px;
-  border: 1px solid #ddd;
+  border: 1px solid #ccc;
   border-radius: 20px;
   box-sizing: border-box;
 }
@@ -35,6 +34,7 @@
   background-color: #30c3fd !important;
   color: white;
   width: 300px;
+  margin-top: 25px;
 }
 
 .button:hover {
@@ -49,7 +49,6 @@
 
 .logo {
   width: 100px;
-  /* Adjust as per your image's actual size */
   height: auto;
   margin-bottom: 20px;
 }

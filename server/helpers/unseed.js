@@ -3,8 +3,8 @@ require("dotenv").config();
 const User = require("../models/user")
 const Cluck = require("../models/cluckModel");
 
-//Email of the user who's user model and related clucks will not be deleted
-const excludeUserEmail = "johndoe@example.org";
+//Email of the user who's user model will not be deleted
+const excludeUserEmail = "admin@admin.com";
 
 const startDatabase = async () => {
     await mongoose
@@ -30,7 +30,7 @@ async function unseedDatabase() {
         await Cluck.deleteMany({ user: { $ne: excludedUser._id } });
 
         await User.deleteMany({ _id: { $ne: excludedUser._id } });
-        await User.updateOne({ _id: excludedUser._id }, { $set: { followers: [], following: [] } });
+        await User.updateOne({ _id: excludedUser._id }, { $set: { followers: [], following: [], blocked: [] } });
 
         console.log(`Unseeding complete. ${numberOfUsers} users deleted. ${numberOfClucks} clucks deleted`);
     } catch (error) {
