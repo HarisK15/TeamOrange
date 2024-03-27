@@ -19,7 +19,7 @@ const cluckSchema = new Schema(
     },
     recluck: {
       type: Boolean,
-    }
+    },
     likedBy: [
       {
         type: mongoose.Types.ObjectId,
