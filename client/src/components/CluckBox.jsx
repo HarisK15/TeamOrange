@@ -7,7 +7,7 @@ import './CluckBox.css';
 import profilePicUrl from '../images/default-pic.jpg';
 import HeartIcon from './HeartIcon';
 
-const CluckBox = ({ cluck, onUpdate = () => {} }) => {
+const CluckBox = ({ cluck, profileView, onUpdate = () => {} }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedText, setEditedText] = useState(cluck.text);
   const [isDeleted, setIsDeleted] = useState(false);
@@ -117,6 +117,9 @@ const CluckBox = ({ cluck, onUpdate = () => {} }) => {
   if (isDeleted) {
     return null;
   }
+  else if (profileView && cluck.recluck){
+    return null
+  }
 
   const handleRecluck = async () => {
     try {
@@ -142,6 +145,11 @@ const CluckBox = ({ cluck, onUpdate = () => {} }) => {
 
 return (
     <div className='cluckBox' data-testid='cluck-box'>
+    {cluck.recluck && (
+    <div className="cluck-recluck">
+      <p>Reclucked by @{cluck.recluckUser.userName}</p>
+    </div>
+    )}
       <div className='cluck-header'>
         <img src={profilePicUrl} alt='Profile' className='profile-pic' />
         <div className='name-username'>
