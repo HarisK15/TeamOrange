@@ -51,12 +51,10 @@ async function seedDatabase() {
       } catch (error) {}
     }
     await seedFollowersAndBlocked();
-    await seedLikes();
+    await seedLikesAndReclucks();
 
     console.log(
-      `Seeding complete. ${numberOfUsers} users created. ${await Cluck.countDocuments(
-        {}
-      )} clucks created`
+      `Seeding complete. ${numberOfUsers} users created. ${await Cluck.countDocuments({})} clucks created`
     );
   } catch (error) {
     console.error('Seeding Database error:', error);
@@ -96,18 +94,18 @@ async function seedFollowersAndBlocked() {
 
     let i = 0;
     for (const currentUser of allUsers) {
-      const shuffledUserIds = allUsers.map((user) => user._id).sort(() => Math.random() - 0.5);
+      const shuffledUserIds = allUsers.map((user) => user._id)
+        .filter((userId) => userId.toString() !== currentUser._id)
+        .sort(() => Math.random() - 0.5);
+
       // Generate a random number of users to follow (currently between (0 and the total number of users - 1)/2)
       const numberOfFollowing = Math.floor(
         (Math.random() * (shuffledUserIds.length - 1)/2)
       );
 
-      const AllOtherUserIds = shuffledUserIds.filter(
-        (userId) => userId.toString() !== currentUser._id.toString()
-      );
-
-      const followingIds = AllOtherUserIds.slice(0, numberOfFollowing);
-      const blockedIds = AllOtherUserIds.slice((AllOtherUserIds.length-(numberOfFollowing/5)));
+      const followingIds = shuffledUserIds.slice(0, numberOfFollowing);
+      // Generate a random number of users to block (currently numberOfFollowing/5 subtracted from shuffledUserIds)
+      const blockedIds = shuffledUserIds.slice((shuffledUserIds.length-(numberOfFollowing/5)));
 
       await User.findByIdAndUpdate(currentUser._id, {
         $addToSet: { 
@@ -131,7 +129,7 @@ async function seedFollowersAndBlocked() {
   }
 }
 
-async function seedLikes() {
+async function seedLikesAndReclucks() {
   try {
     const allUsers = await User.find({}, '_id');
 
@@ -139,24 +137,42 @@ async function seedLikes() {
 
     let i = 0;
     for (const currentCluck of allClucks) {
-      const shuffledUserIds = allUsers.map((user) => user._id).sort(() => Math.random() - 0.5);
+      const shuffledUserIds = allUsers.map((user) => user._id)
+        .filter((userId) => userId !== currentCluck.user) 
+        .sort(() => Math.random() - 0.5);
 
-      // Generate a random number of users to like the cluck (currently between (0 and the total number of users - 1)/2)
+      //Generates a random number of users to like the cluck (currently between (0 and the total number of users - 1)/2)
       const numberOfLiking = Math.floor(
         (Math.random() * (shuffledUserIds.length - 1)/2)
       );
         
-      const followingIds = shuffledUserIds.slice(0, numberOfLiking);
+      const likingIds = shuffledUserIds.slice(0, numberOfLiking);
+      //Generates a random number of users to recluck the cluck (currently between (0 and the number of users liking/4))
+      const recluckIds = shuffledUserIds.slice(0, (await randomNumber(numberOfLiking))/4);
 
-      await Cluck.findByIdAndUpdate(currentCluck._id, {
-        $addToSet: { likedBy: followingIds}
-      });
+      const cluck = await Cluck.findOneAndUpdate(
+        { _id: currentCluck._id },
+        { $addToSet: { likedBy: { $each: likingIds } } },
+        { new: true }
+      );
+      for (const reClucker of recluckIds){
+        const filteredRecluckLikeIds = shuffledUserIds.filter(userId => userId !== reClucker._id);
+        //Generates a random number of users to like the recluck (currently (between 0 to numberOfLiking) subtracted from filteredRecluckLikeIds)
+        const likeRecluckIds = filteredRecluckLikeIds.slice(filteredRecluckLikeIds.length - await randomNumber(numberOfLiking));
+        await Cluck.create({ 
+          text: cluck.text, 
+          user: cluck.user, 
+          recluckUser: reClucker._id, 
+          recluck: true, 
+          likedBy: likeRecluckIds,
+        });
+      }
       i++;
-      process.stdout.write(`Seeding cluck likes ${i}/${allClucks.length}\n`);
+      process.stdout.write(`Seeding cluck likes and reclucks ${i}/${allClucks.length}\n`);
     }
-    console.log('Likes seeded successfully.');
+    console.log('Likes and Reclucks seeded successfully.');
   } catch (error) {
-    console.error('Error seeding likes:', error);
+    console.error('Error seeding likes/reclucks:', error);
   }
 }
 

@@ -147,7 +147,9 @@ return (
     <div className='cluckBox' data-testid='cluck-box'>
     {cluck.recluck && (
     <div className="cluck-recluck">
-      <p>Reclucked by @{cluck.recluckUser.userName}</p>
+      <Link to={`/Profile/${cluck.recluckUser._id}`}>
+        <p>Reclucked by @{cluck.recluckUser.userName}</p>
+      </Link>
     </div>
     )}
       <div className='cluck-header'>

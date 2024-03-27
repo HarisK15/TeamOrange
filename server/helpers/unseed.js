@@ -24,6 +24,8 @@ async function unseedDatabase() {
     if (excludedUser) {
         numberOfClucks = await Cluck.countDocuments({ user: { $ne: excludedUser._id } });
         await Cluck.deleteMany({ user: { $ne: excludedUser._id } });
+        await Cluck.deleteMany({ recluckUser: excludedUser._id });
+        await Cluck.deleteMany({ user: excludedUser._id, recluck: true });
     } else {
         numberOfClucks = await Cluck.countDocuments();
         await Cluck.deleteMany();
