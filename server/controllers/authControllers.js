@@ -51,7 +51,7 @@ const registerUser = async (req, res) => {
       verificationToken: verificationToken,
     });
 
-    const verificationLink = `https://cluckerteamorange-b4381c5c6c08.herokuapp.com/${verificationToken}`;
+    const verificationLink = `https://cluckerteamorange-b4381c5c6c08.herokuapp.com/verify-email/${verificationToken}`;
     await nodemailer.createTransport({
       service: 'gmail',
       auth: {
