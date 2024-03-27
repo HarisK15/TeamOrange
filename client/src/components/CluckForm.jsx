@@ -8,20 +8,27 @@ const CluckForm = () => {
   const [text, setText] = useState("");
   const [error, setError] = useState(null);
   const { addCluck } = useContext(UpdateClucksContext);
-
+  const [image, setImage] = useState(null);
+  const handleImageChange = (e) => {
+    setImage(e.target.files[0]);
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const cluck = { text };
+    const formData = new FormData();
+    formData.append('text', text);
+    if (image) {
+      formData.append('image', image);
+    }
 
     try {
-      const response = await axios.post("/clucks", cluck, {
+      const response = await axios.post("/clucks", formData, {
         withCredentials: true,
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "multipart/form-data",
         },
       });
-
+      
       setText("");
       setError(null);
       console.log("new cluck posted", response.data);
@@ -46,6 +53,8 @@ const CluckForm = () => {
             value={text}
             placeholder="What's your cluck?"
           />
+          <input type="file" onChange={handleImageChange} />
+
           <button type="submit" className="cluck-button">
             Cluck
           </button>
