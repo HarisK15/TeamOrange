@@ -155,7 +155,6 @@ return (
       <div className='cluck-header'>
         <img src={profilePicUrl} alt='Profile' className='profile-pic' />
         <div className='name-username'>
-          <h4 className='name'>Name</h4>
           <Link to={`/Profile/${cluck.user._id}`}>
             <h4 className='username'>@{cluck.user.userName}</h4>
           </Link>
