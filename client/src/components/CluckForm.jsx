@@ -32,7 +32,7 @@ const CluckForm = () => {
       setImage();
       setText("");
       setError(null);
-      console.log("new cluck posted", response.data);
+      //console.log("new cluck posted", response.data);
       addCluck(response.data);
     } catch (error) {
       setError(error.response.data.error);

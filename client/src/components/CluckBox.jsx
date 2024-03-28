@@ -11,6 +11,8 @@ const CluckBox = ({ cluck, profileView, onUpdate = () => {} }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedText, setEditedText] = useState(cluck.text);
   const [isDeleted, setIsDeleted] = useState(false);
+  const [replyText, setReplyText] = useState('');
+  const [replies, setReplies] = useState([]);
   const { addCluck, updateCluck } = useContext(UpdateClucksContext);
   const { userId } = useContext(LoggedInContext);
 
@@ -24,10 +26,7 @@ const CluckBox = ({ cluck, profileView, onUpdate = () => {} }) => {
     [(userId, cluck.user.followers, cluck.user.following)]
   );
 
-  const liked = useMemo(
-    () => cluck?.likedBy?.includes(userId),
-    [cluck.likedBy]
-  );
+  const liked = useMemo(() => cluck?.likedBy?.includes(userId), [cluck.likedBy]);
 
   const handleSave = async () => {
     if (isEditing) {
@@ -52,7 +51,7 @@ const CluckBox = ({ cluck, profileView, onUpdate = () => {} }) => {
           };
           setIsEditing(false);
           updateCluck(updatedCluck);
-          console.log('Cluck updated successfully');
+          //console.log('Cluck updated successfully');
         } else {
           // Handle error
           console.error('Failed to update cluck');
@@ -72,7 +71,7 @@ const CluckBox = ({ cluck, profileView, onUpdate = () => {} }) => {
       if (response.status === 200) {
         // Sets the isDeleted flag to true if the cluck is successfully deleted
         setIsDeleted(true);
-        console.log('Cluck deleted successfully');
+        //console.log('Cluck deleted successfully');
       } else {
         // Handle error
         console.error('Failed to delete cluck');
@@ -103,7 +102,7 @@ const CluckBox = ({ cluck, profileView, onUpdate = () => {} }) => {
         };
         updateCluck(updatedCluck);
         onUpdate();
-        console.log('Cluck updated successfully');
+        //console.log('Cluck updated successfully');
       } else {
         // Handle error
         console.error('Failed to update cluck');
@@ -113,45 +112,72 @@ const CluckBox = ({ cluck, profileView, onUpdate = () => {} }) => {
     }
   };
 
+  const handleReply = async () => {
+    try {
+      const response = await axios.post(
+        `/clucks/${cluck._id}/replies`,
+        { text: replyText },
+        {
+          withCredentials: true,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        // Update the replies
+        const newReply = response.data;
+        setReplies([...replies, newReply]);
+        setReplyText('');
+        //console.log('Reply added successfully');
+      } else {
+        // Handle error
+        console.error('Failed to add reply');
+      }
+    } catch (error) {
+      console.error('Failed to add reply', error);
+    }
+  };
+
   // Cluck is not rendered if the isDeleted flag is True
   if (isDeleted) {
     return null;
-  }
-  else if (profileView && cluck.recluck){
-    return null
+  } else if (profileView && cluck.recluck) {
+    return null;
   }
 
   const handleRecluck = async () => {
     try {
       const response = await axios.post(
-      `clucks/${cluck._id}/recluck`,
-      {},
-      {
-        withCredentials: true,
-        headers: { 
-          "Content-Type": "application/json",
-        },
-      }
-    );
+        `clucks/${cluck._id}/recluck`,
+        {},
+        {
+          withCredentials: true,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
       if (response.status === 200) {
-        console.log("Cluck successfully reclucked");
+        //console.log("Cluck successfully reclucked");
       } else {
-        console.error("Failed to recluck cluck");
+        console.error('Failed to recluck cluck');
       }
     } catch (error) {
-      console.error("Failed to recluck cluck", error);
+      console.error('Failed to recluck cluck', error);
     }
   };
-  console.log( {cluck})
-return (
+  //console.log( {cluck})
+  return (
     <div className='cluckBox' data-testid='cluck-box'>
-    {cluck.recluck && (
-    <div className="cluck-recluck">
-      <Link to={`/Profile/${cluck.recluckUser._id}`}>
-        <p>Reclucked by @{cluck.recluckUser.userName}</p>
-      </Link>
-    </div>
-    )}
+      {cluck.recluck && (
+        <div className='cluck-recluck'>
+          <Link to={`/Profile/${cluck.recluckUser._id}`}>
+            <p>Reclucked by @{cluck.recluckUser.userName}</p>
+          </Link>
+        </div>
+      )}
       <div className='cluck-header'>
         <img src={profilePicUrl} alt='Profile' className='profile-pic' />
         <div className='name-username'>
@@ -162,26 +188,21 @@ return (
       </div>
 
       <div className='cluck-content'>
-      {
-      cluck.image && <img src={`http://localhost:8000/${cluck.image}`} alt="Cluck image" />}
-                            {isEditing ? (
-            <textarea
-              className='edit-textarea'
-              value={editedText}
-              onChange={(e) => setEditedText(e.target.value)}
-            />
-          ) : (
-            <p data-testid='cluck-text'>{showContent ? cluck.text : ''}</p>
-          )}
-        </div>
+        {cluck.image && <img src={`http://localhost:8000/${cluck.image}`} alt='Cluck image' />}
+        {isEditing ? (
+          <textarea
+            className='edit-textarea'
+            value={editedText}
+            onChange={(e) => setEditedText(e.target.value)}
+          />
+        ) : (
+          <p data-testid='cluck-text'>{showContent ? cluck.text : ''}</p>
+        )}
+      </div>
 
       <div className='buttons'>
         {userId !== cluck.user._id && (
-          <button
-            className='like-button'
-            onClick={handleLike}
-            data-testid='like-button'
-          >
+          <button className='like-button' onClick={handleLike} data-testid='like-button'>
             <HeartIcon fillColor={liked ? 'red' : 'lightgray'} />
             {cluck?.likedBy?.length}
           </button>
@@ -208,14 +229,11 @@ return (
             </button>
           </div>
         )}
-      {userId != cluck.user._id && userId != cluck.recluckUser && !cluck.recluck && (
-      <button
-          onClick={handleRecluck}
-          className="recluck-button"
-        >
-          Recluck
-        </button>
-      )}
+        {userId !== cluck.user._id && userId !== cluck.recluckUser && !cluck.recluck && (
+          <button onClick={handleRecluck} className='recluck-button'>
+            Recluck
+          </button>
+        )}
         {userId === cluck.user._id && (
           <div>
             <button
@@ -232,12 +250,32 @@ return (
       <div className='cluck-info'>
         <div className='cluck-timestamp'>
           <p>Posted at: {new Date(cluck.createdAt).toLocaleString()}</p>
-          {cluck.updatedAt != cluck.createdAt && (
+          {cluck.updatedAt !== cluck.createdAt && (
             <p data-testid='last-edited'>
               Last edited: {new Date(cluck.updatedAt).toLocaleString()}
             </p>
           )}
         </div>
+      </div>
+
+      <div className='reply-section'>
+        <textarea
+          className='reply-textarea'
+          placeholder='Reply to this cluck...'
+          value={replyText}
+          onChange={(e) => setReplyText(e.target.value)}
+        />
+        <button className='reply-button' onClick={handleReply}>
+          Reply
+        </button>
+        {replies.map((reply) => (
+          <div key={reply._id} className='reply'>
+            <Link to={`/Profile/${reply.user._id}`}>
+              <h4 className='username'>@{reply.user.userName}</h4>
+            </Link>
+            <p>{reply.text}</p>
+          </div>
+        ))}
       </div>
     </div>
   );
