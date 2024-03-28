@@ -5,7 +5,6 @@ const Schema = mongoose.Schema;
 const cluckSchema = new Schema(
   {
     image: {
-
       type: String,
       required: false,
     },

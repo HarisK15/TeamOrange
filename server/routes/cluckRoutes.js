@@ -11,7 +11,7 @@ const {
 } = require('../controllers/cluckControllers');
 const { userVerification } = require('../middleware/verifyUser');
 const cors = require('cors');
-const { upload, uploadImage } = require('../controllers/imageController');
+const { upload } = require('../middleware/uploads');
 
 const router = express.Router();
 
@@ -39,7 +39,7 @@ router.patch('/like/:id', userVerification, likeCluck);
 
 // POST a new cluck
 
-router.post('/', upload.single('image'), uploadImage, postCluck);
+router.post('/', userVerification, upload.single('image'), postCluck);
 // PATCH (edit) a cluck
 router.patch('/:id', userVerification, editCluck);
 

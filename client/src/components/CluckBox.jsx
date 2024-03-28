@@ -142,7 +142,7 @@ const CluckBox = ({ cluck, profileView, onUpdate = () => {} }) => {
       console.error("Failed to recluck cluck", error);
     }
   };
-
+  console.log( {cluck})
 return (
     <div className='cluckBox' data-testid='cluck-box'>
     {cluck.recluck && (
@@ -163,10 +163,7 @@ return (
 
       <div className='cluck-content'>
       {
-      console.log("this is " ) &&  
-      console.log( cluck.image) &&
-
-      cluck.image && <img src={`http://localhost:8000/uploads/${cluck.image}`} alt="Cluck image" />}
+      cluck.image && <img src={`http://localhost:8000/${cluck.image}`} alt="Cluck image" />}
                             {isEditing ? (
             <textarea
               className='edit-textarea'
