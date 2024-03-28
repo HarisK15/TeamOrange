@@ -162,16 +162,21 @@ return (
       </div>
 
       <div className='cluck-content'>
-        {isEditing ? (
-          <textarea
-            className='edit-textarea'
-            value={editedText}
-            onChange={(e) => setEditedText(e.target.value)}
-          />
-        ) : (
-          <p data-testid='cluck-text'>{showContent ? cluck.text : ''}</p>
-        )}
-      </div>
+      {
+      console.log("this is " ) &&  
+      console.log( cluck.image) &&
+
+      cluck.image && <img src={`http://localhost:8000/uploads/${cluck.image}`} alt="Cluck image" />}
+                            {isEditing ? (
+            <textarea
+              className='edit-textarea'
+              value={editedText}
+              onChange={(e) => setEditedText(e.target.value)}
+            />
+          ) : (
+            <p data-testid='cluck-text'>{showContent ? cluck.text : ''}</p>
+          )}
+        </div>
 
       <div className='buttons'>
         {userId !== cluck.user._id && (

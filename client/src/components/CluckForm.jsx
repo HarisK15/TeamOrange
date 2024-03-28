@@ -4,6 +4,7 @@ import "./CluckForm.css";
 import profilePicUrl from "../images/default-pic.jpg";
 import { UpdateClucksContext } from "../contexts/UpdateClucksContext";
 
+
 const CluckForm = () => {
   const [text, setText] = useState("");
   const [error, setError] = useState(null);
@@ -28,7 +29,7 @@ const CluckForm = () => {
           "Content-Type": "multipart/form-data",
         },
       });
-      
+      setImage();
       setText("");
       setError(null);
       console.log("new cluck posted", response.data);
@@ -56,7 +57,7 @@ const CluckForm = () => {
           <input type="file" onChange={handleImageChange} />
 
           <button type="submit" className="cluck-button">
-            Cluck
+            Cluck();
           </button>
           {error && <div className="error">{error}</div>}
         </div>

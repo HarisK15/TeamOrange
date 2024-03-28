@@ -110,6 +110,7 @@ const deleteCluck = async (req, res) => {
     res.status(200).json({ message: 'Cluck deleted successfully' });
   }
 };
+const { uploadImage } = require('../controllers/imageController');
 
 // POST a new cluck
 const postCluck = async (req, res) => {
@@ -117,15 +118,16 @@ const postCluck = async (req, res) => {
     const { text } = req.body;
     const author = await User.findById(req.userId);
 
-    if (!author) {
-      return res.status(400).json({ error: 'User not found' });
-    }
+   
 
-    const cluck = await Cluck.create({ text: text, user: author });
+    // Handle image upload
+    const imageUrl = await uploadImage(image);
+
+    const cluck = await Cluck.create({ text: text, user: author, image: imageUrl });
 
     res.status(200).json(cluck);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(500).json({ error: error.message });
   }
 };
 
