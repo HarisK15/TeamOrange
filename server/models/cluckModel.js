@@ -30,6 +30,12 @@ const cluckSchema = new Schema(
         ref: "User",
       },
     ],
+    replies: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Cluck",
+      },
+    ],
   },
   { timestamps: true }
 );

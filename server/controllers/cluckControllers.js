@@ -9,9 +9,12 @@ const getAllClucks = async (req, res) => {
   let clucks = await Cluck.find({})
     .populate('user', 'userName followers following privacy blocked').populate("recluckUser", "userName")
     .sort({ createdAt: -1 });
+    
+  //console.log({clucks});
 
   clucks = clucks.filter((cluck) => {
     const { user } = cluck;
+
     if (user.blocked.includes(userId)) {
       return false;
     }
@@ -20,18 +23,43 @@ const getAllClucks = async (req, res) => {
       user?.following?.includes(userId)
     ) {
       return true;
-    } else if (!user?.privacy) {
+    } else if (user?.privacy) {
       // If privacy is false, allow access to all clucks
       return true;
     }
-  });
-
+  }
+  
+  );
   // Sort clucks by createdAt
   clucks.sort((a, b) => b.createdAt - a.createdAt);
 
   res.status(200).json(clucks);
 };
+const replyToCluck = async (req, res) => {
+  try {
+    const { id } = req.params; // ID of the cluck to reply to
+    const userId = req.userId; // ID of the user replying
+    const { text } = req.body; // Reply text
 
+    // Find the cluck to reply to
+    const cluck = await Cluck.findById(id);
+    if (!cluck) {
+      return res.status(404).json({ error: 'Cluck not found' });
+    }
+
+    // Create a new cluck with the reply text and user
+    const reply = await Cluck.create({ text: text, user: userId });
+
+    // Add the reply to the replies array of the original cluck
+    cluck.replies.push(reply._id);
+    await cluck.save();
+
+    res.status(200).json(reply);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
 //GET all clucks by a user
 const getClucksByUser = async (req, res) => {
   try {
@@ -110,20 +138,16 @@ const deleteCluck = async (req, res) => {
     res.status(200).json({ message: 'Cluck deleted successfully' });
   }
 };
-const { uploadImage } = require('../controllers/imageController');
 
 // POST a new cluck
 const postCluck = async (req, res) => {
   try {
     const { text } = req.body;
     const author = await User.findById(req.userId);
+    const image = req.file ? req.file?.path : null;
 
-   
-
-    // Handle image upload
-    const imageUrl = await uploadImage(image);
-
-    const cluck = await Cluck.create({ text: text, user: author, image: imageUrl });
+    const cluck = await Cluck.create({ text: text, user: author, image });
+    //console.log(cluck);
 
     res.status(200).json(cluck);
   } catch (error) {
@@ -232,4 +256,6 @@ module.exports = {
   recluckCluck,
   likeCluck,
   getClucksByUser,
+  replyToCluck,
+
 };
