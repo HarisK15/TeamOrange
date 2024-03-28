@@ -8,6 +8,7 @@ const {
   recluckCluck,
   getClucksByUser,
   likeCluck,
+  replyToCluck,
 } = require('../controllers/cluckControllers');
 const { userVerification } = require('../middleware/verifyUser');
 const cors = require('cors');
@@ -36,6 +37,10 @@ router.delete('/:id', userVerification, deleteCluck);
 
 // Like a cluck
 router.patch('/like/:id', userVerification, likeCluck);
+
+// Reply to a cluck
+
+router.post('/:id/replies', userVerification, replyToCluck);
 
 // POST a new cluck
 
