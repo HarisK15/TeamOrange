@@ -7,13 +7,17 @@ import toast from 'react-hot-toast';
 import './CluckBox.css';
 import profilePicUrl from '../images/default-pic.jpg';
 import HeartIcon from './HeartIcon';
+import CluckForm from './CluckForm';
 
 const CluckBox = ({ cluck, profileView, onUpdate = () => {} }) => {
   const [isEditing, setIsEditing] = useState(false);
+  const [isReplying, setIsReplying] = useState(false);
   const [editedText, setEditedText] = useState(cluck.text);
   const [isDeleted, setIsDeleted] = useState(false);
   const { addCluck, updateCluck } = useContext(UpdateClucksContext);
   const { userId } = useContext(LoggedInContext);
+
+  const [replies, setReplies] = useState([]);
 
   const showContent = useMemo(
     () =>
@@ -51,6 +55,7 @@ const CluckBox = ({ cluck, profileView, onUpdate = () => {} }) => {
             text: editedText,
             updatedAt: new Date().toISOString(),
           };
+          onUpdate();
           setIsEditing(false);
           updateCluck(updatedCluck);
           toast.success('Cluck updated successfully');
@@ -72,6 +77,7 @@ const CluckBox = ({ cluck, profileView, onUpdate = () => {} }) => {
 
       if (response.status === 200) {
         // Sets the isDeleted flag to true if the cluck is successfully deleted
+        onUpdate();
         setIsDeleted(true);
         toast.success('Cluck deleted successfully');
       } else {
@@ -113,50 +119,72 @@ const CluckBox = ({ cluck, profileView, onUpdate = () => {} }) => {
       toast.error('Failed to update cluck', error);
     }
   };
+  const showReplies = async () => {
+    try {
+      const response = await axios.get(`/clucks/replies/${cluck._id}`);
+
+      if (response.status === 200) {
+        setReplies(response.data);
+        console.log('cluck :', cluck);
+        console.log(
+          'response.data.map((el) => el._id) :',
+          response.data.map((el) => el._id)
+        );
+        cluck = { ...cluck, replies: response.data.map((el) => el._id) };
+        console.log('cluck :', cluck);
+        updateCluck(cluck);
+        onUpdate();
+      } else {
+        // Handle error
+        console.error('Failed to fetch replies');
+      }
+    } catch (error) {
+      console.error('Failed to fetch replies', error);
+    }
+  };
+  // showReplies();
 
   // Cluck is not rendered if the isDeleted flag is True
   if (isDeleted) {
     return null;
-  }
-  else if (profileView && cluck.recluck){
-    return null
+  } else if (profileView && cluck.recluck) {
+    return null;
   }
 
   const handleRecluck = async () => {
     try {
       const response = await axios.post(
-      `clucks/${cluck._id}/recluck`,
-      {},
-      {
-        withCredentials: true,
-        headers: { 
-          "Content-Type": "application/json",
-        },
-      }
-    );
+        `clucks/${cluck._id}/recluck`,
+        {},
+        {
+          withCredentials: true,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
       if (response.status === 200) {
-        console.log("Cluck successfully reclucked");
+        console.log('Cluck successfully reclucked');
       } else {
-        console.error("Failed to recluck cluck");
+        console.error('Failed to recluck cluck');
       }
     } catch (error) {
-      console.error("Failed to recluck cluck", error);
+      console.error('Failed to recluck cluck', error);
     }
   };
 
-return (
+  return (
     <div className='cluckBox' data-testid='cluck-box'>
-    {cluck.recluck && (
-    <div className="cluck-recluck">
-      <Link to={`/Profile/${cluck.recluckUser._id}`}>
-        <p>Reclucked by @{cluck.recluckUser.userName}</p>
-      </Link>
-    </div>
-    )}
+      {cluck.recluck && (
+        <div className='cluck-recluck'>
+          <Link to={`/Profile/${cluck.recluckUser._id}`}>
+            <p>Reclucked by @{cluck.recluckUser.userName}</p>
+          </Link>
+        </div>
+      )}
       <div className='cluck-header'>
         <img src={profilePicUrl} alt='Profile' className='profile-pic' />
         <div className='name-username'>
-          <h4 className='name'>Name</h4>
           <Link to={`/Profile/${cluck.user._id}`}>
             <h4 className='username'>@{cluck.user.userName}</h4>
           </Link>
@@ -176,6 +204,30 @@ return (
       </div>
 
       <div className='buttons'>
+        <div>
+          {cluck?.replies?.length ? (
+            <button
+              className='show-replies-button'
+              onClick={() => {
+                replies.length ? setReplies([]) : showReplies();
+              }}
+              data-testid='replies-button'
+            >
+              {replies.length ? 'Hide' : 'Show'} Replies (
+              {cluck?.replies?.length || 0})
+            </button>
+          ) : (
+            <></>
+          )}
+        </div>
+        <button
+          className='reply-button'
+          onClick={() => setIsReplying(true)}
+          data-testid='reply-button'
+        >
+          Reply
+        </button>
+
         {userId !== cluck.user._id && (
           <button
             className='like-button'
@@ -208,14 +260,13 @@ return (
             </button>
           </div>
         )}
-      {userId != cluck.user._id && userId != cluck.recluckUser && !cluck.recluck && (
-      <button
-          onClick={handleRecluck}
-          className="recluck-button"
-        >
-          Recluck
-        </button>
-      )}
+        {userId != cluck.user._id &&
+          userId != cluck.recluckUser &&
+          !cluck.recluck && (
+            <button onClick={handleRecluck} className='recluck-button'>
+              Recluck
+            </button>
+          )}
         {userId === cluck.user._id && (
           <div>
             <button
@@ -227,6 +278,20 @@ return (
             </button>
           </div>
         )}
+      </div>
+      <div className='reply-box'>
+        {isReplying && (
+          <CluckForm
+            replyTo={cluck._id}
+            onReply={() => {
+              showReplies();
+              setIsReplying(false);
+            }}
+          />
+        )}
+        {replies?.map((el) => (
+          <CluckBox key={el._id} cluck={el} onUpdate={() => showReplies()} />
+        ))}
       </div>
 
       <div className='cluck-info'>

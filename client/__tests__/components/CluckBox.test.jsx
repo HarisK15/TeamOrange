@@ -30,6 +30,7 @@ describe("CluckBox", () => {
     text: "Test cluck",
     user: user,
     likedBy: [],
+    replies: ['2'],
     createdAt: now,
     updatedAt: now,
   };
@@ -232,8 +233,41 @@ describe("CluckBox", () => {
     expect(renderResult.queryByTestId("delete-button")).toBeInTheDocument();
   });
 
-  it("handles delete correctly", async () => {
-    axios.delete.mockResolvedValue({ status: 200 });
+  it('shows replies and reply button correctly', () => {
+    expect(renderResult.queryByTestId('reply-button')).toBeInTheDocument();
+    expect(renderResult.queryByTestId('replies-button')).toBeInTheDocument();
+  });
+
+  it('show all replies when clicked on Show replies', async () => {
+    axios.get.mockResolvedValue({
+      status: 200,
+      data: [
+        {
+          _id: '13',
+          text: 'Test cluck 3',
+          user: user,
+          likedBy: [],
+          replies: [],
+          replyTo: ['1'],
+          createdAt: now,
+          updatedAt: now,
+        },
+      ],
+    });
+
+    fireEvent.click(renderResult.getByTestId('replies-button'));
+
+    await waitFor(() => expect(axios.get).toHaveBeenCalledTimes(1));
+    expect(axios.get).toHaveBeenCalledWith('/clucks/replies/1');
+    expect(renderResult.queryByTestId('replies-button')).toHaveTextContent(
+      'Hide Replies (1)'
+    );
+  });
+
+  it('handles delete correctly', async () => {
+    axios.delete.mockResolvedValue({
+      status: 200,
+    });
 
     fireEvent.click(renderResult.getByTestId("delete-button"));
 

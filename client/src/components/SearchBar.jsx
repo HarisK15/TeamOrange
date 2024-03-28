@@ -76,7 +76,7 @@ const SearchBar = () => {
             <>
               <h3 className="clucks-title">Clucks</h3>
               {results.clucks.map((cluck) => (
-                <CluckBox key={cluck._id} cluck={cluck} />
+                <CluckBox key={cluck._id} cluck={cluck} profileView={true}/>
               ))}
             </>
           )}

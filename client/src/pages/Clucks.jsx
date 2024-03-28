@@ -15,7 +15,7 @@ const Clucks = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await axios.get("/check-login");
+        const response = await axios.get('/check-login');
         if (response.data.isLoggedIn) {
           setUserId(response.data.userId);
         }
@@ -28,10 +28,10 @@ const Clucks = () => {
   }, []);
 
   return (
-    <div className="clucks-page">
-      <h2 className="page-title">Clucks</h2>
-      <div className="clucks-content">
-        <div className="clucksList">
+    <div className='clucks-page'>
+      <h2 className='page-title'>Clucks</h2>
+      <div className='clucks-content'>
+        <div className='clucksList'>
           <CluckForm />
           {clucks &&
             clucks.map((cluck) => <CluckBox key={cluck._id} cluck={cluck} />)}
