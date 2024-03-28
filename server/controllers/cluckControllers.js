@@ -114,7 +114,6 @@ const getCluckReplies = async (req, res) => {
 
     res.status(200).json(clucks);
   } catch (error) {
-    console.error('Error fetching clucks by user:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };

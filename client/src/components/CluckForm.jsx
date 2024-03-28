@@ -1,12 +1,12 @@
-import { useContext, useState } from 'react';
-import axios from 'axios';
-import './CluckForm.css';
-import profilePicUrl from '../images/default-pic.jpg';
-import { UpdateClucksContext } from '../contexts/UpdateClucksContext';
+import { useContext, useState } from "react";
+import axios from "axios";
+import toast from "react-hot-toast";
+import "./CluckForm.css";
+import profilePicUrl from "../images/default-pic.jpg";
+import { UpdateClucksContext } from "../contexts/UpdateClucksContext";
 
 const CluckForm = ({ onReply, replyTo }) => {
   const [text, setText] = useState('');
-  const [error, setError] = useState(null);
   const { addCluck } = useContext(UpdateClucksContext);
 
   const handleSubmit = async (e) => {
@@ -27,12 +27,11 @@ const CluckForm = ({ onReply, replyTo }) => {
       );
 
       setText('');
-      setError(null);
-      console.log('new cluck posted', response.data);
+      toast.success("new cluck posted", response.data);
       !replyTo && addCluck(response.data);
       onReply();
     } catch (error) {
-      setError(error.response?.data.error);
+      toast.error("Failed to post cluck");
     }
   };
 
@@ -54,7 +53,6 @@ const CluckForm = ({ onReply, replyTo }) => {
           <button type='submit' className='cluck-button'>
             {replyTo ? 'Reply' : 'Cluck'}
           </button>
-          {error && <div className='error'>{error}</div>}
         </div>
       </div>
     </form>

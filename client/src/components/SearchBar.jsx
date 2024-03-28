@@ -47,6 +47,7 @@ const SearchBar = () => {
   return (
     <div className='search-bar' data-testid='search-bar'>
       <input
+        data-testid='search-field'
         className='search-field'
         type='text'
         value={query}

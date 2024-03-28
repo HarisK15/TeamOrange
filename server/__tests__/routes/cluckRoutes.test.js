@@ -171,7 +171,6 @@ describe('Cluck Routes', () => {
 
   it('GET / - should get clucks whose authors have not blocked ', async () => {
     const response = await performRequest('get', `/clucks`, blockedUserToken);
-    console.log('response :', response);
     expect(response.statusCode).toBe(200);
     expect(response.body.length).toBe(1);
     expect(response.body.filter((el) => el.user._id == user._id).length).toBe(
@@ -308,7 +307,6 @@ describe('Cluck Routes', () => {
       `/clucks/user/${user._id}`,
       user2Token
     );
-    console.log('response ::', response);
     expect(response.statusCode).toBe(200);
     expect(response.body.length).toBe(1);
   });
