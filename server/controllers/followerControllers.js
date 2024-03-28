@@ -83,7 +83,7 @@ const getFollowers = async (req, res) => {
     }
 
     const user = await User.findById(id);
-    console.log(user);
+    //console.log(user);
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
@@ -92,7 +92,7 @@ const getFollowers = async (req, res) => {
 
     res.status(200).json(populatedUser.followers);
   } catch (error) {
-    console.log(error);
+    //console.log(error);
     res.status(500).json({ error: "Server error" });
   }
 };

@@ -26,6 +26,7 @@ const Clucks = () => {
     fetchUser();
   }, []);
 
+  //console.log({ clucks })
   return (
     <div className="clucks-page">
       <h2 className="page-title">Clucks</h2>
