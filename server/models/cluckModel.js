@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
 
@@ -10,12 +10,12 @@ const cluckSchema = new Schema(
     },
     user: {
       type: Schema.Types.ObjectId,
-      ref: "User",
+      ref: 'User',
       required: true,
     },
     recluckUser: {
       type: Schema.Types.ObjectId,
-      ref: "User",
+      ref: 'User',
     },
     recluck: {
       type: Boolean,
@@ -23,11 +23,17 @@ const cluckSchema = new Schema(
     likedBy: [
       {
         type: mongoose.Types.ObjectId,
-        ref: "User",
+        ref: 'User',
       },
     ],
+    replies: [{ type: Schema.Types.ObjectId, ref: 'Cluck' }],
+    replyTo: {
+      type: Schema.Types.ObjectId,
+      ref: 'Cluck',
+      required: false,
+    },
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Cluck", cluckSchema);
+module.exports = mongoose.model('Cluck', cluckSchema);

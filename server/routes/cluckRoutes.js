@@ -8,6 +8,8 @@ const {
   recluckCluck,
   getClucksByUser,
   likeCluck,
+  replyCluck,
+  getCluckReplies,
 } = require('../controllers/cluckControllers');
 const { userVerification } = require('../middleware/verifyUser');
 const cors = require('cors');
@@ -39,10 +41,16 @@ router.patch('/like/:id', userVerification, likeCluck);
 // POST a new cluck
 router.post('/', userVerification, postCluck);
 
+// POST a new cluck
+router.post('/replyCluck/:id', userVerification, replyCluck);
+
+//Get all cluck replies for a cluck
+router.get('/replies/:cluckId', userVerification, getCluckReplies);
+
 // PATCH (edit) a cluck
 router.patch('/:id', userVerification, editCluck);
 
 // Recluck a cluck
-router.post('/:id/recluck', userVerification, recluckCluck)
+router.post('/:id/recluck', userVerification, recluckCluck);
 
 module.exports = router;
