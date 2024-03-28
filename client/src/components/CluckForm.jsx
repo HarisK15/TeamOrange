@@ -57,7 +57,7 @@ const CluckForm = () => {
           <input type="file" onChange={handleImageChange} />
 
           <button type="submit" className="cluck-button">
-            Cluck();
+            Cluck
           </button>
           {error && <div className="error">{error}</div>}
         </div>
