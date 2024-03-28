@@ -29,8 +29,8 @@ const CluckForm = ({ onReply, replyTo }) => {
       setText('');
       setError(null);
       console.log('new cluck posted', response.data);
-      onReply();
       !replyTo && addCluck(response.data);
+      onReply();
     } catch (error) {
       setError(error.response?.data.error);
     }
