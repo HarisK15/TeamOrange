@@ -66,6 +66,12 @@
   padding-top: 5px;
 }
 
+.cluck-recluck {
+  font-size: 1em;
+  color: #657786;
+  text-align: left;
+}
+
 .cluck-info p {
   margin: 0;
 }
@@ -93,6 +99,17 @@
 }
 
 .delete-button {
+  align-self: flex-end;
+  padding: 6px 16px;
+  font-weight: bold;
+  color: #ffffff;
+  background-color: #30c3fd;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.recluck-button {
   align-self: flex-end;
   padding: 6px 16px;
   font-weight: bold;

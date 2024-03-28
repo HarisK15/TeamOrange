@@ -262,7 +262,7 @@ export default function ChangeProfileForm() {
       )}
       <div className="clucks-list">
         {userClucks?.map((cluck) => (
-          <CluckBox key={cluck._id} cluck={cluck} onUpdate={getUserData} />
+          <CluckBox key={cluck._id} cluck={cluck} profileView={true} onUpdate={getUserData} />
         ))}
       </div>
     </div>

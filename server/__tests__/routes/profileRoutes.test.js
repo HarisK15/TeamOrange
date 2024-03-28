@@ -21,8 +21,6 @@ describe('Profile Routes', () => {
   let token;
 
   beforeEach(async () => {
-    // Clear the users collection before each test
-    await User.deleteMany({});
 
     // Creating a user
     const hashedPassword = await hashPassword('password123');
