@@ -206,6 +206,41 @@ export default function ChangeProfileForm() {
   return (
     <div className='profile-container'>
       <div className='profile-info'>
+      <div className="profile-header">
+      <div className="cover-photo-container"> {coverPhoto ? (
+              <img src={coverPhoto} alt="Cover Photo" className="cover-photo" />
+            ) : (
+              <div className="cover-photo-placeholder">
+                <label htmlFor="cover-photo-upload">Upload Cover Photo</label>
+                <input
+                  id="cover-photo-upload"
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => setCoverPhoto(URL.createObjectURL(e.target.files[0]))}
+                />
+              </div>
+            )}
+          </div>
+          <div className="profile-picture-container">
+            {profilePicture ? (
+              <img
+                src={profilePicture}
+                alt="Profile Picture"
+                className="profile-picture"
+              />
+            ) : (
+              <div className="profile-picture-placeholder">
+                <label htmlFor="profile-picture-upload">Upload Profile Picture</label>
+                <input
+                  id="profile-picture-upload"
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => setProfilePicture(URL.createObjectURL(e.target.files[0]))}
+                />
+              </div>
+            )}
+          </div>
+        </div>
         <div className='top-left'>
           <p className='profileUsername'>@{userData.username}</p>
           <p className='email'>{userData.email}</p>
@@ -227,7 +262,10 @@ export default function ChangeProfileForm() {
         </div>
       )}
 
-      {profileId == userId ? (
+
+
+      {profileId == userId  ? (
+        
         <div>
           <div className='radio-group'>
             <div className='radio-item'>
