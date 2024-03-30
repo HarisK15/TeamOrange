@@ -6,11 +6,15 @@ const mongoose = require('mongoose');
 const getAllClucks = async (req, res) => {
   const userId = req.userId.toString();
 
-  let clucks = await Cluck.find({})
-    .populate('user', 'userName followers following privacy blocked').populate("recluckUser", "userName")
-    .sort({ createdAt: -1 });
-    
-  //console.log({clucks});
+  let clucks = await  await Cluck.find({
+      author: {
+        $ne: { blockedUsers: userId }, // The author has not blocked the current user
+        $or: [
+          { privacy: false }, // The author's privacy is off
+          { followers: userId }, // The author has followed the current user
+        ],
+      },
+    });
 
   clucks = clucks.filter((cluck) => {
     const { user } = cluck;
