@@ -15,24 +15,30 @@ const CluckForm = () => {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const formData = new FormData();
-    formData.append('text', text);
+  
+    let data;
+    let contentType;
+  
     if (image) {
-      formData.append('image', image);
+      data = new FormData();
+      data.append('text', text);
+      data.append('image', image);
+      contentType = "multipart/form-data";
+    } else {
+      data = { text: text };
+      contentType = "application/json";
     }
-
+  
     try {
-      const response = await axios.post("/clucks", formData, {
+      const response = await axios.post("/clucks", data, {
         withCredentials: true,
         headers: {
-          "Content-Type": "multipart/form-data",
+          "Content-Type": contentType,
         },
       });
       setImage();
       setText("");
       setError(null);
-      //console.log("new cluck posted", response.data);
       addCluck(response.data);
     } catch (error) {
       setError(error.response.data.error);
