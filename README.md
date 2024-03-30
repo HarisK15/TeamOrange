@@ -41,7 +41,7 @@ For example:
 
 ```
 MONGO_URL = mongodb+srv://johnDoe:-dX4hH0F6Wm2Rqd@cluster0.axvsrx0.mongodb.net/?retryWrites=true&w=majority
-JWT_SECRET = a62525857b51ebe738e1542d1d9ba0267b5fae4d8d7820c0c89b08e9f9f25cbd
+JWT_SECRET = a62525857b51ebe738e1542d1d9ba0267b5fae4d8d7820c0c89b08e9f9f25cbc
 ```
 
 To run the application on your local machine run (in the client directory):
