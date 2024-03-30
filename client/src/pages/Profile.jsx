@@ -16,10 +16,14 @@ export default function ChangeProfileForm() {
     following: [],
   });
 
+  const [profilePicture, setProfilePicture] = useState(null);
+  const [coverPhoto, setCoverPhoto] = useState(null);
   const [loggedInUser, setLoggedInUser] = useState({});
   const [isFollowing, setFollowing] = useState(false);
   const { userId, setUserId } = useContext(LoggedInContext);
   const [userClucks, setUserClucks] = useState([]);
+  const [isEditMode, setIsEditMode] = useState(false);
+
   console.log('userClucks :', userClucks);
 
   const isBlocked = useMemo(
@@ -81,6 +85,7 @@ export default function ChangeProfileForm() {
         bio: userData.bio,
       });
       toast.success(response.data.message);
+   
     } catch (error) {
       if (error.response && error.response.data) {
         toast.error(error.response.data.error);
@@ -88,6 +93,7 @@ export default function ChangeProfileForm() {
         toast.error('An error occurred. Please try again.');
       }
     }
+    setIsEditMode(false);
   };
 
   const updatePrivacy = async (newVal) => {
@@ -105,6 +111,7 @@ export default function ChangeProfileForm() {
     }
   };
 
+ 
   const handleFollow = async () => {
     try {
       const response = await axios.post(`/follow/${profileId}`, {
@@ -143,6 +150,29 @@ export default function ChangeProfileForm() {
       ...userData,
       followers: userData.followers.filter((follower) => follower !== userId),
     });
+  };
+
+    const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    const formData = new FormData();
+    formData.append('image', file);
+
+    try {
+      const response = await axios.post('/upload-image', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      toast.success(response.data.message);
+
+    
+    } catch (error) {
+      if (error.response && error.response.data) {
+        toast.error(error.response.data.error);
+      } else {
+        toast.error('An error occurred. Please try again.');
+      }
+    }
   };
 
   const handleBlock = async (e) => {
