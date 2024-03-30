@@ -1,11 +1,12 @@
-import { useContext, useEffect } from 'react';
-import axios from 'axios';
-import CluckBox from '../components/CluckBox';
-import CluckForm from '../components/CluckForm';
-import { UpdateClucksContext } from '../contexts/UpdateClucksContext';
-import { LoggedInContext } from '../contexts/LoggedInContext';
-import SearchBar from '../components/SearchBar';
-import './Clucks.css';
+import { useContext, useEffect, useState } from "react";
+import axios from "axios";
+import CluckBox from "../components/CluckBox";
+import CluckForm from "../components/CluckForm";
+import { UpdateClucksContext } from "../contexts/UpdateClucksContext";
+import { LoggedInContext } from "../contexts/LoggedInContext";
+import toast from "react-hot-toast";
+import SearchBar from "../components/SearchBar";
+import "./Clucks.css";
 
 const Clucks = () => {
   const { clucks } = useContext(UpdateClucksContext);
@@ -19,7 +20,7 @@ const Clucks = () => {
           setUserId(response.data.userId);
         }
       } catch (error) {
-        console.error('Failed to fetch user', error);
+        toast.error("Failed to fetch user", error);
       }
     };
 

@@ -6,7 +6,7 @@ const mongoose = require('mongoose');
 const getAllClucks = async (req, res) => {
   const userId = req.userId.toString();
 
-  let clucks = await Cluck.find({})
+  let clucks = await Cluck.find({replyTo:{ $exists: false }})
     .populate('user', 'userName followers following privacy blocked replies')
     .populate('recluckUser', 'userName')
     .sort({ createdAt: -1 });
@@ -65,7 +65,7 @@ const getClucksByUser = async (req, res) => {
       res.status(200).json([]);
       return;
     }
-    const clucks = await Cluck.find({ user: userId }).populate('user').exec();
+    const clucks = await Cluck.find({ user: userId, replyTo: {$exists: false} }).populate('user').exec();
 
     // Sort clucks by createdAt
     clucks.sort((a, b) => b.createdAt - a.createdAt);
@@ -114,7 +114,6 @@ const getCluckReplies = async (req, res) => {
 
     res.status(200).json(clucks);
   } catch (error) {
-    console.error('Error fetching clucks by user:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
