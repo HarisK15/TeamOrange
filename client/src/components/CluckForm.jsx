@@ -15,20 +15,20 @@ const CluckForm = () => {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     let data;
     let contentType;
-  
+
     if (image) {
       data = new FormData();
-      data.append('text', text);
-      data.append('image', image);
+      data.append("text", text);
+      data.append("image", image);
       contentType = "multipart/form-data";
     } else {
       data = { text: text };
       contentType = "application/json";
     }
-  
+
     try {
       const response = await axios.post("/clucks", data, {
         withCredentials: true,
@@ -60,7 +60,15 @@ const CluckForm = () => {
             value={text}
             placeholder="What's your cluck?"
           />
-          <input type="file" onChange={handleImageChange} />
+        <label className="cluck-imagearea">
+          <input
+            type="file"
+            onChange={handleImageChange}
+            style={{ display: 'none' }}
+          />
+              + image
+          <i className="fas fa-upload"></i>
+        </label>
 
           <button type="submit" className="cluck-button">
             Cluck
