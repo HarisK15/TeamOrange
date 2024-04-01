@@ -15,8 +15,8 @@
   font-size: larger;
   font-weight: 600;
   color: #30c3fd;
-  background-color: transparent;
-  border: 0px;
+  background-color: #ffffff;
+  border: 0px;/* keep this to avoid ugly ghosting when moving over buttons*/
   border-color: #30c3fd;
   border-radius: 25px;
   padding: 16px;

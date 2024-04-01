@@ -4,6 +4,7 @@ import CluckBox from "../components/CluckBox";
 import CluckForm from "../components/CluckForm";
 import { UpdateClucksContext } from "../contexts/UpdateClucksContext";
 import { LoggedInContext } from "../contexts/LoggedInContext";
+import toast from "react-hot-toast";
 import SearchBar from "../components/SearchBar";
 import "./Clucks.css";
 
@@ -14,24 +15,23 @@ const Clucks = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await axios.get("/check-login");
+        const response = await axios.get('/check-login');
         if (response.data.isLoggedIn) {
           setUserId(response.data.userId);
         }
       } catch (error) {
-        console.error("Failed to fetch user", error);
+        toast.error("Failed to fetch user", error);
       }
     };
 
     fetchUser();
   }, []);
 
-  //console.log({ clucks })
   return (
-    <div className="clucks-page">
-      <h2 className="page-title">Clucks</h2>
-      <div className="clucks-content">
-        <div className="clucksList">
+    <div className='clucks-page'>
+      <h2 className='page-title'>Clucks</h2>
+      <div className='clucks-content'>
+        <div className='clucksList'>
           <CluckForm />
           {clucks &&
             clucks.map((cluck) => <CluckBox key={cluck._id} cluck={cluck} />)}

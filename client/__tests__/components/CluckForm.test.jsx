@@ -8,6 +8,13 @@ import { LoggedInContext } from "../../src/contexts/LoggedInContext";
 
 vitest.mock("axios");
 
+beforeEach(() => {
+  window.HTMLFormElement.prototype.requestSubmit = function() {
+    const event = new Event('submit');
+    this.dispatchEvent(event);
+  };
+});
+
 afterEach(() => {
   cleanup();
   vitest.clearAllMocks();

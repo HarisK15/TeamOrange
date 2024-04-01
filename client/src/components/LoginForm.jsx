@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './LoginForm.css';
+import './LoginForm.css'; // Import the CSS file
 
 const LoginForm = ({ loginUser, data, setData }) => {
   return (
@@ -14,7 +14,7 @@ const LoginForm = ({ loginUser, data, setData }) => {
             placeholder='Email Address' 
             value={data.email} 
             onChange={(e) => setData({ ...data, email: e.target.value })}
-            className="input-field" 
+            className="input-field" // Apply CSS class for input
           />
         </div>
         <div>
@@ -25,10 +25,10 @@ const LoginForm = ({ loginUser, data, setData }) => {
             placeholder='Password' 
             value={data.password} 
             onChange={(e) => setData({ ...data, password: e.target.value })}
-            className="input-field" 
+            className="input-field" // Apply CSS class for input
           />
         </div>
-        <button type='submit' className="btty">Log In</button>
+        <button type='submit' className="button">Log In</button>
       </form>
     </div>
   );

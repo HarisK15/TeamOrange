@@ -1,61 +1,61 @@
 .body {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  background-color: #f5f8fa;
+  font-family: "Arial", sans-serif;
+  background-color: #fcfcfc;
   padding: 0;
-  display: flex;
   justify-content: center;
-  align-items: center;
   height: 100vh;
 }
 
 .form-container {
-  background: #ffffff;
-  padding: 40px;
+  background: white;
+  padding: 100px;
   width: 400px;
-  border-radius: 12px;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  box-shadow: 0 5px 5px rgba(0, 0, 0, 0.1);
   text-align: center;
+  border: #333;
 }
 
 .h1 {
-  color: #333333;
+  color: #333;
 }
 
 .input-field {
-  color: #333333;
-  background-color: #f5f8fa;
+  color: #666 !important;
+  background-color: #ddd !important;
   width: 100%;
   padding: 15px;
-  border: none;
-  border-radius: 25px;
+  border: 1px solid #ccc;
+  border-radius: 20px;
   box-sizing: border-box;
-  margin-bottom: 20px;
 }
 
-.btty {
-  background-color: #30c3fd;
-  color: #ffffff;
-  width: 100%;
-  padding: 15px;
-  border: none;
-  border-radius: 25px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+.button {
+  background-color: #30c3fd !important;
+  color: white;
+  width: 300px;
+  margin-top: 25px;
 }
 
-.btty:hover {
-  background-color: #0266a5;
+.button:hover {
+  background-color: #333;
 }
 
 .label {
   display: block;
-  margin-bottom: 10px;
-  color: #666666;
+  margin-bottom: 5px;
+  color: #666;
+}
+
+.logo {
+  width: 100px;
+  height: auto;
+  margin-bottom: 20px;
 }
 
 .brand-name {
-  color: #30c3fd;
-  font-size: 28px;
+  color: #00acee;
+  font-size: 32px;
   font-weight: bold;
-  margin-bottom: 30px;
+  margin-bottom: 40px;
 }
