@@ -76,6 +76,7 @@ Image-Upload
 
           <button type='submit' className='cluck-button'>
             {replyTo ? 'Reply' : 'Cluck'}
+          </button>
         </div>
       </div>
     </form>
