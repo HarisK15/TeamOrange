@@ -76,7 +76,7 @@ const updateBlock = async (req, res) => {
 
     res.status(200).json({ message: 'Block updated successfully' });
   } catch (error) {
-    //console.log('error :', error);
+    console.log('error :', error);
     res.status(500).json({ error: 'Server error' });
   }
 };

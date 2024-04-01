@@ -1,12 +1,6 @@
 const mongoose = require("mongoose");
 require("dotenv").config();
 const app = require("./app");
-const express = require('express');
-const path = require('path');
-
-
-// Serve static files from the uploads directory
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 mongoose
   .connect(process.env.MONGO_URL)
@@ -18,4 +12,3 @@ mongoose
     }
   })
   .catch((err) => console.log("Database connection error", err));
-module.exports = app;

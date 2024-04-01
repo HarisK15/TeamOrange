@@ -171,7 +171,6 @@ describe('Cluck Routes', () => {
 
   it('GET / - should get clucks whose authors have not blocked ', async () => {
     const response = await performRequest('get', `/clucks`, blockedUserToken);
-    console.log('response :', response);
     expect(response.statusCode).toBe(200);
     expect(response.body.length).toBe(1);
     expect(response.body.filter((el) => el.user._id == user._id).length).toBe(
@@ -308,7 +307,55 @@ describe('Cluck Routes', () => {
       `/clucks/user/${user._id}`,
       user2Token
     );
-    console.log('response ::', response);
+    expect(response.statusCode).toBe(200);
+    expect(response.body.length).toBe(1);
+  });
+
+  it('Post /replyCluck/:id - should reply to a cluck', async () => {
+    const user2 = await User.create({
+      email: 'test2@test.com',
+      password: await hashPassword('password123'),
+      userName: 'testUser2',
+    });
+
+    const token2 = createSecretToken(user2._id);
+
+    const response = await performRequest(
+      'post',
+      `/clucks/replyCluck/${newCluckId}`,
+      token2,
+      { text: 'test 3' }
+    );
+    expect(response.statusCode).toBe(200);
+    expect(response.body.replyTo.toString()).toBe(newCluckId.toString());
+  });
+
+  it('GET /clucks/replies/:cluckId', async () => {
+    const user2 = await User.create({
+      email: 'test2@test.com',
+      password: await hashPassword('password123'),
+      userName: 'testUser2',
+    });
+    const token2 = createSecretToken(user2._id);
+
+    const cluck = await Cluck.create({
+      text: 'Text to reply to.',
+      user: user._id,
+    });
+
+    const cluckReply = await Cluck.create({
+      text: 'Test reply 1',
+      replyTo: cluck._id,
+      user: user2._id,
+    });
+
+    await Cluck.updateOne({ _id: cluck._id }, { replies: [cluckReply._id] });
+
+    const response = await performRequest(
+      'get',
+      `/clucks/replies/${cluck._id}`,
+      token2
+    );
     expect(response.statusCode).toBe(200);
     expect(response.body.length).toBe(1);
   });

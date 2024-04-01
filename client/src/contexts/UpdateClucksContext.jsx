@@ -10,11 +10,9 @@ export const UpdateClucksProvider = ({ children }) => {
 
   useEffect(() => {
     const fetchClucks = async () => {
-      //console.log("Fetching clucks");
       try {
         const response = await axios.get("/clucks");
         setClucks(response.data);
-        //console.log(response.data);
       } catch (error) {
         console.error("Failed to fetch clucks", error);
       }
@@ -23,7 +21,7 @@ export const UpdateClucksProvider = ({ children }) => {
     if (isLoggedIn) {
       fetchClucks();
     }
-  }, [isLoggedIn, setClucks]);
+  }, [isLoggedIn]);
 
   const addCluck = (cluck) => {
     setClucks((prevClucks) => [cluck, ...prevClucks]);
