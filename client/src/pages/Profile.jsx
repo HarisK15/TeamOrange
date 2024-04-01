@@ -20,7 +20,6 @@ export default function ChangeProfileForm() {
   const [isFollowing, setFollowing] = useState(false);
   const { userId, setUserId } = useContext(LoggedInContext);
   const [userClucks, setUserClucks] = useState([]);
-  console.log('userClucks :', userClucks);
 
   const isBlocked = useMemo(
     () => loggedInUser.blocked?.includes(profileId),
@@ -261,14 +260,9 @@ export default function ChangeProfileForm() {
           </div>
         </div>
       )}
-      <div className='clucks-list'>
+      <div className="clucks-list">
         {userClucks?.map((cluck) => (
-          <CluckBox
-            key={cluck._id}
-            cluck={cluck}
-            profileView={true}
-            onUpdate={getUserData}
-          />
+          <CluckBox key={cluck._id} cluck={cluck} profileView={true} onUpdate={getUserData} />
         ))}
       </div>
     </div>

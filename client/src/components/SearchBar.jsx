@@ -47,7 +47,6 @@ const SearchBar = () => {
   return (
     <div className='search-bar' data-testid='search-bar'>
       <input
-        data-testid='search-field'
         className='search-field'
         type='text'
         value={query}
@@ -76,7 +75,7 @@ const SearchBar = () => {
             <>
               <h3 className="clucks-title">Clucks</h3>
               {results.clucks.map((cluck) => (
-                <CluckBox key={cluck._id} cluck={cluck} profileView={true}/>
+                <CluckBox key={cluck._id} cluck={cluck} />
               ))}
             </>
           )}

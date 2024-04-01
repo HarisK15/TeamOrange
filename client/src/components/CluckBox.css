@@ -123,8 +123,6 @@
 .buttons {
   display: flex;
   align-self: flex-end;
-  align-items: center;
-  padding-bottom: 5px;
   gap: 10px;
 }
 
@@ -136,7 +134,7 @@
   resize: none;
   outline: none;
   background-color: #c0c0c0;
-  color: rgb(46, 46, 46);
+  color:rgb(46, 46, 46);
   font-size: 14px;
   box-sizing: border-box;
   overflow: auto;
@@ -167,26 +165,4 @@
 .like-button:focus {
   border: none;
   outline: none;
-}
-
-.reply-button {
-  align-self: flex-end;
-  padding: 6px 16px;
-  font-weight: bold;
-  color: #ffffff;
-  background-color: #30c3fd;
-  border: none;
-  border-radius: 20px;
-  cursor: pointer;
-}
-
-.reply-box {
-  width: 100%;
-}
-
-.show-replies-button {
-  height: fit-content;
-  padding: 0;
-  background-color: transparent;
-  color: black;
 }

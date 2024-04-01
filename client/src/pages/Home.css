@@ -23,13 +23,23 @@
   border: #333;
 }
 .login-button {
-  background-color: #30c3fd !important;
-  color: white;
-  width: 300px;
-  margin-bottom: 30px;
+  background-color: #30c3fd;
+  color: #ffffff;
+  width: 100%;
+  padding: 15px;
+  border: none;
+  margin-bottom: 10px;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: background-color 0.3s ease; 
 }
 .register-button {
-  background-color: #30c3fd !important;
-  color: white;
-  width: 300px;
+  background-color: #30c3fd;
+  color: #ffffff;
+  width: 100%;
+  padding: 15px;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: background-color 0.3s ease; 
 }

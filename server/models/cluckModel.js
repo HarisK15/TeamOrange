@@ -1,21 +1,25 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const Schema = mongoose.Schema;
 
 const cluckSchema = new Schema(
   {
+    image: {
+      type: String,
+      required: false,
+    },
     text: {
       type: String,
       required: true,
     },
     user: {
       type: Schema.Types.ObjectId,
-      ref: 'User',
+      ref: "User",
       required: true,
     },
     recluckUser: {
       type: Schema.Types.ObjectId,
-      ref: 'User',
+      ref: "User",
     },
     recluck: {
       type: Boolean,
@@ -23,17 +27,17 @@ const cluckSchema = new Schema(
     likedBy: [
       {
         type: mongoose.Types.ObjectId,
-        ref: 'User',
+        ref: "User",
       },
     ],
-    replies: [{ type: Schema.Types.ObjectId, ref: 'Cluck' }],
-    replyTo: {
-      type: Schema.Types.ObjectId,
-      ref: 'Cluck',
-      required: false,
-    },
+    replies: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Cluck",
+      },
+    ],
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model('Cluck', cluckSchema);
+module.exports = mongoose.model("Cluck", cluckSchema);

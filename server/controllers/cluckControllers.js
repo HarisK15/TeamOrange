@@ -26,7 +26,6 @@ const getAllClucks = async (req, res) => {
       return true;
     }
   });
-
   // Sort clucks by createdAt
   clucks.sort((a, b) => b.createdAt - a.createdAt);
 
@@ -65,10 +64,7 @@ const getClucksByUser = async (req, res) => {
       res.status(200).json([]);
       return;
     }
-    const clucks = await Cluck.find({ user: userId, replyTo: {$exists: false} }).populate('user').exec();
-
-    // Sort clucks by createdAt
-    clucks.sort((a, b) => b.createdAt - a.createdAt);
+    const clucks = await Cluck.find({ user: userId }).populate('user').exec();
 
     res.status(200).json(clucks);
   } catch (error) {
@@ -77,54 +73,11 @@ const getClucksByUser = async (req, res) => {
   }
 };
 
-//GET all cluck replies for a cluck
-const getCluckReplies = async (req, res) => {
-  try {
-    const cluckId = req.params.cluckId;
-    const requestingUser = req.userId.toString();
-
-    const cluckForReplies = await Cluck.findById(cluckId);
-
-    if (!cluckForReplies) {
-      return res.status(404).json({ error: 'Cluck not found' });
-    }
-
-    const user = await User.findById(requestingUser);
-
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-
-    // const isSeeingOwnProfile = requestingUser === userId;
-
-    // if (
-    //   isBlocked ||
-    //   (userForClucks.privacy &&
-    //     !isSeeingOwnProfile &&
-    //     !(isFollowing && isFollowingBack))
-    // ) {
-    //   res.status(200).json([]);
-    //   return;
-    // }
-
-    const clucks = await Cluck.find({ replyTo: cluckId })
-      .populate('user', 'userName followers following privacy blocked replies')
-      .populate('recluckUser', 'userName')
-      .sort({ createdAt: -1 });
-
-    res.status(200).json(clucks);
-  } catch (error) {
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-};
-
 // GET a single cluck
 const getCluck = async (req, res) => {
   const { id } = req.params;
 
-  const cluck = await Cluck.findById(id)
-    .populate('user', 'userName')
-    .populate('recluckUser', 'userName');
+  const cluck = await Cluck.findById(id).populate("user", "userName").populate("recluckUser", "userName");
 
   if (!cluck) {
     res.status(404).json({ error: 'Cluck not found' });
@@ -149,13 +102,7 @@ const deleteCluck = async (req, res) => {
       .json({ message: 'You can only delete your own clucks' });
   }
 
-  const replyTo = cluck.replyTo;
-
   await Cluck.findByIdAndDelete(id);
-
-  if (replyTo) {
-    await Cluck.findOneAndUpdate({ _id: replyTo }, { $pull: { replies: id } });
-  }
 
   if (!cluck) {
     return res.status(404).json({ error: 'Cluck not found' });
@@ -169,37 +116,14 @@ const postCluck = async (req, res) => {
   try {
     const { text } = req.body;
     const author = await User.findById(req.userId);
+    const image = req.file ? req.file?.path : null;
 
-    if (!author) {
-      return res.status(400).json({ error: 'User not found' });
-    }
-
-    const cluck = await Cluck.create({ text: text, user: author });
+    const cluck = await Cluck.create({ text: text, user: author, image });
+    //console.log(cluck);
 
     res.status(200).json(cluck);
   } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-};
-
-// POST a new reply cluck
-const replyCluck = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { text } = req.body;
-    const author = await User.findById(req.userId);
-
-    if (!author) {
-      return res.status(400).json({ error: 'User not found' });
-    }
-
-    const cluck = await Cluck.create({ text: text, user: author, replyTo: id });
-
-    await Cluck.updateOne({ _id: id }, { $addToSet: { replies: cluck._id } });
-
-    res.status(200).json(cluck);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(500).json({ error: error.message });
   }
 };
 
@@ -269,28 +193,29 @@ const recluckCluck = async (req, res) => {
     const userId = req.userId;
 
     const recluckUser = await User.findById(userId);
-    const cluck = await Cluck.findById(id);
+    const cluck = await Cluck.findById(id)
 
     if (!cluck) {
-      return res.status(404).json({ error: 'Cluck not found' });
+      return res.status(404).json({ error: "Cluck not found" });
     }
 
     const cluckText = cluck.text;
     const cluckAuthor = cluck.user;
 
-    const recluck = await Cluck.create({
+    const recluck = await Cluck.create({ 
       text: cluckText,
       user: cluckAuthor,
-      recluckUser: recluckUser,
-      recluck: true,
+      recluckUser: recluckUser, 
+      recluck: true
     });
 
     await recluck.save();
-
-    return res.status(200).json({ message: 'Cluck successfully reclucked' });
-  } catch (error) {
+    
+    return res.status(200).json({ message: "Cluck successfully reclucked"});
+  }
+  catch (error){
     console.error(error);
-    res.status(500).json({ message: 'Internal Server Error' });
+    res.status(500).json({ message: "Internal Server Error"});
   }
 };
 
@@ -302,7 +227,6 @@ module.exports = {
   deleteCluck,
   recluckCluck,
   likeCluck,
-  replyCluck,
   getClucksByUser,
-  getCluckReplies,
+
 };

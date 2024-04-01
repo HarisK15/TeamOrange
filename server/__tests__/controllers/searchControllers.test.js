@@ -129,6 +129,7 @@ describe('Search Controllers with Privacy and Following checks', () => {
   });
   it('should return clucks of those other whose privacy is off even not following each other', async () => {
     const clucks = await searchClucks('Cluck', '1');
+    //console.log('clucks :', clucks);
 
     expect(clucks.length).toEqual(1);
     expect(clucks.filter((el) => el.user._id === '2').length).toEqual(1);

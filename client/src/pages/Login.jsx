@@ -15,7 +15,6 @@ email: '',
 password: '',
 });
 const { setIsLoggedIn } = useContext(LoggedInContext);
-// sends a get request to the root page without the bowser automatically refreshing the page
 const loginUser = async (e) => {
 e.preventDefault();
 const { email, password } = data;

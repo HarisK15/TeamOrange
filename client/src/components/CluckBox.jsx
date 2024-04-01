@@ -11,7 +11,6 @@ import CluckForm from './CluckForm';
 
 const CluckBox = ({ cluck, profileView, onUpdate = () => {} }) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [isReplying, setIsReplying] = useState(false);
   const [editedText, setEditedText] = useState(cluck.text);
   const [isDeleted, setIsDeleted] = useState(false);
   const { addCluck, updateCluck } = useContext(UpdateClucksContext);
@@ -192,6 +191,8 @@ const CluckBox = ({ cluck, profileView, onUpdate = () => {} }) => {
       </div>
 
       <div className='cluck-content'>
+      {cluck.image && <img src={`http://localhost:8000/${cluck.image}`} alt='Cluck image' />}
+
         {isEditing ? (
           <textarea
             className='edit-textarea'
@@ -220,13 +221,7 @@ const CluckBox = ({ cluck, profileView, onUpdate = () => {} }) => {
             <></>
           )}
         </div>
-        <button
-          className='reply-button'
-          onClick={() => setIsReplying(true)}
-          data-testid='reply-button'
-        >
-          Reply
-        </button>
+       
 
         {userId !== cluck.user._id && (
           <button
@@ -279,20 +274,7 @@ const CluckBox = ({ cluck, profileView, onUpdate = () => {} }) => {
           </div>
         )}
       </div>
-      <div className='reply-box'>
-        {isReplying && (
-          <CluckForm
-            replyTo={cluck._id}
-            onReply={() => {
-              showReplies();
-              setIsReplying(false);
-            }}
-          />
-        )}
-        {replies?.map((el) => (
-          <CluckBox key={el._id} cluck={el} onUpdate={() => showReplies()} />
-        ))}
-      </div>
+     
 
       <div className='cluck-info'>
         <div className='cluck-timestamp'>
