@@ -4,6 +4,7 @@ const Schema = mongoose.Schema;
 
 const cluckSchema = new Schema(
   {
+    
     text: {
       type: String,
       required: true,
@@ -12,6 +13,10 @@ const cluckSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: 'User',
       required: true,
+    },
+    image: {
+      type: String,
+      required: false,
     },
     recluckUser: {
       type: Schema.Types.ObjectId,

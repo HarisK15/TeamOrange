@@ -1,6 +1,9 @@
 const mongoose = require("mongoose");
 require("dotenv").config();
 const app = require("./app");
+const express = require('express');
+const path = require('path');
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 mongoose
   .connect(process.env.MONGO_URL)
