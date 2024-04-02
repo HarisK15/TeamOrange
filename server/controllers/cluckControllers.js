@@ -190,12 +190,14 @@ const replyCluck = async (req, res) => {
     const { id } = req.params;
     const { text } = req.body;
     const author = await User.findById(req.userId);
+    const image = req.file ? req.file?.path : null;
+
 
     if (!author) {
       return res.status(400).json({ error: 'User not found' });
     }
 
-    const cluck = await Cluck.create({ text: text, user: author, replyTo: id });
+    const cluck = await Cluck.create({ text: text, user: author, replyTo: id, image });
 
     await Cluck.updateOne({ _id: id }, { $addToSet: { replies: cluck._id } });
 
