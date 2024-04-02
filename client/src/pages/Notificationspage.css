@@ -1,0 +1,10 @@
+.notifications-page {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: 20px;
+}
+
+.notifications-page .notification {
+	margin-bottom: 20px;
+}
