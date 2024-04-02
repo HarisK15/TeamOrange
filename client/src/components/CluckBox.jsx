@@ -192,7 +192,10 @@ const CluckBox = ({ cluck, profileView, onUpdate = () => {} }) => {
       </div>
 
       <div className='cluck-content'>
+      {cluck.image && <img src={`http://localhost:8000/${cluck.image}`} alt='Cluck image' />}
+
         {isEditing ? (
+          
           <textarea
             className='edit-textarea'
             value={editedText}
@@ -200,6 +203,7 @@ const CluckBox = ({ cluck, profileView, onUpdate = () => {} }) => {
           />
         ) : (
           <p data-testid='cluck-text'>{showContent ? cluck.text : ''}</p>
+          
         )}
       </div>
 

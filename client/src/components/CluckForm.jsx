@@ -8,12 +8,16 @@ import { UpdateClucksContext } from "../contexts/UpdateClucksContext";
 const CluckForm = ({ onReply, replyTo }) => {
   const [text, setText] = useState('');
   const { addCluck } = useContext(UpdateClucksContext);
+  const [error, setError] = useState(null);
 
+  const [image, setImage] = useState(null);
+  const handleImageChange = (e) => {
+    setImage(e.target.files[0]);
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-Image-Upload
     let data;
+
     let contentType;
 
     if (image) {
@@ -26,24 +30,30 @@ Image-Upload
       contentType = "application/json";
     }
 
-
     try {
       const response = await axios.post(
         replyTo ? `/clucks/replyCluck/${replyTo}` : '/clucks',
-        cluck,
+        data,
         {
           withCredentials: true,
           headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': contentType,
           },
+        
         }
+        
       );
-
       setText('');
+      setError(null);
+      setImage();
+
       toast.success("new cluck posted", response.data);
+      console.log(response.data);
       !replyTo && addCluck(response.data);
-      onReply();
+      typeof onReply === 'function' && onReply();
     } catch (error) {
+      console.error(error);
+      setError(error.message);
       toast.error("Failed to post cluck");
     }
   };
@@ -63,17 +73,14 @@ Image-Upload
             value={text}
             placeholder={`What's your ${replyTo ? 'reply' : 'cluck'}?`}
           />
-Image-Upload
-        <label className="cluck-imagearea">
+           <label className="cluck-imagearea">
           <input
             type="file"
             onChange={handleImageChange}
             style={{ display: 'none' }}
           />
               + image
-          <i className="fas fa-upload"></i>
         </label>
-
           <button type='submit' className='cluck-button'>
             {replyTo ? 'Reply' : 'Cluck'}
           </button>
