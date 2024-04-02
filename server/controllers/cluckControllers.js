@@ -169,12 +169,14 @@ const postCluck = async (req, res) => {
   try {
     const { text } = req.body;
     const author = await User.findById(req.userId);
+    const image = req.file ? req.file?.path : null;
+
 
     if (!author) {
       return res.status(400).json({ error: 'User not found' });
     }
 
-    const cluck = await Cluck.create({ text: text, user: author });
+    const cluck = await Cluck.create({ text: text, user: author, image });
 
     res.status(200).json(cluck);
   } catch (error) {
