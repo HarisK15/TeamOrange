@@ -8,7 +8,7 @@ const notificationSchema = new Schema({
   },
   type: {
     type: String,
-    enum: ['error', 'success', 'info'],
+    enum: ['error', 'success', 'info','new-reply', 'new-like', 'new-follower'],
     required: true,
   },
   read: {

@@ -27,7 +27,7 @@ export default function Navbar() {
           <button onClick={() => navigate("/Change-Password")}>
             Change Password
           </button>
-          <button onClick={() => navigate("/Notifications")}>Notifications</button>
+          <button onClick={() => navigate("/notifications")}>Notifications</button>
           <button onClick={logout}>Logout</button>
         </>
       ) : (

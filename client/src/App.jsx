@@ -33,8 +33,7 @@ function App() {
             <Route path="/change-password" element={<ChangePassword />} />
             <Route path="/profile/:profileId" element={<Profile />} />
             <Route path="/verify-email/:verificationToken" element={<EmailVerification />} />
-            <Route path="/Notifications" component={NotificationsPage} />
-
+            <Route path="/notifications" element={<NotificationsPage />} />
         </Routes>
         </UpdateClucksProvider>
       </LoggedInProvider>

@@ -1,5 +1,6 @@
 const User = require("../models/user");
 const mongoose = require("mongoose");
+const axios = require('axios'); // Add this at the top of your file
 
 // Follow a user
 const followUser = async (req, res) => {
@@ -29,6 +30,15 @@ const followUser = async (req, res) => {
 
     await userToFollow.save();
     await user.save();
+    try {
+      await axios.post('/notifications', {
+        message: `You have a new follower: ${userId}`,
+        type: 'new-follower',
+        user: id,
+      });
+    } catch (error) {
+      console.error('Failed to create notification:', error);
+    }
 
     res.status(200).json({ message: "User followed successfully" });
   } catch (error) {
