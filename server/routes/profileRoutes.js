@@ -2,6 +2,10 @@
 const express = require('express');
 const router = express.Router();
 const cors = require('cors');
+const { uploadProfileImage } = require('../controllers/profileController');
+const uploadProfile = require('../middleware/uploadProfile');
+
+
 const {
   changeBio,
   getProfileData,
@@ -27,6 +31,8 @@ router.post('/privacy', userVerification, updatePrivacy);
 // Block requests
 router.post('/block/:id', userVerification, updateBlock);
 
+// POST requests for uploading profile image
+router.post('/profileImage', uploadProfile.single('profileImage'), uploadProfileImage);
 // GET requests
 router.get('/userData/:profileId', getProfileData);
 

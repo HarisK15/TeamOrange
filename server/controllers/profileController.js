@@ -23,7 +23,24 @@ const changeBio = async (req, res) => {
     return res.status(500).json({ error: 'Internal server error' });
   }
 };
+const uploadProfile = require('../middleware/uploadProfile');
 
+const uploadProfileImage = async (req, res) => {
+  try {
+    const user = await User.findById(req.userId);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    user.profileImage = req.file.path;
+    await user.save();
+
+    return res.status(200).json({ message: 'Profile image uploaded successfully' });
+  } catch (error) {
+    console.error('Error uploading profile image:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+};
 const updatePrivacy = async (req, res) => {
   try {
     const { privacy } = req.body;
@@ -110,4 +127,4 @@ const getProfileData = async (req, res) => {
   }
 };
 
-module.exports = { changeBio, getProfileData, updatePrivacy, updateBlock };
+module.exports = { changeBio, getProfileData, updatePrivacy, updateBlock,  uploadProfileImage};

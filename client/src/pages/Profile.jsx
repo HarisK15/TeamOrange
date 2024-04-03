@@ -5,6 +5,7 @@ import { toast } from 'react-hot-toast';
 import { LoggedInContext } from '../contexts/LoggedInContext';
 import './Profile.css';
 import CluckBox from '../components/CluckBox';
+import UploadProfileImage from '../components/UploadProfileImage';
 
 export default function ChangeProfileForm() {
   let { profileId } = useParams();
@@ -16,10 +17,14 @@ export default function ChangeProfileForm() {
     following: [],
   });
 
+  const [profilePicture, setProfilePicture] = useState(null);
+  const [coverPhoto, setCoverPhoto] = useState(null);
   const [loggedInUser, setLoggedInUser] = useState({});
   const [isFollowing, setFollowing] = useState(false);
   const { userId, setUserId } = useContext(LoggedInContext);
   const [userClucks, setUserClucks] = useState([]);
+  const [isEditMode, setIsEditMode] = useState(false);
+
   console.log('userClucks :', userClucks);
 
   const isBlocked = useMemo(
@@ -81,6 +86,7 @@ export default function ChangeProfileForm() {
         bio: userData.bio,
       });
       toast.success(response.data.message);
+   
     } catch (error) {
       if (error.response && error.response.data) {
         toast.error(error.response.data.error);
@@ -88,6 +94,7 @@ export default function ChangeProfileForm() {
         toast.error('An error occurred. Please try again.');
       }
     }
+    setIsEditMode(false);
   };
 
   const updatePrivacy = async (newVal) => {
@@ -105,6 +112,7 @@ export default function ChangeProfileForm() {
     }
   };
 
+ 
   const handleFollow = async () => {
     try {
       const response = await axios.post(`/follow/${profileId}`, {
@@ -145,6 +153,7 @@ export default function ChangeProfileForm() {
     });
   };
 
+  
   const handleBlock = async (e) => {
     const blocked = e.target.checked;
     try {
@@ -176,6 +185,40 @@ export default function ChangeProfileForm() {
   return (
     <div className='profile-container'>
       <div className='profile-info'>
+      <div className="profile-header">
+      <div className="cover-photo-container"> {coverPhoto ? (
+              <img src={coverPhoto} alt="Cover Photo" className="cover-photo" />
+            ) : (
+              <div className="cover-photo-placeholder">
+                <label htmlFor="cover-photo-upload">Upload Cover Photo</label>
+                <input
+                  id="cover-photo-upload"
+                  type="file"
+                  accept="image/*"
+                  onChange={UploadProfileImage}
+                />
+              </div>
+            )}
+          </div>
+          <div className="profile-picture-container">
+            {profilePicture ? (
+              <img
+                src={profilePicture}
+                alt="Profile Picture"
+                className="profile-picture"
+              />
+            ) : (
+              <div className="profile-picture-placeholder">
+                <label htmlFor="profile-picture-upload">Upload Profile Picture</label>
+                <input
+                  id="profile-picture-upload"
+                  type="file"
+                  accept="image/*"
+                  onChange={UploadProfileImage}                />
+              </div>
+            )}
+          </div>
+        </div>
         <div className='top-left'>
           <p className='profileUsername'>@{userData.username}</p>
           <p className='email'>{userData.email}</p>
@@ -197,7 +240,10 @@ export default function ChangeProfileForm() {
         </div>
       )}
 
-      {profileId == userId ? (
+
+
+      {profileId == userId  ? (
+        
         <div>
           <div className='radio-group'>
             <div className='radio-item'>
@@ -231,12 +277,13 @@ export default function ChangeProfileForm() {
               id='bio'
               type='text'
               name='bio'
+              className='bio1'
               placeholder='Change your bio...'
               value={userData.bio}
               onChange={handleChange}
               data-testid='bio'
             ></textarea>
-            <button type='submit'>Update Profile</button>
+            <button className='update-button' type='submit'>Update Profile</button>
           </form>
         </div>
       ) : (
