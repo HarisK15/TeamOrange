@@ -1,3 +1,5 @@
+
+
 import { useState, useEffect, useContext, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
@@ -22,21 +24,15 @@ export default function ChangeProfileForm() {
   const [isFollowing, setFollowing] = useState(false);
   const { userId, setUserId } = useContext(LoggedInContext);
   const [userClucks, setUserClucks] = useState([]);
-
-  const handleProfileImageUpload = (newProfileImage) => {
-    setProfileImage(newProfileImage);
-  };
-
   console.log('userClucks :', userClucks);
 
   const isBlocked = useMemo(
     () => loggedInUser.blocked?.includes(profileId),
     [loggedInUser?.blocked]
   );
-
-
-
-
+  const handleProfileImageUpload = (newProfileImage) => {
+    setProfileImage(newProfileImage);
+  };
   const getUserData = async () => {
     try {
       const [
@@ -53,11 +49,12 @@ export default function ChangeProfileForm() {
         axios.get(`/clucks/user/${profileId}`),
         axios.get(`/profile/userData/${userId}`),
         axios.get(`/profile/profileImage/${userId}`),
+
       ]);
 
-      setProfilePicture(profileImageResponse.data.profileImage);
       if (loginResponse?.data.isLoggedIn) {
         setUserId(loginResponse.data.userId);
+      
       }
 
       setFollowing(followingResponse.data.isFollowing);
@@ -73,28 +70,39 @@ export default function ChangeProfileForm() {
       });
 
       setLoggedInUser(loggedInUserResponse?.data);
-
+      setProfilePicture(profileImageResponse.data.profileImage);
+        if (loginResponse?.data.isLoggedIn) {
+          setUserId(loginResponse.data.userId);
+        }
       setUserClucks(cluckResponse?.data);
     } catch (error) {
       console.error('Error fetching user data:', error);
     }
+   
   };
-
   useEffect(() => {
     getUserData();
   }, [userId, profileId, setUserId, isFollowing]);
-
   useEffect(() => {
-    axios
-      .get(`/profile/profileImage/${userId}`)
-      .then((response) => {
-        setProfileImage(response.data.profileImage);
-      })
-      .catch((error) => {
+    let isMounted = true; // This flag indicates whether the component is still mounted
+  
+    const fetchProfileImage = async () => {
+      try {
+        const response = await axios.get(`/profile/profileImage/${userId}`);
+        if (isMounted) {
+          setProfileImage(response.data.profileImage);
+        }
+      } catch (error) {
         console.error('Error fetching profile image:', error);
-      });
+      }
+    };
+  
+    fetchProfileImage();
+  
+    return () => {
+      isMounted = false; // The component is no longer mounted
+    };
   }, [userId]);
- 
   const handleChange = (e) => {
     setUserData((prevState) => ({ ...prevState, bio: e.target.value }));
   };
@@ -106,7 +114,6 @@ export default function ChangeProfileForm() {
         bio: userData.bio,
       });
       toast.success(response.data.message);
-      await getUserData();
     } catch (error) {
       if (error.response && error.response.data) {
         toast.error(error.response.data.error);
@@ -114,10 +121,7 @@ export default function ChangeProfileForm() {
         toast.error('An error occurred. Please try again.');
       }
     }
-    setIsEditMode(false);
   };
-  
-
 
   const updatePrivacy = async (newVal) => {
     try {

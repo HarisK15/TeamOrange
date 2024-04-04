@@ -66,7 +66,7 @@ const getProfileImage = async (req, res) => {
   try {
     const user = await User.findById(req.params.userId);
     console.log('');
-    console.log('hii ${user}');
+    console.log(user);
     if (!user || !user.profileImage) {
       return res.status(404).json({ error: 'Profile image not found' });
     }
