@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-const UploadProfileImage = () => {
+const UploadProfileImage = ({ onUpload }) => {
   const [selectedFile, setSelectedFile] = useState(null);
 
   const fileSelectedHandler = event => {
@@ -20,6 +20,7 @@ const UploadProfileImage = () => {
           'Content-Type': 'multipart/form-data',
         },
       });
+      onUpload(response.data.profileImage); // Call the onUpload function with the message from the response
       console.log('Received response:', response); // Log the received response
 
       if (response.status === 200) {

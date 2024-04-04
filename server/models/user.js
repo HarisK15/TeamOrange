@@ -24,6 +24,14 @@ const userSchema = new Schema({
     type: Boolean,
     default: true,
   },
+  profileImage: {
+    type: String,
+    default: 'default-pic.jpg',
+  },
+  coverImage: {
+    type: String,
+    default: 'default-pic.jpg',
+  },
   blocked: [
     {
       type: mongoose.Types.ObjectId,

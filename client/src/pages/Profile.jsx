@@ -7,7 +7,6 @@ import './Profile.css';
 import CluckBox from '../components/CluckBox';
 import UploadProfileImage from '../components/UploadProfileImage';
 
-
 export default function ChangeProfileForm() {
   let { profileId } = useParams();
   const [userData, setUserData] = useState({
@@ -25,15 +24,23 @@ export default function ChangeProfileForm() {
   const { userId, setUserId } = useContext(LoggedInContext);
   const [userClucks, setUserClucks] = useState([]);
   const [isEditMode, setIsEditMode] = useState(false);
-const handleProfileImageUpload = (newProfileImage) => {
+
+  const handleProfileImageUpload = (newProfileImage) => {
     setProfileImage(newProfileImage);
-    }
+  };
+
   console.log('userClucks :', userClucks);
 
   const isBlocked = useMemo(
     () => loggedInUser.blocked?.includes(profileId),
     [loggedInUser?.blocked]
   );
+
+  const [selectedCoverPhoto, setSelectedCoverPhoto] = useState(null);
+
+const coverPhotoSelectedHandler = event => {
+  setSelectedCoverPhoto(event.target.files[0]);
+};
 
   const getUserData = async () => {
     try {
@@ -43,14 +50,17 @@ const handleProfileImageUpload = (newProfileImage) => {
         profileResponse,
         cluckResponse,
         loggedInUserResponse,
+        profileImageResponse,
       ] = await Promise.all([
         axios.get('/check-login'),
         axios.get(`/isFollowing/${profileId}`),
         axios.get(`/profile/userData/${profileId}`, {}),
         axios.get(`/clucks/user/${profileId}`),
         axios.get(`/profile/userData/${userId}`),
+        axios.get(`/profile/profileImage/${userId}`),
       ]);
 
+      setProfilePicture(profileImageResponse.data.profileImage);
       if (loginResponse?.data.isLoggedIn) {
         setUserId(loginResponse.data.userId);
       }
@@ -74,17 +84,23 @@ const handleProfileImageUpload = (newProfileImage) => {
       console.error('Error fetching user data:', error);
     }
   };
+
   useEffect(() => {
     getUserData();
   }, [userId, profileId, setUserId, isFollowing]);
+
   useEffect(() => {
-    axios.get('/profileImage')
-      .then(response => {
+    axios
+      .get(`/profile/profileImage/${userId}`)
+      .then((response) => {
         setProfileImage(response.data.profileImage);
       })
-      .catch(error => {
+      .catch((error) => {
         console.error('Error fetching profile image:', error);
       });
+  }, [userId]);
+  useEffect(() => {
+    fetchCoverPhoto();
   }, []);
   const handleChange = (e) => {
     setUserData((prevState) => ({ ...prevState, bio: e.target.value }));
@@ -97,7 +113,7 @@ const handleProfileImageUpload = (newProfileImage) => {
         bio: userData.bio,
       });
       toast.success(response.data.message);
-   
+      await getUserData();
     } catch (error) {
       if (error.response && error.response.data) {
         toast.error(error.response.data.error);
@@ -107,15 +123,38 @@ const handleProfileImageUpload = (newProfileImage) => {
     }
     setIsEditMode(false);
   };
-  const handleCoverPhotoUpload = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setCoverPhoto(reader.result);
-      };
-      reader.readAsDataURL(file);
+  const fetchCoverPhoto = async () => {
+    try {
+      const response = await axios.get('http://localhost:8000/profile/coverPhoto');
+      setCoverPhoto(response.data.coverImage);
+    } catch (error) {
+      console.error('Error fetching cover photo:', error);
     }
+  };
+  const handleCoverPhotoUpload = async () => {
+    const formData = new FormData();
+    formData.append('coverPhoto', selectedCoverPhoto);
+
+    try {
+      console.log('Sending POST request ....'); // Log before sending the request
+
+      const response = await axios.post('http://localhost:8000/profile/covers', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      setCoverPhoto(response.data.coverImage);
+      console.log('Received response:', response); // Log the received response
+      if (response.status === 200) {
+        // Handle the response
+      } else {
+        console.error('Error uploading profile image:', response.status, response.statusText);
+      }
+    } catch (error) {
+      console.error('Error uploading profile image:', error);
+      
+    }
+
   };
 
   const updatePrivacy = async (newVal) => {
@@ -133,7 +172,6 @@ const handleProfileImageUpload = (newProfileImage) => {
     }
   };
 
- 
   const handleFollow = async () => {
     try {
       const response = await axios.post(`/follow/${profileId}`, {
@@ -174,7 +212,6 @@ const handleProfileImageUpload = (newProfileImage) => {
     });
   };
 
-  
   const handleBlock = async (e) => {
     const blocked = e.target.checked;
     try {
@@ -223,9 +260,9 @@ const handleProfileImageUpload = (newProfileImage) => {
   )}
 </div>
           <div className="profile-picture-container">
-            {profilePicture ? (
+            {profilePicture || profileImage ? (
               <img
-                src={profileImage}
+                src={`http://localhost:8000/profileImage/${profileImage }`}
                 alt="Profile Picture"
                 className="profile-picture"
               />

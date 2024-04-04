@@ -1,6 +1,7 @@
 const { default: mongoose } = require('mongoose');
 const User = require('../models/user');
 const uploadProfile = require('../middleware/uploadProfile');
+const path = require('path');
 
 const changeBio = async (req, res) => {
   try {
@@ -35,7 +36,7 @@ const uploadProfileImage = async (req, res) => {
     user.profileImage = path.basename(req.file.path);
     await user.save();
 
-    return res.status(200).json({ message: 'Profile image uploaded successfully' });
+    return res.status(200).json({ message: 'Profile image uploaded successfully', profileImage: user.profileImage});
   } catch (error) {
     console.error('Error uploading profile image:', error);
     return res.status(500).json({ error: 'Internal server error' });
@@ -59,19 +60,40 @@ const updatePrivacy = async (req, res) => {
   }
 };
 const getProfileImage = async (req, res) => {
+    if (!mongoose.Types.ObjectId.isValid(req.params.userId))
+    return res.status(400).json({ error: 'User ID not provided' });
+  console.log('Fetching profile image');
   try {
-    const user = await User.findById(req.userId);
+    const user = await User.findById(req.params.userId);
+    console.log('');
+    console.log('hii ${user}');
     if (!user || !user.profileImage) {
       return res.status(404).json({ error: 'Profile image not found' });
     }
 
     // Send the image file in the response
-    res.sendFile(path.resolve(path.join('profilers', user.profileImage)));
+    // res.sendFile(path.resolve(path.join('profilers', user.profileImage)));
+    res.json({ profileImage: user.profileImage });
     } catch (error) {
     console.error('Error fetching profile image:', error);
     return res.status(500).json({ error: 'Internal server error' });
   }
 };
+
+const getCoverPhoto = async (req, res) => {
+  try {
+    const user = await User.findById(req.userId);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    return res.status(200).json({ coverImage: user.coverImage });
+  } catch (error) {
+    console.error('Error retrieving cover photo:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
 const updateBlock = async (req, res) => {
   try {
     const { block } = req.body;
@@ -110,8 +132,23 @@ const updateBlock = async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 };
+const uploadCoverPhoto = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.userId);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
 
+    user.coverImage = path.basename(req.file.path);
+    await user.save();
+
+    return res.status(200).json({ message: 'cover image uploaded successfully', coverImage: user.coverImage});
+  } catch (error) {
+    console.error('Error uploading cover  image:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }};
 const getProfileData = async (req, res) => {
+  
   await User.updateMany(
     {
       privacy: { $exists: false },
@@ -140,4 +177,4 @@ const getProfileData = async (req, res) => {
   }
 };
 
-module.exports = { changeBio, getProfileData, updatePrivacy, updateBlock,  uploadProfileImage,getProfileImage};
+module.exports = { changeBio, getProfileData, updatePrivacy, updateBlock,  uploadProfileImage,getProfileImage,  uploadCoverPhoto,getCoverPhoto};
