@@ -1,20 +1,33 @@
 const multer = require('multer');
-const path = require('path');
 const fs = require('fs');
 
+// Set up Multer for image upload
 const storage = multer.diskStorage({
-	destination: function(req, file, cb) {
-		const destinationFolder = './profilers/';
-		if (!fs.existsSync(destinationFolder)) {
-			fs.mkdirSync(destinationFolder, { recursive: true });
-		}
-		cb(null, destinationFolder);
-	},
-	filename: function(req, file, cb) {
-		cb(null, Date.now() + path.extname(file.originalname)); // Appending extension
-	}
+  destination: function(req, file, cb) {
+    console.log('In destination function');
+    const dir = './profilers/';
+    fs.exists(dir, exist => {
+      if (!exist) {
+        console.log('Directory does not exist, creating directory');
+        return fs.mkdir(dir, error => {
+          if (error) {
+            console.error('Error creating directory:', error);
+          }
+          cb(error, dir);
+        });
+      }
+      console.log('Directory exists');
+      return cb(null, dir);
+    });
+  },
+  filename: function(req, file, cb) {
+    console.log('In filename function');
+    cb(null, new Date().toISOString().replace(/:/g, '-') + file.originalname);
+  }
 });
 
 const upload = multer({ storage: storage });
 
-module.exports = upload;
+module.exports = {
+  upload
+};

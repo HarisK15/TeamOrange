@@ -3,8 +3,8 @@ const express = require('express');
 const router = express.Router();
 const cors = require('cors');
 const { uploadProfileImage } = require('../controllers/profileController');
-const uploadProfile = require('../middleware/uploadProfile');
-
+const { upload } = require('../middleware/uploadProfile');
+const profileController = require('../controllers/profileController');
 
 const {
   changeBio,
@@ -32,7 +32,12 @@ router.post('/privacy', userVerification, updatePrivacy);
 router.post('/block/:id', userVerification, updateBlock);
 
 // POST requests for uploading profile image
-router.post('/profileImage', uploadProfile.single('profileImage'), uploadProfileImage);
+router.post('/profileImage',userVerification, upload.single('profileImage'), uploadProfileImage);
+
+const path = require('path');
+
+// GET route for fetching profile image
+router.get('/profileImage/:userId', userVerification, profileController.getProfileImage);
 // GET requests
 router.get('/userData/:profileId', getProfileData);
 

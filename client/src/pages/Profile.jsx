@@ -7,6 +7,7 @@ import './Profile.css';
 import CluckBox from '../components/CluckBox';
 import UploadProfileImage from '../components/UploadProfileImage';
 
+
 export default function ChangeProfileForm() {
   let { profileId } = useParams();
   const [userData, setUserData] = useState({
@@ -16,7 +17,7 @@ export default function ChangeProfileForm() {
     followers: [],
     following: [],
   });
-
+  const [profileImage, setProfileImage] = useState(null);
   const [profilePicture, setProfilePicture] = useState(null);
   const [coverPhoto, setCoverPhoto] = useState(null);
   const [loggedInUser, setLoggedInUser] = useState({});
@@ -24,7 +25,9 @@ export default function ChangeProfileForm() {
   const { userId, setUserId } = useContext(LoggedInContext);
   const [userClucks, setUserClucks] = useState([]);
   const [isEditMode, setIsEditMode] = useState(false);
-
+const handleProfileImageUpload = (newProfileImage) => {
+    setProfileImage(newProfileImage);
+    }
   console.log('userClucks :', userClucks);
 
   const isBlocked = useMemo(
@@ -74,7 +77,15 @@ export default function ChangeProfileForm() {
   useEffect(() => {
     getUserData();
   }, [userId, profileId, setUserId, isFollowing]);
-
+  useEffect(() => {
+    axios.get('/profileImage')
+      .then(response => {
+        setProfileImage(response.data.profileImage);
+      })
+      .catch(error => {
+        console.error('Error fetching profile image:', error);
+      });
+  }, []);
   const handleChange = (e) => {
     setUserData((prevState) => ({ ...prevState, bio: e.target.value }));
   };
@@ -95,6 +106,16 @@ export default function ChangeProfileForm() {
       }
     }
     setIsEditMode(false);
+  };
+  const handleCoverPhotoUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setCoverPhoto(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const updatePrivacy = async (newVal) => {
@@ -186,35 +207,32 @@ export default function ChangeProfileForm() {
     <div className='profile-container'>
       <div className='profile-info'>
       <div className="profile-header">
-      <div className="cover-photo-container"> {coverPhoto ? (
-              <img src={coverPhoto} alt="Cover Photo" className="cover-photo" />
-            ) : (
-              <div className="cover-photo-placeholder">
-                <label htmlFor="cover-photo-upload">Upload Cover Photo</label>
-                <input
-                  id="cover-photo-upload"
-                  type="file"
-                  accept="image/*"
-                  onChange={UploadProfileImage}
-                />
-              </div>
-            )}
-          </div>
+      <div className="cover-photo-container">
+  {coverPhoto ? (
+    <img src={coverPhoto} alt="Cover Photo" className="cover-photo" />
+  ) : (
+    <div className="cover-photo-placeholder">
+      <label htmlFor="cover-photo-upload">Upload Cover Photo</label>
+      <input
+        id="cover-photo-upload"
+        type="file"
+        accept="image/*"
+        onChange={handleCoverPhotoUpload} // You need to define this function
+      />
+    </div>
+  )}
+</div>
           <div className="profile-picture-container">
             {profilePicture ? (
               <img
-                src={profilePicture}
+                src={profileImage}
                 alt="Profile Picture"
                 className="profile-picture"
               />
             ) : (
               <div className="profile-picture-placeholder">
                 <label htmlFor="profile-picture-upload">Upload Profile Picture</label>
-                <input
-                  id="profile-picture-upload"
-                  type="file"
-                  accept="image/*"
-                  onChange={UploadProfileImage}                />
+                <UploadProfileImage onUpload={handleProfileImageUpload} />
               </div>
             )}
           </div>
