@@ -18,12 +18,10 @@ export default function ChangeProfileForm() {
   });
   const [profileImage, setProfileImage] = useState(null);
   const [profilePicture, setProfilePicture] = useState(null);
-  const [coverPhoto, setCoverPhoto] = useState(null);
   const [loggedInUser, setLoggedInUser] = useState({});
   const [isFollowing, setFollowing] = useState(false);
   const { userId, setUserId } = useContext(LoggedInContext);
   const [userClucks, setUserClucks] = useState([]);
-  const [isEditMode, setIsEditMode] = useState(false);
 
   const handleProfileImageUpload = (newProfileImage) => {
     setProfileImage(newProfileImage);
@@ -36,11 +34,8 @@ export default function ChangeProfileForm() {
     [loggedInUser?.blocked]
   );
 
-  const [selectedCoverPhoto, setSelectedCoverPhoto] = useState(null);
 
-const coverPhotoSelectedHandler = event => {
-  setSelectedCoverPhoto(event.target.files[0]);
-};
+
 
   const getUserData = async () => {
     try {
@@ -99,9 +94,7 @@ const coverPhotoSelectedHandler = event => {
         console.error('Error fetching profile image:', error);
       });
   }, [userId]);
-  useEffect(() => {
-    fetchCoverPhoto();
-  }, []);
+ 
   const handleChange = (e) => {
     setUserData((prevState) => ({ ...prevState, bio: e.target.value }));
   };
@@ -123,39 +116,8 @@ const coverPhotoSelectedHandler = event => {
     }
     setIsEditMode(false);
   };
-  const fetchCoverPhoto = async () => {
-    try {
-      const response = await axios.get('http://localhost:8000/profile/coverPhoto');
-      setCoverPhoto(response.data.coverImage);
-    } catch (error) {
-      console.error('Error fetching cover photo:', error);
-    }
-  };
-  const handleCoverPhotoUpload = async () => {
-    const formData = new FormData();
-    formData.append('coverPhoto', selectedCoverPhoto);
+  
 
-    try {
-      console.log('Sending POST request ....'); // Log before sending the request
-
-      const response = await axios.post('http://localhost:8000/profile/covers', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      setCoverPhoto(response.data.coverImage);
-      console.log('Received response:', response); // Log the received response
-      if (response.status === 200) {
-        // Handle the response
-      } else {
-        console.error('Error uploading profile image:', response.status, response.statusText);
-      }
-    } catch (error) {
-      console.error('Error uploading profile image:', error);
-      
-    }
-
-  };
 
   const updatePrivacy = async (newVal) => {
     try {
@@ -245,19 +207,9 @@ const coverPhotoSelectedHandler = event => {
       <div className='profile-info'>
       <div className="profile-header">
       <div className="cover-photo-container">
-  {coverPhoto ? (
-    <img src={coverPhoto} alt="Cover Photo" className="cover-photo" />
-  ) : (
-    <div className="cover-photo-placeholder">
-      <label htmlFor="cover-photo-upload">Upload Cover Photo</label>
-      <input
-        id="cover-photo-upload"
-        type="file"
-        accept="image/*"
-        onChange={handleCoverPhotoUpload} // You need to define this function
-      />
-    </div>
-  )}
+  
+    <img src="http://localhost:8000/cover/cover.png" alt="Cover Photo" className="cover-photo" />
+  
 </div>
           <div className="profile-picture-container">
             {profilePicture || profileImage ? (

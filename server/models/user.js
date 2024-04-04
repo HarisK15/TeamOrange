@@ -28,10 +28,7 @@ const userSchema = new Schema({
     type: String,
     default: 'default-pic.jpg',
   },
-  coverImage: {
-    type: String,
-    default: 'default-pic.jpg',
-  },
+
   blocked: [
     {
       type: mongoose.Types.ObjectId,

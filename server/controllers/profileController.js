@@ -80,19 +80,6 @@ const getProfileImage = async (req, res) => {
   }
 };
 
-const getCoverPhoto = async (req, res) => {
-  try {
-    const user = await User.findById(req.userId);
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-
-    return res.status(200).json({ coverImage: user.coverImage });
-  } catch (error) {
-    console.error('Error retrieving cover photo:', error);
-    return res.status(500).json({ error: 'Internal server error' });
-  }
-};
 
 const updateBlock = async (req, res) => {
   try {
@@ -132,21 +119,7 @@ const updateBlock = async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 };
-const uploadCoverPhoto = async (req, res, next) => {
-  try {
-    const user = await User.findById(req.userId);
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
 
-    user.coverImage = path.basename(req.file.path);
-    await user.save();
-
-    return res.status(200).json({ message: 'cover image uploaded successfully', coverImage: user.coverImage});
-  } catch (error) {
-    console.error('Error uploading cover  image:', error);
-    return res.status(500).json({ error: 'Internal server error' });
-  }};
 const getProfileData = async (req, res) => {
   
   await User.updateMany(
@@ -177,4 +150,4 @@ const getProfileData = async (req, res) => {
   }
 };
 
-module.exports = { changeBio, getProfileData, updatePrivacy, updateBlock,  uploadProfileImage,getProfileImage,  uploadCoverPhoto,getCoverPhoto};
+module.exports = { changeBio, getProfileData, updatePrivacy, updateBlock,  uploadProfileImage,getProfileImage};
