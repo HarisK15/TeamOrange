@@ -219,7 +219,7 @@ export default function ChangeProfileForm() {
             {profileImage || profilePicture ? (
               
               <div className="profile-picture-placeholder">
-                <button  htmlFor="profile-picture-upload">
+                <button className='upload-btn'  htmlFor="profile-picture-upload">
                 <img
                   src={`http://localhost:8000/profileImage/${profileImage || profilePicture}`}
                   alt="Profile Picture"
