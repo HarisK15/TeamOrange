@@ -1,6 +1,7 @@
 const Cluck = require('../models/cluckModel');
 const User = require('../models/user');
 const mongoose = require('mongoose');
+const axios = require('axios'); 
 
 // GET all clucks
 const getAllClucks = async (req, res) => {
@@ -192,7 +193,6 @@ const replyCluck = async (req, res) => {
     const author = await User.findById(req.userId);
     const image = req.file ? req.file?.path : null;
 
-
     if (!author) {
       return res.status(400).json({ error: 'User not found' });
     }
@@ -200,6 +200,17 @@ const replyCluck = async (req, res) => {
     const cluck = await Cluck.create({ text: text, user: author, replyTo: id, image });
 
     await Cluck.updateOne({ _id: id }, { $addToSet: { replies: cluck._id } });
+
+    // After the reply is added, create a notification
+    try {
+      await axios.post('http://localhost:8000/notifications', {
+        message: `${author._id} replied to your post`,
+        type: 'new-reply',
+        user: cluck.user._id,
+      });
+    } catch (error) {
+      console.error('Failed to create notification:', error);
+    }
 
     res.status(200).json(cluck);
   } catch (error) {
@@ -226,6 +237,17 @@ const likeCluck = async (req, res) => {
       { $addToSet: { likedBy: userId } },
       { new: true }
     );
+
+    // After the like is added, create a notification
+    try {
+      await axios.post('http://localhost:8000/notifications', {
+        message: `${userId} liked your post`,
+        type: 'new-like',
+        user: cluck.user._id,
+      });
+    } catch (error) {
+      console.error('Failed to create notification:', error);
+    }
   } else {
     updatedCluck = await Cluck.findOneAndUpdate(
       { _id: id },
