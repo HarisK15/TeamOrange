@@ -4,7 +4,8 @@ const app = require("./app");
 const express = require('express');
 const path = require('path');
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
+app.use('/profileImage', express.static(path.join(__dirname, 'profilers')));
+app.use('/cover', express.static(path.join(__dirname, 'covers')));
 mongoose
   .connect(process.env.MONGO_URL)
   .then(() => {

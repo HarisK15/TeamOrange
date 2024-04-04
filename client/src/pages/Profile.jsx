@@ -1,3 +1,5 @@
+
+
 import { useState, useEffect, useContext, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
@@ -5,6 +7,7 @@ import { toast } from 'react-hot-toast';
 import { LoggedInContext } from '../contexts/LoggedInContext';
 import './Profile.css';
 import CluckBox from '../components/CluckBox';
+import UploadProfileImage from '../components/UploadProfileImage';
 
 export default function ChangeProfileForm() {
   let { profileId } = useParams();
@@ -15,7 +18,8 @@ export default function ChangeProfileForm() {
     followers: [],
     following: [],
   });
-
+  const [profileImage, setProfileImage] = useState(null);
+  const [profilePicture, setProfilePicture] = useState(null);
   const [loggedInUser, setLoggedInUser] = useState({});
   const [isFollowing, setFollowing] = useState(false);
   const { userId, setUserId } = useContext(LoggedInContext);
@@ -26,7 +30,9 @@ export default function ChangeProfileForm() {
     () => loggedInUser.blocked?.includes(profileId),
     [loggedInUser?.blocked]
   );
-
+  const handleProfileImageUpload = (newProfileImage) => {
+    setProfileImage(newProfileImage);
+  };
   const getUserData = async () => {
     try {
       const [
@@ -35,16 +41,20 @@ export default function ChangeProfileForm() {
         profileResponse,
         cluckResponse,
         loggedInUserResponse,
+        profileImageResponse,
       ] = await Promise.all([
         axios.get('/check-login'),
         axios.get(`/isFollowing/${profileId}`),
         axios.get(`/profile/userData/${profileId}`, {}),
         axios.get(`/clucks/user/${profileId}`),
         axios.get(`/profile/userData/${userId}`),
+        axios.get(`/profile/profileImage/${userId}`),
+
       ]);
 
       if (loginResponse?.data.isLoggedIn) {
         setUserId(loginResponse.data.userId);
+      
       }
 
       setFollowing(followingResponse.data.isFollowing);
@@ -60,16 +70,39 @@ export default function ChangeProfileForm() {
       });
 
       setLoggedInUser(loggedInUserResponse?.data);
-
+      setProfilePicture(profileImageResponse.data.profileImage);
+        if (loginResponse?.data.isLoggedIn) {
+          setUserId(loginResponse.data.userId);
+        }
       setUserClucks(cluckResponse?.data);
     } catch (error) {
       console.error('Error fetching user data:', error);
     }
+   
   };
   useEffect(() => {
     getUserData();
   }, [userId, profileId, setUserId, isFollowing]);
-
+  useEffect(() => {
+    let isMounted = true; // This flag indicates whether the component is still mounted
+  
+    const fetchProfileImage = async () => {
+      try {
+        const response = await axios.get(`/profile/profileImage/${userId}`);
+        if (isMounted) {
+          setProfileImage(response.data.profileImage);
+        }
+      } catch (error) {
+        console.error('Error fetching profile image:', error);
+      }
+    };
+  
+    fetchProfileImage();
+  
+    return () => {
+      isMounted = false; // The component is no longer mounted
+    };
+  }, [userId]);
   const handleChange = (e) => {
     setUserData((prevState) => ({ ...prevState, bio: e.target.value }));
   };
@@ -176,6 +209,27 @@ export default function ChangeProfileForm() {
   return (
     <div className='profile-container'>
       <div className='profile-info'>
+      <div className="profile-header">
+      <div className="cover-photo-container">
+  
+    <img src="http://localhost:8000/cover/cover.png" alt="Cover Photo" className="cover-photo" />
+  
+</div>
+          <div className="profile-picture-container">
+            {profilePicture || profileImage ? (
+              <img
+                src={`http://localhost:8000/profileImage/${profileImage }`}
+                alt="Profile Picture"
+                className="profile-picture"
+              />
+            ) : (
+              <div className="profile-picture-placeholder">
+                <label htmlFor="profile-picture-upload">Upload Profile Picture</label>
+                <UploadProfileImage onUpload={handleProfileImageUpload} />
+              </div>
+            )}
+          </div>
+        </div>
         <div className='top-left'>
           <p className='profileUsername'>@{userData.username}</p>
           <p className='email'>{userData.email}</p>
@@ -197,7 +251,10 @@ export default function ChangeProfileForm() {
         </div>
       )}
 
-      {profileId == userId ? (
+
+
+      {profileId == userId  ? (
+        
         <div>
           <div className='radio-group'>
             <div className='radio-item'>
@@ -231,12 +288,13 @@ export default function ChangeProfileForm() {
               id='bio'
               type='text'
               name='bio'
+              className='bio1'
               placeholder='Change your bio...'
               value={userData.bio}
               onChange={handleChange}
               data-testid='bio'
             ></textarea>
-            <button type='submit'>Update Profile</button>
+            <button className='update-button' type='submit'>Update Profile</button>
           </form>
         </div>
       ) : (
