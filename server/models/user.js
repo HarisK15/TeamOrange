@@ -26,7 +26,7 @@ const userSchema = new Schema({
   },
   profileImage: {
     type: String,
-    default: 'default-pic.jpg',
+    default: 'null',
   },
 
   blocked: [
