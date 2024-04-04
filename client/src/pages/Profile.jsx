@@ -216,15 +216,23 @@ export default function ChangeProfileForm() {
   
 </div>
           <div className="profile-picture-container">
-            {profilePicture || profileImage ? (
-              <img
-                src={`http://localhost:8000/profileImage/${profileImage }`}
-                alt="Profile Picture"
-                className="profile-picture"
-              />
+            {profileImage || profilePicture ? (
+              
+              <div className="profile-picture-placeholder">
+                <button  htmlFor="profile-picture-upload">
+                <img
+                  src={`http://localhost:8000/profileImage/${profileImage || profilePicture}`}
+                  alt="Profile Picture"
+                  className="profile-picture"
+                />
+                </button>
+                <UploadProfileImage onUpload={handleProfileImageUpload} />
+              </div>
+              
+              
             ) : (
               <div className="profile-picture-placeholder">
-                <label htmlFor="profile-picture-upload">Upload Profile Picture</label>
+                <button  htmlFor="profile-picture-upload">change Profile Picture</button>
                 <UploadProfileImage onUpload={handleProfileImageUpload} />
               </div>
             )}

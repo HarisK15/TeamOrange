@@ -15,6 +15,7 @@
   object-fit: cover;
   z-index: 1;
 }
+
 .update-button {
   display: inline-block;
   padding: 10px 20px;
@@ -56,6 +57,15 @@
 }
 
 
+.profile-picture-upload-button {
+  display: block;
+  width: 100%;
+  text-align: center;
+  background-color: #f0f0f0;
+  color: #000;
+  padding: 10px;
+  cursor: pointer;
+}
 .profile-picture {
   position: absolute;
   top: 30%;
